@@ -1,0 +1,12 @@
+.agents/
+.next/
+node_modules/
+coverage/
+playwright-report/
+test-results/
+.lighthouseci/
+next-env.d.ts
+docs/BRUNOVA_WEBSITE_V1_BUILD_SPECIFICATION.md
+docs/logo.png
+public/brand/*.webp
+pnpm-lock.yaml

@@ -16,10 +16,10 @@ test-results/
 
 # Logs and local tooling
 *.log
+*.tsbuildinfo
 .DS_Store
 .idea/
 .vscode/
 
 # Regenerable Hallmark cache
 .hallmark/preflight.json
-
