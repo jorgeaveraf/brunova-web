@@ -1,0 +1,13 @@
+.git
+.github
+.next
+node_modules
+coverage
+playwright-report
+test-results
+.lighthouseci
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store

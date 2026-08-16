@@ -26,18 +26,18 @@ Preserve the source byte-for-byte. Derive a correctly encoded, tightly cropped r
 
 ### 2.1 Stack and versions
 
-| Area | Decision |
-|---|---|
-| Runtime | Node.js 24 Active LTS |
+| Area            | Decision                                                                                                 |
+| --------------- | -------------------------------------------------------------------------------------------------------- |
+| Runtime         | Node.js 24 Active LTS                                                                                    |
 | Package manager | Latest verified stable pnpm 11.x at scaffold time; exact version pinned in `package.json#packageManager` |
-| Framework | Next.js 16.2.11 Active LTS, App Router, Node runtime |
-| UI | React and React DOM 19.2.x compatible with Next.js 16.2.11 |
-| Language | TypeScript 5.9.3 strict baseline |
-| Styling | Tailwind CSS 4.3.x and semantic CSS variables in root `tokens.css` |
-| Validation | Zod 4.x |
-| Theme | `next-themes` 0.4.x |
-| Tests | Vitest 4.1.x, Testing Library 16.x, Playwright 1.62.x, axe Playwright integration |
-| Quality | ESLint 9.x, `eslint-config-next` 16.2.11, Prettier 3.x |
+| Framework       | Next.js 16.2.11 Active LTS, App Router, Node runtime                                                     |
+| UI              | React and React DOM 19.2.x compatible with Next.js 16.2.11                                               |
+| Language        | TypeScript 5.9.3 strict baseline                                                                         |
+| Styling         | Tailwind CSS 4.3.x and semantic CSS variables in root `tokens.css`                                       |
+| Validation      | Zod 4.x                                                                                                  |
+| Theme           | `next-themes` 0.4.x                                                                                      |
+| Tests           | Vitest 4.1.x, Testing Library 16.x, Playwright 1.62.x, axe Playwright integration                        |
+| Quality         | ESLint 9.x, `eslint-config-next` 16.2.11, Prettier 3.x                                                   |
 
 Use Next.js 16.2.11 Active LTS instead of the 16.3.x Current line for Website v1. Re-evaluate Current only after v1 is stable. Commit `pnpm-lock.yaml`, use frozen-lockfile installs, and do not adopt a new pnpm major without an architecture decision.
 
