@@ -1,0 +1,25 @@
+# Dependencies and framework output
+node_modules/
+.next/
+out/
+
+# Environment files (keep the documented template)
+.env
+.env.*
+!.env.example
+
+# Test and analysis output
+coverage/
+playwright-report/
+test-results/
+.lighthouseci/
+
+# Logs and local tooling
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# Regenerable Hallmark cache
+.hallmark/preflight.json
+
