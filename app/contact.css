@@ -43,6 +43,10 @@
   font-size: var(--text-display-contact);
 }
 
+.contact-studio__opening .heading--1 > span {
+  white-space: nowrap;
+}
+
 .contact-studio__opening > p {
   max-width: 35rem;
   margin: 0;
