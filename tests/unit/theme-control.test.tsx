@@ -15,19 +15,16 @@ describe("ThemeControl", () => {
   it("offers system, light, and dark preferences", () => {
     render(<ThemeControl />)
 
-    const control = screen.getByRole("combobox", { name: "Appearance" })
-    expect(control).toBeEnabled()
-    expect(screen.getByRole("option", { name: "System" })).toBeInTheDocument()
-    expect(screen.getByRole("option", { name: "Light" })).toBeInTheDocument()
-    expect(screen.getByRole("option", { name: "Dark" })).toBeInTheDocument()
+    expect(screen.getByRole("group", { name: "Theme" })).toBeInTheDocument()
+    expect(screen.getByRole("radio", { name: "System" })).toBeChecked()
+    expect(screen.getByRole("radio", { name: "Light" })).toBeEnabled()
+    expect(screen.getByRole("radio", { name: "Dark" })).toBeEnabled()
   })
 
   it("updates the explicit theme preference", () => {
     render(<ThemeControl />)
 
-    fireEvent.change(screen.getByRole("combobox", { name: "Appearance" }), {
-      target: { value: "dark" },
-    })
+    fireEvent.click(screen.getByRole("radio", { name: "Dark" }))
 
     expect(setTheme).toHaveBeenCalledWith("dark")
   })

@@ -1,7 +1,7 @@
 "use client"
 
 import { useTheme } from "next-themes"
-import { useSyncExternalStore } from "react"
+import { useId, useSyncExternalStore } from "react"
 
 const themeOptions = [
   { value: "system", label: "System" },
@@ -9,29 +9,40 @@ const themeOptions = [
   { value: "dark", label: "Dark" },
 ] as const
 
-export function ThemeControl() {
+export function ThemeControl({ compact = false }: { compact?: boolean }) {
   const { theme, setTheme } = useTheme()
+  const controlId = useId()
   const mounted = useSyncExternalStore(
     () => () => undefined,
     () => true,
     () => false,
   )
+  const selectedTheme =
+    mounted && themeOptions.some((option) => option.value === theme)
+      ? theme
+      : "system"
 
   return (
-    <label className="theme-control" data-state={mounted ? "ready" : "loading"}>
-      <span className="theme-control__label">Appearance</span>
-      <select
-        aria-label="Appearance"
-        disabled={!mounted}
-        onChange={(event) => setTheme(event.currentTarget.value)}
-        value={mounted ? theme : "system"}
-      >
+    <fieldset
+      className={`theme-control${compact ? " theme-control--compact" : ""}`}
+      data-state={mounted ? "ready" : "loading"}
+      disabled={!mounted}
+    >
+      <legend className="theme-control__legend">Theme</legend>
+      <div className="theme-control__options">
         {themeOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
+          <label className="theme-control__option" key={option.value}>
+            <input
+              checked={selectedTheme === option.value}
+              name={`${controlId}-theme`}
+              onChange={() => setTheme(option.value)}
+              type="radio"
+              value={option.value}
+            />
+            <span>{option.label}</span>
+          </label>
         ))}
-      </select>
-    </label>
+      </div>
+    </fieldset>
   )
 }
