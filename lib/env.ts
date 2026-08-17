@@ -40,3 +40,42 @@ export function getPortalUrl(): URL | undefined {
   const portalUrl = getServerEnvironment().PORTAL_URL
   return portalUrl ? new URL(portalUrl) : undefined
 }
+
+export type ContactRuntimeConfiguration = {
+  siteUrl: URL
+  webhookUrl: URL
+  webhookSecret: string
+  rateLimitSalt: string
+}
+
+function isLoopbackUrl(url: URL): boolean {
+  return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(url.hostname)
+}
+
+export function getContactRuntimeConfiguration():
+  | { ready: true; configuration: ContactRuntimeConfiguration }
+  | { ready: false } {
+  const environment = getServerEnvironment()
+  const webhookUrl = environment.N8N_CONTACT_WEBHOOK_URL
+    ? new URL(environment.N8N_CONTACT_WEBHOOK_URL)
+    : undefined
+
+  if (
+    !webhookUrl ||
+    !environment.N8N_CONTACT_WEBHOOK_SECRET ||
+    !environment.CONTACT_RATE_LIMIT_SALT ||
+    (webhookUrl.protocol !== "https:" && !isLoopbackUrl(webhookUrl))
+  ) {
+    return { ready: false }
+  }
+
+  return {
+    ready: true,
+    configuration: {
+      siteUrl: new URL(environment.SITE_URL),
+      webhookUrl,
+      webhookSecret: environment.N8N_CONTACT_WEBHOOK_SECRET,
+      rateLimitSalt: environment.CONTACT_RATE_LIMIT_SALT,
+    },
+  }
+}
