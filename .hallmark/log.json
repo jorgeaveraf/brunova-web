@@ -1,6 +1,17 @@
 [
   {
     "date": "2026-08-16",
+    "macrostructure": "Route Atlas",
+    "theme": "custom",
+    "theme_axes": "light / geometric-sans / neutral",
+    "vibe": "architectural restraint, warm bone, operational precision",
+    "nav": "N6 adapted two-band masthead",
+    "footer": "Ft2 inline rule",
+    "enrichment": "Tier B semantic work-system flows",
+    "brief": "Brunova Website v1 core routes"
+  },
+  {
+    "date": "2026-08-16",
     "macrostructure": "Architectural Narrative",
     "theme": "custom",
     "theme_axes": "light / geometric-sans / neutral",

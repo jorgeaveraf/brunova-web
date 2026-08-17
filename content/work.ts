@@ -64,3 +64,7 @@ export const workCases = [
     detailStatus: "publication-review-required",
   },
 ] as const satisfies readonly WorkCase[]
+
+export function getWorkCase(slug: string): WorkCase | undefined {
+  return workCases.find((workCase) => workCase.slug === slug)
+}

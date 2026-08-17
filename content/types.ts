@@ -19,7 +19,11 @@ export type Capability = {
   slug: string
   index: string
   name: string
+  navigationLabel: string
   shortDescription: string
+  problemClass: string
+  approach: string
+  operationalConcerns: readonly string[]
   outcomes: readonly string[]
   relatedWork: readonly string[]
 }
@@ -30,6 +34,10 @@ export type ProcessStage = {
   name: string
   description: string
   timeline: string
+  problemSolved: string
+  entryKnowledge: string
+  establishes: readonly string[]
+  nextStep: string
 }
 
 export type WorkCase = {
@@ -40,6 +48,32 @@ export type WorkCase = {
   capabilitySignals: readonly string[]
   publicationStatus: "approved-summary"
   detailStatus: "publication-review-required"
+}
+
+export type WorkSystemStep = {
+  label: string
+  role: string
+}
+
+export type WorkCapabilityLink = {
+  label: string
+  capabilitySlug: string
+}
+
+export type WorkDetail = {
+  slug: WorkCase["slug"]
+  context: string
+  operationalProblem: string
+  scalingConstraint?: string
+  systemApproach: string
+  systemBoundary: {
+    summary: string
+    steps: readonly WorkSystemStep[]
+  }
+  engineeringDecisions: readonly string[]
+  safeguards?: readonly string[]
+  outcome: string
+  capabilities: readonly WorkCapabilityLink[]
 }
 
 export type HomepageSymptom = {
