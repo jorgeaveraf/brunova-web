@@ -202,8 +202,14 @@ select {
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    transition-duration: var(--dur-fast) !important;
-    animation-duration: var(--dur-fast) !important;
+    transition-duration: var(--dur-reduced) !important;
+    animation-duration: var(--dur-reduced) !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .theme-control select,
+  .system-state a,
+  .system-state button {
+    transform: none !important;
   }
 }

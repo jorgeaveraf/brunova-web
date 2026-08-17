@@ -9,7 +9,7 @@ const themeOptions = [
   { value: "dark", label: "Dark" },
 ] as const
 
-export function ThemeControl() {
+export function ThemeControl({ compact = false }: { compact?: boolean }) {
   const { theme, setTheme } = useTheme()
   const mounted = useSyncExternalStore(
     () => () => undefined,
@@ -18,10 +18,15 @@ export function ThemeControl() {
   )
 
   return (
-    <label className="theme-control" data-state={mounted ? "ready" : "loading"}>
-      <span className="theme-control__label">Appearance</span>
+    <label
+      className={`theme-control${compact ? " theme-control--compact" : ""}`}
+      data-state={mounted ? "ready" : "loading"}
+    >
+      <span className="theme-control__label">
+        {compact ? "Theme" : "Appearance"}
+      </span>
       <select
-        aria-label="Appearance"
+        aria-label={compact ? "Theme" : "Appearance"}
         disabled={!mounted}
         onChange={(event) => setTheme(event.currentTarget.value)}
         value={mounted ? theme : "system"}
