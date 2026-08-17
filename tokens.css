@@ -18,6 +18,7 @@
   --color-border: oklch(81.5% 0.01 75);
   --color-accent: oklch(20% 0.008 70);
   --color-accent-foreground: oklch(96% 0.008 75);
+  --color-inverse-muted: oklch(74% 0.009 75);
   --color-focus: oklch(20% 0.008 70);
   --color-danger: oklch(48% 0.14 25);
   --color-success: oklch(43% 0.09 145);
@@ -37,6 +38,7 @@
   --color-border: oklch(33% 0.009 70);
   --color-accent: oklch(92% 0.008 75);
   --color-accent-foreground: oklch(16% 0.008 70);
+  --color-inverse-muted: oklch(40% 0.01 70);
   --color-focus: oklch(94% 0.008 75);
   --color-danger: oklch(72% 0.12 25);
   --color-success: oklch(72% 0.08 145);
@@ -80,6 +82,7 @@
   --text-xl: 1.953125rem;
   --text-2xl: 2.44140625rem;
   --text-display: clamp(2.75rem, 5vw + 1rem, 5.25rem);
+  --text-display-home: clamp(2.75rem, 4.2vw, 4.5rem);
 
   --leading-display: 1.05;
   --leading-body: 1.6;
