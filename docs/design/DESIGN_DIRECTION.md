@@ -1,6 +1,6 @@
 # Brunova Website v1 — Design Direction
 
-**Status:** Phase 3 homepage implemented for review. Core destination routes remain subject to Phase 4 approval.
+**Status:** Phase 4 core routes implemented for review. Contact conversion remains subject to Phase 5 approval.
 
 ## Hallmark decision
 
@@ -260,3 +260,51 @@ Variety     5/5 — sections change structure by responsibility without falling 
 ```
 
 No incremental axis is below 3. The explicit homepage anti-pattern scan covers centered/gradient heroes, meaningless abstracts, repeated cards, fake screenshots, glows, bento, icon-per-feature treatments, unnecessary pills, invented statistics, AI-powered marketing, fake proof, repeated centered sections and excessive rounding. None is intentionally present. The final Hallmark 58-gate completion audit remains Phase 8 work.
+
+## Phase 4 core-route decisions
+
+### Route Atlas structure
+
+Phase 4 extends the Custom/Bespoke Architectural Narrative with a distinct internal-page system named **Route Atlas**. The theme, N6-adapted masthead and Ft2 footer remain unchanged by explicit continuity decision; each route body instead adopts the reading model required by its content.
+
+- `/capabilities` uses an interlocking capability field: a compact responsibility map anchors five asymmetric deep-dive spreads. Capabilities are connected parts of a system, not isolated service cards.
+- `/process` uses a transfer map. Lateral entry appears before the four ordinal stages, and each stage exposes entry knowledge, the problem resolved, established conditions and the likely next state.
+- `/work` uses an editorial folio: one dominant selected system establishes the portfolio, with three supporting records arranged at different scales and offsets.
+- `/work/[slug]` uses a technical dossier: a restrained section index, conservative narrative, a semantic system flow, engineering decisions, defensible safeguards where available, capability relationships and related work.
+- `/about` uses a company thesis: the approved observation and boundary statements carry the first composition, followed by the founder-led/team-based operating model and three Brunova principles.
+- `/portal` uses a sparse access threshold. It contains no login chrome or fake account state.
+- `/privacy` uses a long-document composition with a reading index and factual sections.
+- `/contact` is a controlled, noindex unavailable state only. It prevents a dead route while leaving all form and API behavior to Phase 5.
+
+No internal page copies the homepage’s ledger macrostructure. Repetition remains only where the information is genuinely ordinal or record-based.
+
+### Work-detail publication boundary
+
+The four public dossiers use only the titles, summaries, capability signals and system relationships already approved in source material. Every flow step is a direct restatement of those facts. The content model supports optional scaling constraints and safeguards; absent sections are omitted rather than populated with generic or invented prose.
+
+No client names, logos, infrastructure identifiers, URLs, credentials, employment relationships, pricing, metrics or testimonials were introduced. Publication-reviewed detailed outcomes remain a future content task.
+
+### Metadata and route states
+
+All Phase 4 routes have typed title, description, canonical, Open Graph and Twitter summary metadata. Work-detail metadata comes from typed work records. The portal placeholder and contact availability route are `noindex`; the portal can expose one controlled HTTP(S) external action when `PORTAL_URL` exists.
+
+The privacy model carries `legal-human-review-required-before-production` as a source-only review marker. The public page makes no jurisdictional compliance claim and documents the current no-op analytics adapter, absence of analytics cookies and advertising trackers, sessionStorage attribution behavior, and the planned server-to-n8n contact boundary.
+
+### Responsive and accessibility behavior
+
+The routes recompose at content-driven breakpoints rather than simply stacking desktop columns. Capability spreads collapse into ordered reading groups; process identity and stage questions move into one continuous mobile narrative; case-system flows replace horizontal arrows with vertical progression; About preserves complete-word display wrapping; Portal stays a single deliberate boundary; Privacy keeps a readable measure.
+
+System-flow figures use a visible `figcaption` and semantic ordered list, so no architectural meaning depends on visual arrows. Focus remains neutral and immediate. Motion remains cut.
+
+### Phase 4 incremental Hallmark critique
+
+```text
+Philosophy  5/5 — every route composition follows its operational reading job
+Hierarchy   5/5 — page-level intent, evidence and next actions remain explicit
+Execution   4/5 — static routes, typed records, responsive flows and metadata are browser-tested
+Specificity 5/5 — capability, process, work and privacy copy remain Brunova-specific
+Restraint   5/5 — no fabricated proof, fake interfaces, service-card grid or decorative motion
+Variety     5/5 — seven route bodies use distinct fingerprints inside one design system
+```
+
+No incremental axis is below 3. The Phase 4 scan covers repeated page structures, duplicated homepage ledgers, generic service cards, fabricated case-study detail, badges, pills, excessive centering, gradients, glows, icon grids, unsupported metrics and clickable-label overflow. The final 58-gate completion audit remains intentionally deferred to Phase 8.
