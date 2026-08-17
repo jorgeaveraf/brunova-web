@@ -2,7 +2,7 @@
 
 Production corporate website foundation for Brunova systems engineering and operational intelligence.
 
-The canonical production model is a portable Next.js standalone container managed with Docker Compose. Phase 0 and Phase 1 established the repository, design system, theme, health route, tests, and deployment foundation. Phase 2 added the global shell and typed local content. Phase 3 adds the production homepage narrative; destination routes remain approval-gated.
+The canonical production model is a portable Next.js standalone container managed with Docker Compose. The current application includes the production homepage, core routes and the server-mediated contact conversion path.
 
 ## Requirements
 
@@ -49,13 +49,13 @@ cp .env.example .env
 
 Application values:
 
-| Variable                     |                   Required | Purpose                                                    |
-| ---------------------------- | -------------------------: | ---------------------------------------------------------- |
-| `SITE_URL`                   |                 Production | Server-only canonical origin used during build and runtime |
-| `N8N_CONTACT_WEBHOOK_URL`    | Phase 5/production contact | Private n8n webhook URL                                    |
-| `N8N_CONTACT_WEBHOOK_SECRET` | Phase 5/production contact | Server-to-server authentication                            |
-| `CONTACT_RATE_LIMIT_SALT`    | Phase 5/production contact | Server-only hashing salt                                   |
-| `PORTAL_URL`                 |                         No | External client portal destination                         |
+| Variable                     |           Required | Purpose                                                    |
+| ---------------------------- | -----------------: | ---------------------------------------------------------- |
+| `SITE_URL`                   |         Production | Server-only canonical origin used during build and runtime |
+| `N8N_CONTACT_WEBHOOK_URL`    | Contact activation | HTTPS production webhook URL                               |
+| `N8N_CONTACT_WEBHOOK_SECRET` | Contact activation | Bearer secret for server-to-server authentication          |
+| `CONTACT_RATE_LIMIT_SALT`    | Contact activation | At least 16 characters; hashes client addresses in memory  |
+| `PORTAL_URL`                 |                 No | External client portal destination                         |
 
 Compose controls:
 
@@ -65,7 +65,9 @@ Compose controls:
 | `PORT`         | `3000`      | Host port mapped to container port 3000 |
 | `IMAGE_TAG`    | `local`     | Local image tag                         |
 
-Never commit `.env` or secrets. `SITE_URL` is passed as a non-secret build argument so statically generated canonical metadata uses the deployment origin. n8n credentials remain runtime-only.
+Never commit `.env` or secrets. `SITE_URL` is passed as a non-secret build argument so statically generated canonical metadata uses the deployment origin. Contact credentials remain runtime-only and never enter Docker build arguments.
+
+The contact page remains available when these three contact values are absent, but submissions fail closed with a controlled service-unavailable response. Production activation requires all three values. External production webhook URLs must use HTTPS; loopback HTTP is accepted only for controlled local verification.
 
 ## Production container verification
 
@@ -120,9 +122,11 @@ The reverse proxy should:
 - terminate HTTPS/TLS,
 - route the Brunova domain to `127.0.0.1:3000`,
 - forward `Host` and `X-Forwarded-Proto`,
-- set trusted client-address forwarding headers,
+- overwrite, rather than append user-controlled values to, `X-Real-IP` and `X-Forwarded-For`,
 - optionally apply compression and additional security headers,
-- preserve the future `/api/contact` body-size and timeout constraints.
+- preserve the `/api/contact` 16 KiB request limit and allow its bounded eight-second upstream timeout.
+
+`SITE_URL` is the authoritative allowed browser origin. The application does not infer the public origin from forwarded headers. Keep the Compose port bound to loopback and ensure the trusted reverse proxy replaces client-address headers before they reach the container; the application uses a validated address only to produce a short-lived HMAC rate-limit key and never persists or forwards the raw address.
 
 The application does not require Nginx for local or container operation. Do not expose the container directly to the public internet when a host reverse proxy is expected.
 
@@ -185,12 +189,12 @@ feature/* → develop → main
 - arbitrary feature branches do not deploy to production.
 - merges into `develop` and `main` require review.
 
-BR-017 Phase 0/1 and Phase 2 were approved and merged into `develop`. Phase 3 work is performed on `feature/br-017-homepage` and remains unmerged until approved.
+BR-017 Phase 0–4 are integrated into `develop`. Phase 5 work is performed on `feature/br-017-contact-conversion` and remains unmerged until approved.
 
 ## Current limitations
 
-- The production homepage and global navigation are implemented.
-- Navigation and homepage links intentionally point to destination pages deferred to Phase 4.
-- `/api/contact` and n8n delivery begin in Phase 5.
+- Production pages, global navigation and the contact conversion experience are implemented.
+- Contact delivery requires production n8n values and downstream deduplication keyed by the forwarded browser `idempotency_key`.
+- The in-memory rate limiter is instance-local defense-in-depth. A reverse-proxy or provider-level limit remains recommended for production, but is not required for application startup.
 - Favicon and production Open Graph artwork are not yet supplied.
 - The approved logo is a dark-backed raster source; a future vector/transparent source is recommended.

@@ -10,6 +10,14 @@ const utmKeys = [
 
 type UtmKey = (typeof utmKeys)[number]
 
+export type ContactAttribution = {
+  source: string | null
+  medium: string | null
+  campaign: string | null
+  term: string | null
+  content: string | null
+}
+
 export type FirstTouchAttribution = Partial<Record<UtmKey, string>> & {
   capturedAt: string
   landingPath: string
@@ -18,9 +26,26 @@ export type FirstTouchAttribution = Partial<Record<UtmKey, string>> & {
 
 type StorageReader = Pick<Storage, "getItem" | "setItem">
 
-function normalizeAttributionValue(value: string | null): string | undefined {
-  const normalized = value?.trim().slice(0, 256)
+function normalizeAttributionValue(value: unknown): string | undefined {
+  const normalized = typeof value === "string" ? value.trim().slice(0, 200) : ""
   return normalized || undefined
+}
+
+export function contactAttributionFromStorage(
+  storage: Pick<Storage, "getItem">,
+): ContactAttribution {
+  const attribution = readFirstTouchAttribution(storage)
+
+  const readValue = (key: UtmKey) =>
+    normalizeAttributionValue(attribution?.[key] ?? null) ?? null
+
+  return {
+    source: readValue("utm_source"),
+    medium: readValue("utm_medium"),
+    campaign: readValue("utm_campaign"),
+    term: readValue("utm_term"),
+    content: readValue("utm_content"),
+  }
 }
 
 export function readFirstTouchAttribution(
