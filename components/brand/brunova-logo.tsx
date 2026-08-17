@@ -16,6 +16,7 @@ export function BrunovaLogo({ location }: { location: "header" | "footer" }) {
           location === "header" ? "(min-width: 960px) 172px, 132px" : "172px"
         }
         src="/brand/brunova-wordmark-dark.webp"
+        style={{ height: "auto", width: "100%" }}
         width={1045}
       />
     </Link>

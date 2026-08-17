@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 
+import "@/app/core-routes.css"
+
 import { Container } from "@/components/layout/container"
 import { Heading } from "@/components/layout/section-heading"
 import { privacyContent } from "@/content/privacy"
@@ -16,7 +18,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function PrivacyPage() {
   return (
-    <main className="route-page privacy-page" id="main-content">
+    <main className="route-page privacy-page" id="main-content" tabIndex={-1}>
       <header className="privacy-intro">
         <Container className="privacy-intro__inner">
           <div>

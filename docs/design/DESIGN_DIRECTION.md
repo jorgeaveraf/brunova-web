@@ -1,6 +1,8 @@
 # Brunova Website v1 — Design Direction
 
-**Status:** Phase 4 core routes implemented for review. Contact conversion remains subject to Phase 5 approval.
+**Status:** Phase 5 approved and integrated. Phase 6 hardening is in progress without a design expansion.
+
+Phase 6 hardening preserves this approved direction. Its only visible accessibility correction is programmatic focusability on main landmarks for skip navigation and stable, visually hidden contact submission announcements; neither changes composition, palette, typography or motion. Security, SEO and performance work introduces no new visual primitive. The incremental Hallmark regression check remains separate from the final Phase 8 whole-site audit.
 
 ## Hallmark decision
 

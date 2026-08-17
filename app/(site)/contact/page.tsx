@@ -1,5 +1,8 @@
 import type { Metadata } from "next"
 
+import "@/app/contact.css"
+import "@/app/core-routes.css"
+
 import { ContactForm } from "@/components/contact/contact-form"
 import { Container } from "@/components/layout/container"
 import { Heading } from "@/components/layout/section-heading"
@@ -32,7 +35,7 @@ const expectations = [
 
 export default function ContactPage() {
   return (
-    <main className="route-page contact-page" id="main-content">
+    <main className="route-page contact-page" id="main-content" tabIndex={-1}>
       <Container className="contact-studio">
         <section className="contact-studio__context">
           <div className="contact-studio__opening">

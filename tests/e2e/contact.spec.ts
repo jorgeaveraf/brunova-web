@@ -27,7 +27,10 @@ test("contact route renders the production conversion contract", async ({
   await expect(
     page.getByRole("button", { name: "Send the context" }),
   ).toBeVisible()
-  await expect(page.locator('meta[name="robots"]')).toHaveCount(0)
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    "content",
+    /noindex/,
+  )
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     /\/contact$/,
@@ -106,6 +109,7 @@ test("successful submission includes first-touch UTM and browser idempotency", a
   await expect(
     page.getByRole("heading", { name: "Thanks. We received your note." }),
   ).toBeVisible()
+  await expect(page.locator('.contact-result[role="status"]')).toBeFocused()
   expect(idempotencyKey).toMatch(
     /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
   )
@@ -146,6 +150,7 @@ test("recoverable retry preserves content and key until a material edit", async 
   await fillContactForm(page)
   await page.getByRole("button", { name: "Send the context" }).click()
   await expect(page.getByText("We couldn't send this right now.")).toBeVisible()
+  await expect(page.locator('.contact-result[role="status"]')).toBeFocused()
   await expect(page.getByLabel("Name")).toHaveValue("Ada Lovelace")
 
   await page.getByRole("button", { name: "Send the context" }).click()
@@ -189,6 +194,28 @@ test("network and rate-limit failures remain calm and preserve context", async (
   })
   await page.getByRole("button", { name: "Send the context" }).click()
   await expect(page.getByText("Please wait before trying again.")).toBeVisible()
+  await expect(page.locator('.contact-result[role="status"]')).toBeFocused()
+})
+
+test("submitting state is announced without replacing the form", async ({
+  page,
+}) => {
+  await page.route("**/api/contact", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ ok: true }),
+    })
+  })
+
+  await page.goto("/contact")
+  await fillContactForm(page)
+  await page.getByRole("button", { name: "Send the context" }).click()
+
+  await expect(page.locator("form")).toHaveAttribute("aria-busy", "true")
+  await expect(page.getByText("Sending your information.")).toBeAttached()
+  await expect(page.getByLabel("Name")).toHaveValue("Ada Lovelace")
 })
 
 for (const theme of ["light", "dark"] as const) {

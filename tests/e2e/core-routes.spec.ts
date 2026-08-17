@@ -85,7 +85,10 @@ test("core routes expose their approved content contracts", async ({
     "href",
     /\/contact$/,
   )
-  await expect(page.locator('meta[name="robots"]')).toHaveCount(0)
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+    "content",
+    /noindex/,
+  )
 })
 
 test("all four typed work routes render conservative dossiers", async ({
