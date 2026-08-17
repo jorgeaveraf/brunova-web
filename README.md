@@ -2,7 +2,7 @@
 
 Production corporate website foundation for Brunova systems engineering and operational intelligence.
 
-The canonical production model is a portable Next.js standalone container managed with Docker Compose. Phase 0 and Phase 1 established the repository, design system, theme, health route, tests, and deployment foundation. Phase 2 adds the global shell and typed local content; the production homepage and content routes remain approval-gated.
+The canonical production model is a portable Next.js standalone container managed with Docker Compose. Phase 0 and Phase 1 established the repository, design system, theme, health route, tests, and deployment foundation. Phase 2 added the global shell and typed local content. Phase 3 adds the production homepage narrative; destination routes remain approval-gated.
 
 ## Requirements
 
@@ -185,13 +185,12 @@ feature/* → develop → main
 - arbitrary feature branches do not deploy to production.
 - merges into `develop` and `main` require review.
 
-BR-017 Phase 0/1 was approved and merged into `develop`. Phase 2 work is performed on `feature/br-017-site-shell` and remains unmerged until approved.
+BR-017 Phase 0/1 and Phase 2 were approved and merged into `develop`. Phase 3 work is performed on `feature/br-017-homepage` and remains unmerged until approved.
 
 ## Current limitations
 
-- The visible root route is a temporary Phase 2 shell-review surface, not the Website v1 homepage.
-- Global navigation is implemented; its destination pages remain deferred to Phase 4.
-- The production homepage begins in Phase 3 after approval.
+- The production homepage and global navigation are implemented.
+- Navigation and homepage links intentionally point to destination pages deferred to Phase 4.
 - `/api/contact` and n8n delivery begin in Phase 5.
 - Favicon and production Open Graph artwork are not yet supplied.
 - The approved logo is a dark-backed raster source; a future vector/transparent source is recommended.

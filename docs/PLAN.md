@@ -1,6 +1,6 @@
 # BR-017 — Brunova Website v1 Implementation Plan
 
-**Status:** Phase 0 and Phase 1 approved and merged into `develop`. Phase 2 authorized on `feature/br-017-site-shell`. Phase 3 remains approval-gated.
+**Status:** Phase 0/1 and Phase 2 approved and merged into `develop`. Phase 3 authorized on `feature/br-017-homepage`. Phase 4 remains approval-gated.
 
 ## 1. Repository assessment
 
@@ -242,13 +242,13 @@ Acceptance:
 
 Implement typed content, desktop/mobile navigation, footer, CTA system, semantic layout primitives, no-op analytics, and UTM capture. Acceptance includes accessible mobile focus behavior, complete required destinations, no AI-nav/footer fingerprint, and single-line clickable labels from 320–1920px.
 
-**Authorization:** Approved for implementation on `feature/br-017-site-shell`; do not merge into `develop` without review.
+**Authorization:** Approved and merged into `develop` with explicit non-fast-forward merge `4ae0194`.
 
 ### Phase 3 — Homepage
 
 Implement the ten-part narrative. Acceptance includes all eight buyer questions in order, exact approved hero copy, exactly five capabilities/four work entries/four stages/three differentiators, no fake proof, fold fit at 1280×800, and Hallmark mobile widths.
 
-**Authorization:** Not started; requires Phase 2 review approval.
+**Authorization:** Approved for implementation on `feature/br-017-homepage`; do not merge into `develop` without review.
 
 ### Phase 4 — Core routes
 
