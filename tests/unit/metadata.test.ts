@@ -30,6 +30,6 @@ describe("page metadata", () => {
       noIndex: true,
     })
 
-    expect(metadata.robots).toEqual({ index: false, follow: false })
+    expect(metadata.robots).toEqual({ index: false, follow: true })
   })
 })

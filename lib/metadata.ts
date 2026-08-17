@@ -5,6 +5,7 @@ type PageMetadataInput = {
   description: string
   path: `/${string}`
   noIndex?: boolean
+  followWhenNoIndex?: boolean
 }
 
 export function createPageMetadata({
@@ -12,6 +13,7 @@ export function createPageMetadata({
   description,
   path,
   noIndex = false,
+  followWhenNoIndex = true,
 }: PageMetadataInput): Metadata {
   return {
     title,
@@ -33,7 +35,7 @@ export function createPageMetadata({
       ? {
           robots: {
             index: false,
-            follow: false,
+            follow: followWhenNoIndex,
           },
         }
       : {}),

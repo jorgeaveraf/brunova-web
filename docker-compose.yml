@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
       args:
         SITE_URL: ${SITE_URL:-http://localhost:3000}
+        SEO_INDEXING_ENABLED: ${SEO_INDEXING_ENABLED:-false}
     env_file:
       - path: .env
         required: true

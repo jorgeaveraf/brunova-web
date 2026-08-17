@@ -15,7 +15,9 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 FROM base AS build
 ARG SITE_URL=http://localhost:3000
+ARG SEO_INDEXING_ENABLED=false
 ENV SITE_URL=${SITE_URL}
+ENV SEO_INDEXING_ENABLED=${SEO_INDEXING_ENABLED}
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 RUN pnpm build

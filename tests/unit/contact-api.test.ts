@@ -96,6 +96,7 @@ describe("POST /api/contact", () => {
     const response = await handler(contactRequest())
 
     expect(response.status).toBe(200)
+    expect(response.headers.get("cache-control")).toBe("no-store")
     expect(await response.json()).toEqual({ ok: true })
     expect(send).toHaveBeenCalledTimes(1)
 
