@@ -78,13 +78,14 @@ test("core routes expose their approved content contracts", async ({
 
   await page.goto("/contact")
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Conversation intake is not available yet.",
+    "Start a conversation.",
   )
-  await expect(page.locator("form")).toHaveCount(0)
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
-    "content",
-    /noindex/,
+  await expect(page.locator("form")).toHaveCount(1)
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    /\/contact$/,
   )
+  await expect(page.locator('meta[name="robots"]')).toHaveCount(0)
 })
 
 test("all four typed work routes render conservative dossiers", async ({

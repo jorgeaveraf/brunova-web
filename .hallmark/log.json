@@ -1,6 +1,17 @@
 [
   {
     "date": "2026-08-16",
+    "macrostructure": "Split Studio adapted to Route Atlas",
+    "theme": "custom",
+    "theme_axes": "inverse dark context / geometric-sans / neutral",
+    "vibe": "executive, austere, low pressure",
+    "nav": "N6 adapted two-band masthead (approved shell)",
+    "footer": "Ft2 inline rule (approved shell)",
+    "enrichment": "none",
+    "brief": "Brunova Website v1 contact conversion"
+  },
+  {
+    "date": "2026-08-16",
     "macrostructure": "Route Atlas",
     "theme": "custom",
     "theme_axes": "light / geometric-sans / neutral",

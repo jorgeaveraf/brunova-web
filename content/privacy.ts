@@ -2,14 +2,14 @@ export const privacyContent = {
   reviewStatus: "legal-human-review-required-before-production",
   updatedLabel: "Privacy notice",
   introduction:
-    "This notice describes the data handling currently present on the Brunova website and the contact workflow that will apply when contact submission becomes available.",
+    "This notice describes how the Brunova website handles contact information, first-touch attribution and the current analytics configuration.",
   sections: [
     {
       id: "contact-information",
       title: "Contact information",
       paragraphs: [
-        "When the contact form is implemented, it is expected to collect your name, work email, company, role, problem category and problem description.",
-        "The contact workflow is not active in the current release. No contact submission is accepted by this website yet.",
+        "The contact form collects your name, work email, company, role, problem category and the description you provide about an operational problem.",
+        "Brunova uses this information to review the context, determine an appropriate next step and follow up on the conversation.",
       ],
     },
     {
@@ -17,15 +17,15 @@ export const privacyContent = {
       title: "First-touch attribution",
       paragraphs: [
         "If a landing URL contains UTM parameters, the website stores the first source, medium, campaign, term and content values in browser sessionStorage together with the landing path, capture time and available referrer.",
-        "That record remains in the current browser session and is not sent to an analytics provider in the current release.",
+        "That first-touch record remains in the current browser session. The UTM source, medium, campaign, term and content values are included with a contact submission when available.",
       ],
     },
     {
       id: "processing",
       title: "Contact processing boundary",
       paragraphs: [
-        "When contact submission is implemented, the browser will send the form to Brunova’s server endpoint. The server will validate and sanitize the submission before forwarding it to a private n8n webhook for operational follow-up.",
-        "Any downstream lead, notification, email, spreadsheet or customer-relationship workflow will depend on the production n8n configuration and must be reviewed before that contact path is enabled.",
+        "The browser sends the contact form to Brunova’s server. The server validates and limits the submission before forwarding only the accepted contact fields and first-touch UTM values to Brunova’s private server-side operational workflow.",
+        "That workflow supports internal review and operational follow-up. The website does not send the honeypot field, form timing information, raw network address or browser fingerprint into that workflow.",
       ],
     },
     {

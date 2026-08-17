@@ -6,7 +6,7 @@ import { privacyContent } from "@/content/privacy"
 import { createPageMetadata } from "@/lib/metadata"
 
 const description =
-  "How the Brunova Website v1 handles first-touch attribution, planned contact information, analytics and downstream processing."
+  "How the Brunova website handles contact information, first-touch attribution, analytics and operational follow-up."
 
 export const metadata: Metadata = createPageMetadata({
   title: "Privacy",

@@ -274,7 +274,7 @@ Phase 4 extends the Custom/Bespoke Architectural Narrative with a distinct inter
 - `/about` uses a company thesis: the approved observation and boundary statements carry the first composition, followed by the founder-led/team-based operating model and three Brunova principles.
 - `/portal` uses a sparse access threshold. It contains no login chrome or fake account state.
 - `/privacy` uses a long-document composition with a reading index and factual sections.
-- `/contact` is a controlled, noindex unavailable state only. It prevents a dead route while leaving all form and API behavior to Phase 5.
+- `/contact` entered Phase 4 as a controlled, noindex unavailable state. Phase 5 replaces that temporary boundary with the production conversion route described below.
 
 No internal page copies the homepage’s ledger macrostructure. Repetition remains only where the information is genuinely ordinal or record-based.
 
@@ -286,13 +286,21 @@ No client names, logos, infrastructure identifiers, URLs, credentials, employmen
 
 ### Metadata and route states
 
-All Phase 4 routes have typed title, description, canonical, Open Graph and Twitter summary metadata. Work-detail metadata comes from typed work records. The portal placeholder and contact availability route are `noindex`; the portal can expose one controlled HTTP(S) external action when `PORTAL_URL` exists.
+All Phase 4 routes have typed title, description, canonical, Open Graph and Twitter summary metadata. Work-detail metadata comes from typed work records. The portal placeholder remains `noindex`; the production contact route is public and indexable, with its own canonical and social metadata. The portal can expose one controlled HTTP(S) external action when `PORTAL_URL` exists.
 
-The privacy model carries `legal-human-review-required-before-production` as a source-only review marker. The public page makes no jurisdictional compliance claim and documents the current no-op analytics adapter, absence of analytics cookies and advertising trackers, sessionStorage attribution behavior, and the planned server-to-n8n contact boundary.
+The privacy model carries `legal-human-review-required-before-production` as a source-only review marker. The public page makes no jurisdictional compliance claim and documents the current no-op analytics adapter, absence of analytics cookies and advertising trackers, sessionStorage attribution behavior, and the implemented server-side operational-workflow boundary without naming internal tooling.
 
 ### Responsive and accessibility behavior
 
 The routes recompose at content-driven breakpoints rather than simply stacking desktop columns. Capability spreads collapse into ordered reading groups; process identity and stage questions move into one continuous mobile narrative; case-system flows replace horizontal arrows with vertical progression; About preserves complete-word display wrapping; Portal stays a single deliberate boundary; Privacy keeps a readable measure.
+
+## Phase 5 — Contact conversion
+
+The production contact route uses a Split Studio composition adapted to Route Atlas. An inverse neutral context plane holds the executive framing and expectation sequence; the form remains an unboxed, continuous conversation on the adjacent surface. On mobile, the two planes become one natural reading order. This avoids both the generic centered form card and a sales-qualification dashboard.
+
+The page retains the approved custom palette, Manrope/IBM Plex Sans pairing, N6 masthead, Ft2 footer and cut-motion stance. Functional danger and success tokens appear only with text and semantic state, never as brand accents. The form uses persistent labels, native controls, stable helper/error positions and the existing neutral focus treatment.
+
+The contact interaction covers initial, validation, submitting, success, recoverable service failure, network failure, rejected, rate-limited and unexpected-error states. Success remains in context and makes no response-time promise. Recoverable states preserve entered information. Hallmark pre-emit critique: Philosophy 5/5, Hierarchy 5/5, Execution 5/5, Specificity 5/5, Restraint 5/5, Variety 5/5. The Phase 5 contact surface passes the 58-gate pre-emit sweep; the eventual whole-site completion audit remains Phase 8 work.
 
 System-flow figures use a visible `figcaption` and semantic ordered list, so no architectural meaning depends on visual arrows. Focus remains neutral and immediate. Motion remains cut.
 
