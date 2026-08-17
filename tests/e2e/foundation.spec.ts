@@ -17,7 +17,12 @@ test("site shell and health endpoint are operational", async ({ page }) => {
   await expect(
     page.getByRole("link", { name: "Start a conversation" }).first(),
   ).toHaveAttribute("href", "/contact")
-  await expect(page.locator('select[aria-label="Theme"]:visible')).toBeEnabled()
+  const themeControl = page
+    .getByRole("group", { name: "Theme" })
+    .filter({ visible: true })
+  await expect(
+    themeControl.getByRole("radio", { name: "System" }),
+  ).toBeEnabled()
 
   const health = await page.request.get("/api/health")
   expect(health.status()).toBe(200)
@@ -30,8 +35,19 @@ test("site shell and health endpoint are operational", async ({ page }) => {
 test("explicit theme preference persists", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto("/")
-  await page.locator('select[aria-label="Theme"]:visible').selectOption("dark")
+  const themeControl = page
+    .getByRole("group", { name: "Theme" })
+    .filter({ visible: true })
+  await themeControl.getByText("Dark", { exact: true }).click()
+  const darkOption = themeControl.getByRole("radio", { name: "Dark" })
+  await expect(darkOption).toBeChecked()
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark")
+
+  await darkOption.focus()
+  await page.keyboard.press("ArrowLeft")
+  await expect(themeControl.getByRole("radio", { name: "Light" })).toBeChecked()
+  await page.keyboard.press("ArrowRight")
+  await expect(darkOption).toBeChecked()
 
   await page.reload()
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark")

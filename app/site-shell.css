@@ -1,6 +1,6 @@
 /* Hallmark · macrostructure: Architectural Narrative · tone: architectural restraint · anchor hue: warm neutral
  * nav: N6 adapted (two-band masthead, single rules) · footer: Ft2 inline rule · enrichment: none
- * pre-emit critique: P5 H5 E4 S5 R5 V4 · focused shell gates: pass · final 58: Phase 8
+ * pre-emit critique: P5 H5 E5 S5 R5 V4 · focused shell gates: pass · final 58: Phase 8
  * contrast: pass (40–41) · responsive/mobile: pass (34, 49–57) · honest/tokens/icons: pass (30, 46–48)
  */
 
@@ -176,21 +176,7 @@
 }
 
 .theme-control--compact {
-  grid-template-columns: auto auto;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.theme-control--compact .theme-control__label {
-  color: var(--color-muted-foreground);
-  font-size: var(--text-xs);
-  letter-spacing: 0;
-}
-
-.theme-control--compact select {
-  min-width: 6.75rem;
-  min-height: var(--control-height);
-  padding-inline: var(--space-sm) var(--space-xl);
+  flex: 0 0 auto;
 }
 
 .mobile-navigation {
@@ -292,6 +278,19 @@
 }
 
 .mobile-navigation__utilities .action-link {
+  width: 100%;
+}
+
+.mobile-navigation__utilities .theme-control,
+.mobile-navigation__utilities .theme-control__options {
+  width: 100%;
+}
+
+.mobile-navigation__utilities .theme-control__option {
+  flex: 1 1 0;
+}
+
+.mobile-navigation__utilities .theme-control__option span {
   width: 100%;
 }
 

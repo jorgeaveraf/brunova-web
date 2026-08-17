@@ -198,3 +198,9 @@ Variety     4/5 — two-band desktop, compact mobile sheet and inline footer use
 ```
 
 No focused Phase 2 axis is below 3. The shell-scoped Hallmark review passes navigation/footer fingerprint, interaction, contrast, token discipline, honest-copy, responsive and mobile-safety checks. The final 58-gate completion audit remains deferred to Phase 8 because Phase 2 intentionally contains no final homepage or hero composition.
+
+### Theme utility refinement
+
+The approved pre-merge refinement replaces the visible `Theme` plus native-select treatment with a quiet three-choice text rail: `System`, `Light`, and `Dark`. Native radio inputs retain semantic grouping, arrow-key navigation, focus behavior and disabled loading state. The selected option receives a single neutral underline; the control has no surrounding pill, icon, chromatic accent or spatial animation.
+
+This treatment reads as website chrome rather than an application settings field while preserving the existing `next-themes` persistence and prepaint behavior. In the mobile menu the three options distribute evenly across the utility width; in the desktop masthead they remain compact and subordinate to Portal and the primary CTA.
