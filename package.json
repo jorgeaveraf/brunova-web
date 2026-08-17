@@ -19,7 +19,8 @@
     "test:e2e": "playwright test",
     "format:check": "prettier --check .",
     "bundle:report": "node scripts/measure-bundles.mjs",
-    "lighthouse": "node scripts/run-lighthouse.mjs"
+    "lighthouse": "node scripts/run-lighthouse.mjs",
+    "qa:visuals": "node scripts/capture-phase7-visuals.mjs"
   },
   "dependencies": {
     "next": "16.2.11",
