@@ -29,7 +29,9 @@ async function capture({
   })
   // Chromium can stitch an off-canvas fixed skip link into full-page captures.
   // Its keyboard behavior is covered independently by Playwright assertions.
-  await page.addStyleTag({ content: ".skip-link { visibility: hidden !important; }" })
+  await page.addStyleTag({
+    content: ".skip-link { visibility: hidden !important; }",
+  })
   await page.screenshot({
     fullPage: true,
     path: path.join(outputDirectory, `${name}.png`),
