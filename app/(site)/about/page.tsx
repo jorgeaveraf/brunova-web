@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 
+import "@/app/core-routes.css"
+
 import { Container } from "@/components/layout/container"
 import { Heading } from "@/components/layout/section-heading"
 import { ActionLink } from "@/components/ui/action-link"
@@ -18,7 +20,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function AboutPage() {
   return (
-    <main className="route-page about-page" id="main-content">
+    <main className="route-page about-page" id="main-content" tabIndex={-1}>
       <header className="about-thesis">
         <Container className="about-thesis__inner">
           <Heading level={1}>Built at the operating boundary.</Heading>

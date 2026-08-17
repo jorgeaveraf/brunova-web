@@ -35,6 +35,8 @@ corepack pnpm exec playwright install chromium
 corepack pnpm test:e2e
 corepack pnpm build
 corepack pnpm format:check
+corepack pnpm bundle:report
+corepack pnpm lighthouse
 ```
 
 The host must use Node 24 for the supported local toolchain. Docker is the authoritative production-runtime verification.
@@ -52,10 +54,11 @@ Application values:
 | Variable                     |           Required | Purpose                                                    |
 | ---------------------------- | -----------------: | ---------------------------------------------------------- |
 | `SITE_URL`                   |         Production | Server-only canonical origin used during build and runtime |
+| `SEO_INDEXING_ENABLED`       |                 No | `true` only for the canonical HTTPS production deployment  |
 | `N8N_CONTACT_WEBHOOK_URL`    | Contact activation | HTTPS production webhook URL                               |
 | `N8N_CONTACT_WEBHOOK_SECRET` | Contact activation | Bearer secret for server-to-server authentication          |
 | `CONTACT_RATE_LIMIT_SALT`    | Contact activation | At least 16 characters; hashes client addresses in memory  |
-| `PORTAL_URL`                 |                 No | External client portal destination                         |
+| `PORTAL_URL`                 |                 No | HTTPS external client portal destination in production     |
 
 Compose controls:
 
@@ -65,9 +68,11 @@ Compose controls:
 | `PORT`         | `3000`      | Host port mapped to container port 3000 |
 | `IMAGE_TAG`    | `local`     | Local image tag                         |
 
-Never commit `.env` or secrets. `SITE_URL` is passed as a non-secret build argument so statically generated canonical metadata uses the deployment origin. Contact credentials remain runtime-only and never enter Docker build arguments.
+Never commit `.env` or secrets. `SITE_URL` and `SEO_INDEXING_ENABLED` are passed as non-secret build arguments so statically generated canonical metadata and crawler policy use the deployment origin. Contact credentials remain runtime-only and never enter Docker build arguments.
 
-The contact page remains available when these three contact values are absent, but submissions fail closed with a controlled service-unavailable response. Production activation requires all three values. External production webhook URLs must use HTTPS; loopback HTTP is accepted only for controlled local verification.
+Indexing defaults off. Set `SEO_INDEXING_ENABLED=true` only with the canonical, non-loopback HTTPS `SITE_URL`; invalid production origins fail validation. Preview, local and staging environments should leave it `false`. The sitemap still exposes the route inventory for verification, while `robots.txt` disallows crawling and page metadata emits `noindex` outside the canonical production deployment.
+
+The contact page remains available when these three contact values are absent, but submissions fail closed with a controlled service-unavailable response. Production activation requires all three values. External production webhook and portal URLs must use HTTPS; loopback HTTP is accepted only for controlled local verification.
 
 ## Production container verification
 
@@ -124,11 +129,27 @@ The reverse proxy should:
 - forward `Host` and `X-Forwarded-Proto`,
 - overwrite, rather than append user-controlled values to, `X-Real-IP` and `X-Forwarded-For`,
 - optionally apply compression and additional security headers,
+- preserve the application CSP and reinforce HSTS/security headers only with matching values,
 - preserve the `/api/contact` 16 KiB request limit and allow its bounded eight-second upstream timeout.
 
 `SITE_URL` is the authoritative allowed browser origin. The application does not infer the public origin from forwarded headers. Keep the Compose port bound to loopback and ensure the trusted reverse proxy replaces client-address headers before they reach the container; the application uses a validated address only to produce a short-lived HMAC rate-limit key and never persists or forwards the raw address.
 
 The application does not require Nginx for local or container operation. Do not expose the container directly to the public internet when a host reverse proxy is expected.
+
+The application owns CSP, HSTS in production, framing restrictions, MIME sniffing protection, referrer policy, permissions policy and cross-origin isolation headers. CSP intentionally allows inline scripts/styles required by the current Next.js hydration, font and theme bootstrap model; production never allows `unsafe-eval` and allows no third-party origins. See `docs/operations/HARDENING.md` for the exact policy and trust boundary.
+
+## SEO and performance verification
+
+After a production build is running on port 3000:
+
+```bash
+corepack pnpm bundle:report
+LHCI_BASE_URL=http://127.0.0.1:3000 corepack pnpm lighthouse
+```
+
+The bundle report records every gzip target and enforces route-specific JavaScript, CSS and initial WOFF2 font transfer. The first-load JavaScript target remains visible as a warning because the pinned Next.js/React shared runtime exceeds the historical target before Brunova route code; it must not regress silently. Lighthouse runs the homepage, contact route and a representative work dossier with mobile settings. It enforces accessibility, best-practices and SEO floors while treating timing-sensitive performance, LCP/TBT and first-load script thresholds as warnings for local reproducibility.
+
+Final favicon and Open Graph artwork are not yet supplied. Metadata currently uses a truthful text-only `summary` social fallback; no temporary imitation brand image is generated.
 
 ## Routine VPS operations
 
@@ -189,7 +210,7 @@ feature/* → develop → main
 - arbitrary feature branches do not deploy to production.
 - merges into `develop` and `main` require review.
 
-BR-017 Phase 0–4 are integrated into `develop`. Phase 5 work is performed on `feature/br-017-contact-conversion` and remains unmerged until approved.
+BR-017 Phase 0–5 are integrated into `develop`. Phase 6 hardening is performed on `feature/br-017-hardening` and remains unmerged until approved.
 
 ## Current limitations
 
@@ -198,3 +219,4 @@ BR-017 Phase 0–4 are integrated into `develop`. Phase 5 work is performed on `
 - The in-memory rate limiter is instance-local defense-in-depth. A reverse-proxy or provider-level limit remains recommended for production, but is not required for application startup.
 - Favicon and production Open Graph artwork are not yet supplied.
 - The approved logo is a dark-backed raster source; a future vector/transparent source is recommended.
+- Privacy copy remains subject to human/legal review before production publication.

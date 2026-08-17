@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 
+import "@/app/core-routes.css"
+
 import { Container } from "@/components/layout/container"
 import { Heading } from "@/components/layout/section-heading"
 import { createPageMetadata } from "@/lib/metadata"
@@ -11,13 +13,11 @@ const portalDescription =
 export const dynamic = "force-dynamic"
 
 export function generateMetadata(): Metadata {
-  const portalUrl = getPortalUrl()
-
   return createPageMetadata({
     title: "Brunova Client Portal",
     description: portalDescription,
     path: "/portal",
-    noIndex: !portalUrl,
+    noIndex: true,
   })
 }
 
@@ -25,7 +25,7 @@ export default function PortalPage() {
   const portalUrl = getPortalUrl()
 
   return (
-    <main className="route-page portal-page" id="main-content">
+    <main className="route-page portal-page" id="main-content" tabIndex={-1}>
       <Container className="portal-threshold">
         <div className="portal-threshold__identity">
           <p>Client systems boundary</p>

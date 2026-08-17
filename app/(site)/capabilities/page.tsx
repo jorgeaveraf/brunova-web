@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 
+import "@/app/core-routes.css"
+
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { Container } from "@/components/layout/container"
 import { Heading } from "@/components/layout/section-heading"
@@ -19,7 +21,11 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function CapabilitiesPage() {
   return (
-    <main className="route-page capability-page" id="main-content">
+    <main
+      className="route-page capability-page"
+      id="main-content"
+      tabIndex={-1}
+    >
       <header className="route-intro capability-intro">
         <Container className="capability-intro__inner">
           <Heading level={1}>Capabilities that combine into systems.</Heading>

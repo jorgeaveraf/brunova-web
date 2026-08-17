@@ -19,7 +19,7 @@ import "../homepage.css"
 
 export default function Homepage() {
   return (
-    <main id="main-content">
+    <main id="main-content" tabIndex={-1}>
       <Section aria-labelledby="homepage-title" className="home-hero">
         <Container className="home-hero__inner">
           <div className="home-hero__copy">

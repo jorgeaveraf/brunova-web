@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
+import "@/app/core-routes.css"
+
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { Container } from "@/components/layout/container"
 import { Heading } from "@/components/layout/section-heading"
@@ -31,6 +33,7 @@ export async function generateMetadata({
       description: "The requested Brunova selected-work record is unavailable.",
       path: `/work/${slug}`,
       noIndex: true,
+      followWhenNoIndex: false,
     })
   }
 
@@ -61,7 +64,7 @@ export default async function WorkDetailPage({ params }: WorkDetailPageProps) {
     .slice(0, 2)
 
   return (
-    <main className="route-page case-page" id="main-content">
+    <main className="route-page case-page" id="main-content" tabIndex={-1}>
       <header className="case-intro">
         <Container className="case-intro__inner">
           <div className="case-intro__identity">

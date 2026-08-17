@@ -10,6 +10,8 @@ import {
 
 import { trackEvent } from "@/lib/analytics"
 import { contactAttributionFromStorage } from "@/lib/attribution"
+import { problemCategories } from "@/lib/contact/categories"
+import { browserContactFieldErrors } from "@/lib/contact/client-validation"
 import {
   applyMaterialEdit,
   completeSubmission,
@@ -18,7 +20,6 @@ import {
   serializeSubmissionIntent,
   type IdempotencyState,
 } from "@/lib/contact/idempotency"
-import { contactRequestSchema, problemCategories } from "@/lib/contact/schema"
 import type { ContactFieldErrors, ContactResponse } from "@/lib/contact/types"
 
 type FormStatus =
@@ -31,16 +32,6 @@ type FormStatus =
   | "rejected"
   | "rate_limited"
   | "unexpected_error"
-
-const fieldMessages: Record<string, string> = {
-  name: "Enter your name using 2–100 characters.",
-  email: "Enter a valid work email address.",
-  company: "Enter your company using 2–120 characters.",
-  role: "Enter your role using 2–100 characters.",
-  problemCategory: "Choose the category closest to the problem.",
-  problemDescription:
-    "Describe the operational problem using 30–4,000 characters.",
-}
 
 const statusCopy: Partial<
   Record<FormStatus, { title: string; message: string }>
@@ -86,7 +77,7 @@ function createContactRequest(form: HTMLFormElement, formStartedAt: number) {
     role: value("role"),
     problemCategory: value("problemCategory"),
     problemDescription: value("problemDescription"),
-    pagePath: "/contact",
+    pagePath: "/contact" as const,
     utm: contactAttributionFromStorage(window.sessionStorage),
     website: value("website"),
     formStartedAt,
@@ -96,15 +87,7 @@ function createContactRequest(form: HTMLFormElement, formStartedAt: number) {
 function publicFieldErrors(
   request: ReturnType<typeof createContactRequest>,
 ): ContactFieldErrors {
-  const parsed = contactRequestSchema.safeParse(request)
-  if (parsed.success) return {}
-
-  return Object.fromEntries(
-    parsed.error.issues.flatMap((issue) => {
-      const field = String(issue.path[0] ?? "")
-      return fieldMessages[field] ? [[field, [fieldMessages[field]]]] : []
-    }),
-  )
+  return browserContactFieldErrors(request)
 }
 
 function intentSnapshot(form: HTMLFormElement): string {
@@ -242,10 +225,9 @@ export function ContactForm() {
       form,
       formStartedAt.current || Date.now(),
     )
-    const parsed = contactRequestSchema.safeParse(request)
+    const nextErrors = publicFieldErrors(request)
 
-    if (!parsed.success) {
-      const nextErrors = publicFieldErrors(request)
+    if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors)
       setStatus("validation")
       trackEvent("contact_form_error", { code: "VALIDATION_ERROR" })
@@ -266,7 +248,7 @@ export function ContactForm() {
     setErrors({})
     setStatus("submitting")
     trackEvent("contact_form_submitted", {
-      problem_category: parsed.data.problemCategory,
+      problem_category: request.problemCategory,
     })
 
     try {
@@ -276,7 +258,7 @@ export function ContactForm() {
           "Content-Type": "application/json",
           "Idempotency-Key": attemptedState.key,
         },
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify(request),
       })
 
       let result: ContactResponse
@@ -294,7 +276,7 @@ export function ContactForm() {
         setStatus("success")
         setIdempotency((current) => completeSubmission(current))
         trackEvent("contact_form_success", {
-          problem_category: parsed.data.problemCategory,
+          problem_category: request.problemCategory,
         })
         return
       }
@@ -335,10 +317,12 @@ export function ContactForm() {
   if (status === "success") {
     return (
       <div
+        aria-atomic="true"
         aria-live="polite"
         className="contact-result contact-result--success"
         data-state="success"
         ref={statusRef}
+        role="status"
         tabIndex={-1}
       >
         <p className="contact-result__mark" aria-hidden="true">
@@ -368,6 +352,14 @@ export function ContactForm() {
       onInput={handleInput}
       onSubmit={handleSubmit}
     >
+      <p
+        aria-atomic="true"
+        aria-live="polite"
+        className="contact-form__announcement"
+      >
+        {status === "submitting" ? "Sending your information." : ""}
+      </p>
+
       <div className="contact-form__heading">
         <div>
           <h2>Describe the operating problem.</h2>
@@ -380,10 +372,12 @@ export function ContactForm() {
 
       {currentStatus ? (
         <div
+          aria-atomic="true"
           aria-live="polite"
           className="contact-result"
           data-state={status}
           ref={statusRef}
+          role={status === "validation" ? "alert" : "status"}
           tabIndex={-1}
         >
           <strong>{currentStatus.title}</strong>

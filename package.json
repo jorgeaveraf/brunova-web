@@ -17,7 +17,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "bundle:report": "node scripts/measure-bundles.mjs",
+    "lighthouse": "node scripts/run-lighthouse.mjs"
   },
   "dependencies": {
     "next": "16.2.11",
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
+    "@lhci/cli": "0.15.1",
     "@playwright/test": "1.62.1",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/jest-dom": "7.0.1",

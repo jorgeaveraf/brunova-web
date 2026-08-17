@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 
+import "@/app/core-routes.css"
+
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { Container } from "@/components/layout/container"
 import { Heading } from "@/components/layout/section-heading"
@@ -20,7 +22,7 @@ export default function WorkPage() {
   const [leadCase, ...supportingCases] = workCases
 
   return (
-    <main className="route-page work-page" id="main-content">
+    <main className="route-page work-page" id="main-content" tabIndex={-1}>
       <header className="route-intro work-intro">
         <Container className="work-intro__inner">
           <Heading level={1}>Selected systems we’ve engineered.</Heading>

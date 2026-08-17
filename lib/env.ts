@@ -1,15 +1,20 @@
 import { z } from "zod"
 
-const absoluteUrl = z.url()
 const externalHttpUrl = z
   .url()
   .refine((value) => ["http:", "https:"].includes(new URL(value).protocol), {
     message: "Expected an HTTP or HTTPS URL",
   })
 
+const booleanEnvironmentValue = z
+  .enum(["true", "false"])
+  .default("false")
+  .transform((value) => value === "true")
+
 const serverEnvironmentSchema = z.object({
-  SITE_URL: absoluteUrl.default("http://localhost:3000"),
-  N8N_CONTACT_WEBHOOK_URL: absoluteUrl.optional(),
+  SITE_URL: externalHttpUrl.default("http://localhost:3000"),
+  SEO_INDEXING_ENABLED: booleanEnvironmentValue,
+  N8N_CONTACT_WEBHOOK_URL: externalHttpUrl.optional(),
   N8N_CONTACT_WEBHOOK_SECRET: z.string().min(1).optional(),
   CONTACT_RATE_LIMIT_SALT: z.string().min(16).optional(),
   PORTAL_URL: externalHttpUrl.optional(),
@@ -19,15 +24,87 @@ export type ServerEnvironment = z.infer<typeof serverEnvironmentSchema>
 
 let cachedEnvironment: ServerEnvironment | undefined
 
-export function getServerEnvironment(): ServerEnvironment {
-  cachedEnvironment ??= serverEnvironmentSchema.parse({
-    SITE_URL: process.env.SITE_URL,
-    N8N_CONTACT_WEBHOOK_URL: process.env.N8N_CONTACT_WEBHOOK_URL || undefined,
+function isLoopbackUrl(url: URL): boolean {
+  return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(url.hostname)
+}
+
+function assertCanonicalSiteUrl(
+  siteUrl: URL,
+  indexingEnabled: boolean,
+  nodeEnvironment: string | undefined,
+) {
+  if (
+    siteUrl.username ||
+    siteUrl.password ||
+    siteUrl.pathname !== "/" ||
+    siteUrl.search ||
+    siteUrl.hash
+  ) {
+    throw new Error("SITE_URL must contain only the canonical site origin")
+  }
+
+  if (
+    nodeEnvironment === "production" &&
+    !isLoopbackUrl(siteUrl) &&
+    siteUrl.protocol !== "https:"
+  ) {
+    throw new Error("Production SITE_URL must use HTTPS")
+  }
+
+  if (
+    indexingEnabled &&
+    (siteUrl.protocol !== "https:" || isLoopbackUrl(siteUrl))
+  ) {
+    throw new Error(
+      "SEO_INDEXING_ENABLED requires a non-loopback HTTPS SITE_URL",
+    )
+  }
+}
+
+function assertProductionHttps(
+  value: string | undefined,
+  name: "N8N_CONTACT_WEBHOOK_URL" | "PORTAL_URL",
+  nodeEnvironment: string | undefined,
+) {
+  if (!value || nodeEnvironment !== "production") return
+
+  const url = new URL(value)
+  if (!isLoopbackUrl(url) && url.protocol !== "https:") {
+    throw new Error(`Production ${name} must use HTTPS`)
+  }
+}
+
+export function parseServerEnvironment(
+  environment: NodeJS.ProcessEnv,
+): ServerEnvironment {
+  const parsed = serverEnvironmentSchema.parse({
+    SITE_URL: environment.SITE_URL,
+    SEO_INDEXING_ENABLED: environment.SEO_INDEXING_ENABLED || undefined,
+    N8N_CONTACT_WEBHOOK_URL: environment.N8N_CONTACT_WEBHOOK_URL || undefined,
     N8N_CONTACT_WEBHOOK_SECRET:
-      process.env.N8N_CONTACT_WEBHOOK_SECRET || undefined,
-    CONTACT_RATE_LIMIT_SALT: process.env.CONTACT_RATE_LIMIT_SALT || undefined,
-    PORTAL_URL: process.env.PORTAL_URL || undefined,
+      environment.N8N_CONTACT_WEBHOOK_SECRET || undefined,
+    CONTACT_RATE_LIMIT_SALT: environment.CONTACT_RATE_LIMIT_SALT || undefined,
+    PORTAL_URL: environment.PORTAL_URL || undefined,
   })
+
+  assertCanonicalSiteUrl(
+    new URL(parsed.SITE_URL),
+    parsed.SEO_INDEXING_ENABLED,
+    environment.NODE_ENV,
+  )
+
+  assertProductionHttps(
+    parsed.N8N_CONTACT_WEBHOOK_URL,
+    "N8N_CONTACT_WEBHOOK_URL",
+    environment.NODE_ENV,
+  )
+  assertProductionHttps(parsed.PORTAL_URL, "PORTAL_URL", environment.NODE_ENV)
+
+  return parsed
+}
+
+export function getServerEnvironment(): ServerEnvironment {
+  cachedEnvironment ??= parseServerEnvironment(process.env)
 
   return cachedEnvironment
 }
@@ -41,15 +118,15 @@ export function getPortalUrl(): URL | undefined {
   return portalUrl ? new URL(portalUrl) : undefined
 }
 
+export function isSeoIndexingEnabled(): boolean {
+  return getServerEnvironment().SEO_INDEXING_ENABLED
+}
+
 export type ContactRuntimeConfiguration = {
   siteUrl: URL
   webhookUrl: URL
   webhookSecret: string
   rateLimitSalt: string
-}
-
-function isLoopbackUrl(url: URL): boolean {
-  return ["localhost", "127.0.0.1", "::1", "[::1]"].includes(url.hostname)
 }
 
 export function getContactRuntimeConfiguration():
