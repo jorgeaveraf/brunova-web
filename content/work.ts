@@ -3,6 +3,7 @@ import type { WorkCase } from "@/content/types"
 export const workCases = [
   {
     slug: "multi-tenant-financial-integration-platform",
+    homepageTitle: "Multi-tenant Financial Integration Platform",
     title:
       "A shared financial integration layer across multiple operating entities",
     summary:
@@ -18,6 +19,7 @@ export const workCases = [
   },
   {
     slug: "operational-finance-data-infrastructure",
+    homepageTitle: "Operational Finance Data Infrastructure",
     title:
       "Turning recurring financial reporting into shared operational infrastructure",
     summary:
@@ -33,6 +35,7 @@ export const workCases = [
   },
   {
     slug: "document-intelligence-workflow",
+    homepageTitle: "Document Intelligence Workflow",
     title: "AI-assisted document processing with control built in",
     summary:
       "A document-processing system combining classification, structured extraction, validation, human review and downstream workflow integration for operationally sensitive documents.",
@@ -47,6 +50,7 @@ export const workCases = [
   },
   {
     slug: "fragile-automation-modernization",
+    homepageTitle: "Fragile Automation Modernization",
     title: "From person-dependent workflows to operable systems",
     summary:
       "Modernization of automation estates by introducing clearer boundaries, observability, recovery, idempotency, deployment discipline and operational documentation without rewriting working behavior unnecessarily.",

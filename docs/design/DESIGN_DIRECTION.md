@@ -1,6 +1,6 @@
 # Brunova Website v1 — Design Direction
 
-**Status:** Phase 2 shell implemented for review. Homepage composition remains subject to Phase 3 approval.
+**Status:** Phase 3 homepage implemented for review. Core destination routes remain subject to Phase 4 approval.
 
 ## Hallmark decision
 
@@ -10,7 +10,7 @@ Macrostructure: Architectural Narrative
 Vibe: architectural restraint, warm bone, operational precision
 Genre influence: modern-minimal, without its floating-pill or generic SaaS defaults
 Motion stance: motion-cut
-Enrichment: semantic system-boundary diagram, deferred to Phase 3
+Enrichment: Tier B semantic system-boundary diagram, implemented in Phase 3
 ```
 
 The specification requires a recognition-first story rather than a template sequence. Marquee Hero delays explanation, Stat-Led requires unsupported metrics, Split Studio requires proof imagery that is not available, Narrative Workflow could imply a mandatory four-stage purchase path, and a Bento treatment would conflict with the anti-card direction. Architectural Narrative is therefore a deliberate bespoke structure rather than a renamed catalog preset.
@@ -28,7 +28,7 @@ Restraint   5/5 — neutral palette, motion-cut, no fabricated proof
 Variety     4/5 — bespoke composition avoids the dominant Hallmark/SaaS defaults
 ```
 
-No score is below 3. Re-score after the full page exists.
+No score is below 3. The Phase 3 homepage critique is recorded below; the final 58-gate audit remains deferred to Phase 8.
 
 ## Approved logo source
 
@@ -204,3 +204,59 @@ No focused Phase 2 axis is below 3. The shell-scoped Hallmark review passes navi
 The approved pre-merge refinement replaces the visible `Theme` plus native-select treatment with a quiet three-choice text rail: `System`, `Light`, and `Dark`. Native radio inputs retain semantic grouping, arrow-key navigation, focus behavior and disabled loading state. The selected option receives a single neutral underline; the control has no surrounding pill, icon, chromatic accent or spatial animation.
 
 This treatment reads as website chrome rather than an application settings field while preserving the existing `next-themes` persistence and prepaint behavior. In the mobile menu the three options distribute evenly across the utility width; in the desktop masthead they remain compact and subordinate to Portal and the primary CTA.
+
+## Phase 3 homepage decisions
+
+### Narrative macrostructure
+
+The homepage keeps the approved Custom/Bespoke Architectural Narrative rather than rotating into a catalog macrostructure. This is an explicit continuity decision: Phase 3 completes the singular system promised by the Phase 0 direction and the Phase 2 shell. The sequence is recognition-led:
+
+1. Brunova’s role and primary action.
+2. Accumulating symptoms of an operation that no longer behaves as a system.
+3. Operational Intelligence as the relationship between work, data and systems.
+4. Five concrete capabilities.
+5. The architecture-before-tools reframe.
+6. Four anonymized system examples.
+7. A four-stage process with optional entry points.
+8. Three operating principles.
+9. One closing action.
+
+The existing N6-adapted masthead and Ft2 footer remain unchanged. Phase 4 route bodies are not represented or simulated on the homepage.
+
+### Hero and semantic system visual
+
+The hero is an asymmetric editorial/system split. Approved headline, support and two actions occupy the primary reading column. The adjacent Tier B inline SVG depicts four fragmented inputs crossing manual handoffs into a defined operating boundary containing process, trusted data, decisions and ownership; a controlled flow exits as reliable operations.
+
+The diagram contains an accessible title and description and uses only semantic labels. It has no random nodes, network wallpaper, fake product interface or invented technical stack. At widths below 40rem, the spatial SVG is replaced—not merely scaled—by a four-step semantic sequence with readable labels. The full meaning is static; no information or visual state depends on animation.
+
+### Section composition
+
+- Problem recognition uses an offset fault ledger. Repetition communicates accumulation without eight icon cards.
+- Operational Intelligence uses a relationship definition field, making it a systems perspective rather than a product or dashboard.
+- Capabilities use a five-row architectural ledger with typed Phase 2 records.
+- Architecture before tools uses the foreground/background inversion as the only major visual interruption. The six examination inputs remain plain structural rails, not pills.
+- Selected Work uses four editorial rows and concise anonymized records; no metrics, clients, logos or testimonials were introduced.
+- Process uses a progressively offset track plus an explicit optional-entry note, so Discovery is available but not mandatory.
+- Differentiators are presented as operating principles in staggered ruled rows, not a generic “Why choose us?” grid.
+- The final CTA contains one primary action.
+
+### Responsive, theme and motion decisions
+
+The hero becomes a single-column copy-first composition below the desktop breakpoint. The system visual switches to the mobile sequence below 40rem. Ledger rows simplify before they stack, long headings retain emergency wrapping, and interactive labels remain single-line. The 1280×800 desktop composition reserves the first viewport for the complete headline, substantial support and primary action while maintaining the two-band masthead.
+
+Light and dark modes use the same composition. The architecture hinge is deliberately inverse in each mode: near-black on bone in light mode and bone on near-black in dark mode. A dedicated neutral inverse-muted token preserves readable secondary emphasis without introducing a chromatic accent.
+
+Motion remains cut. Phase 3 adds no animation primitive, scroll observer or runtime dependency. Existing button/control feedback and reduced-motion behavior remain the only transitions.
+
+### Phase 3 incremental Hallmark critique
+
+```text
+Philosophy  5/5 — recognition and operating-model logic determine the composition
+Hierarchy   5/5 — eight buyer questions resolve in the approved order with one final action
+Execution   4/5 — semantic desktop/mobile diagrams and varied ledgers are implemented and testable
+Specificity 5/5 — exact copy, typed records and operational labels are Brunova-specific
+Restraint   5/5 — neutral palette, no fake proof, no decorative motion, no generic product chrome
+Variety     5/5 — sections change structure by responsibility without falling into card or bento repetition
+```
+
+No incremental axis is below 3. The explicit homepage anti-pattern scan covers centered/gradient heroes, meaningless abstracts, repeated cards, fake screenshots, glows, bento, icon-per-feature treatments, unnecessary pills, invented statistics, AI-powered marketing, fake proof, repeated centered sections and excessive rounding. None is intentionally present. The final Hallmark 58-gate completion audit remains Phase 8 work.

@@ -34,9 +34,25 @@ export type ProcessStage = {
 
 export type WorkCase = {
   slug: string
+  homepageTitle: string
   title: string
   summary: string
   capabilitySignals: readonly string[]
   publicationStatus: "approved-summary"
   detailStatus: "publication-review-required"
+}
+
+export type HomepageSymptom = {
+  name: string
+  consequence: string
+}
+
+export type OperationalIntelligenceElement = {
+  name: string
+  role: string
+}
+
+export type Differentiator = {
+  title: string
+  description: string
 }
