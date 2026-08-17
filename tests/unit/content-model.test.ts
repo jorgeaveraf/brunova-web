@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest"
 
 import { capabilities } from "@/content/capabilities"
-import { differentiators, homepage, homepageSymptoms } from "@/content/home"
+import {
+  differentiators,
+  homepage,
+  homepageSymptoms,
+  operationalIntelligenceElements,
+} from "@/content/home"
 import { primaryNavigation } from "@/content/navigation"
 import { processStages } from "@/content/process"
 import { workCases } from "@/content/work"
@@ -41,6 +46,12 @@ describe("typed public content", () => {
       "Systems, not workflows",
       "Close to operations",
     ])
+    expect(homepageSymptoms.at(-2)?.consequence).toBe(
+      "The standard process works; exceptions break it.",
+    )
+    expect(operationalIntelligenceElements.at(-1)?.role).toBe(
+      "assists where judgment can be bounded and governed",
+    )
   })
 
   it("keeps commercial pricing out of the public records", () => {

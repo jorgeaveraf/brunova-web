@@ -69,7 +69,7 @@ export const homepageSymptoms = [
   },
   {
     name: "Exceptions that break the process",
-    consequence: "The happy path works; reality does not.",
+    consequence: "The standard process works; exceptions break it.",
   },
   {
     name: "Data without operational trust",
@@ -86,7 +86,7 @@ export const operationalIntelligenceElements = [
     name: "Software",
     role: "turns the operating model into durable capability",
   },
-  { name: "AI", role: "assists where judgment can remain governed" },
+  { name: "AI", role: "assists where judgment can be bounded and governed" },
 ] as const satisfies readonly OperationalIntelligenceElement[]
 
 export const architectureInputs = [
