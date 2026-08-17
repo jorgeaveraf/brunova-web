@@ -6,7 +6,9 @@ test("site shell and health endpoint are operational", async ({ page }) => {
   await page.goto("/")
 
   await expect(
-    page.getByRole("heading", { name: "Global shell ready for review." }),
+    page.getByRole("heading", {
+      name: "Systems for operations that have outgrown their tools.",
+    }),
   ).toBeVisible()
   await expect(
     page.getByRole("navigation", { name: "Primary navigation" }),
@@ -85,7 +87,7 @@ test("mobile navigation manages focus, Escape, explicit close, and backdrop", as
   ).not.toBeVisible()
 })
 
-for (const width of [320, 375, 414, 768, 960, 1024, 1280, 1440, 1920]) {
+for (const width of [320, 375, 390, 414, 768, 960, 1024, 1280, 1440, 1920]) {
   test(`shell has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 })
     await page.goto("/")
