@@ -210,7 +210,7 @@ feature/* → develop → main
 - arbitrary feature branches do not deploy to production.
 - merges into `develop` and `main` require review.
 
-BR-017 Phase 0–5 are integrated into `develop`. Phase 6 hardening is performed on `feature/br-017-hardening` and remains unmerged until approved.
+BR-017 Phase 0–6 are approved and integrated into `develop`. Phase 7 whole-system QA is performed on `feature/br-017-system-qa` and remains unmerged until approved.
 
 ## Current limitations
 
