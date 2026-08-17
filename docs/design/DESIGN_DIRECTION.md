@@ -1,6 +1,6 @@
 # Brunova Website v1 — Design Direction
 
-**Status:** Phase 0 foundation direction. Final page composition remains subject to Phase 2+ review.
+**Status:** Phase 2 shell implemented for review. Homepage composition remains subject to Phase 3 approval.
 
 ## Hallmark decision
 
@@ -133,3 +133,68 @@ Theme values are `system`, `light`, and `dark`. System is the default. Explicit 
 ## Deployment influence
 
 The design system must work in a standalone Next.js container without CDN-only runtime dependencies. Fonts are fetched and self-hosted by `next/font` at build time. No design behavior depends on Vercel.
+
+## Phase 2 shell decisions
+
+### Header and navigation
+
+The desktop header uses an adapted N6 two-band masthead, not a literal newspaper treatment. The first band gives the raster wordmark a controlled black brand field and places the company descriptor at the opposite edge. The second band separates primary routes from utilities with single rules and no floating container.
+
+This adaptation was selected over N1b because the canonical wordmark-left / centered-links / CTA-right SaaS bar would reproduce the generic AI-navigation fingerprint. It was selected over N5 because a detached frosted pill conflicts with Brunova's architectural restraint. The resulting hierarchy is:
+
+1. Brunova identity and positioning.
+2. Capabilities, Process, Work and About.
+3. Portal and theme as utilities.
+4. Start a conversation as the only filled action.
+
+The theme control remains visible but subordinate to Portal and the primary CTA. Navigation labels are kept on one line.
+
+### Mobile navigation
+
+Mobile replaces the two desktop bands with a compact brand plate and explicit `Menu` control. The menu uses a native `<dialog>` sheet with:
+
+- first focus on Capabilities,
+- native focus trapping,
+- Escape dismissal,
+- explicit Close control,
+- backdrop dismissal,
+- focus restoration to Menu,
+- 44px-or-larger touch targets,
+- a numbered route ledger that communicates architecture rather than decoration.
+
+The numbered links are the only ordinal device in the shell. The temporary review surface uses one Phase 2 label; future content pages should not inherit it as a decorative eyebrow pattern.
+
+### Footer
+
+The footer uses the Ft2 inline-rule principle. It keeps one identity region, a single wrapping link rail, and copyright. It does not create product/company/resources/legal columns, social placeholders, office claims or a competing CTA.
+
+### Raster logo behavior
+
+The approved WebP remains visually sound in light and dark headers when treated as a deliberate black plate. At the current header size it renders at 172×48 pixels from a complete optimized source. On mobile it renders at 132px wide and remains legible.
+
+The black field is visibly stronger on light surfaces and nearly disappears into dark surfaces. This is acceptable for the current implementation because the wordmark itself stays unchanged and the plate acts as a stable brand boundary. A future transparent/vector source would allow more flexible spacing, but the current raster does not materially limit the Phase 2 shell.
+
+Measured WCAG 2.1 contrast ratios for the rendered shell are:
+
+| Pair                        |   Light |    Dark |
+| --------------------------- | ------: | ------: |
+| Body text / background      | 17.33:1 | 16.50:1 |
+| Muted text / background     |  7.82:1 |  7.42:1 |
+| Primary action text / fill  | 16.17:1 | 15.31:1 |
+| Focus ring / background     | 16.75:1 | 16.50:1 |
+| Focus ring / raised surface | 17.62:1 | 15.71:1 |
+
+These measurements keep the accessibility treatment inside Brunova's neutral palette; no chromatic focus accent is justified.
+
+### Focused Hallmark critique
+
+```text
+Philosophy  5/5 — the shell exposes identity, routes and utilities as distinct system boundaries
+Hierarchy   5/5 — one primary CTA; Portal and theme remain subordinate
+Execution   4/5 — desktop/mobile and light/dark are implemented and browser-tested
+Specificity 5/5 — navigation, content counts, tracking events and source status are explicit
+Restraint   5/5 — no generic icons, pill nav, glass, gradients, fake proof or excessive motion
+Variety     4/5 — two-band desktop, compact mobile sheet and inline footer use different rhythms
+```
+
+No focused Phase 2 axis is below 3. The shell-scoped Hallmark review passes navigation/footer fingerprint, interaction, contrast, token discipline, honest-copy, responsive and mobile-safety checks. The final 58-gate completion audit remains deferred to Phase 8 because Phase 2 intentionally contains no final homepage or hero composition.
