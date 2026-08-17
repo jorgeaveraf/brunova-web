@@ -141,6 +141,9 @@ test("authoritative route matrix renders with metadata, indexing and boundaries"
   expect(notFoundRobots.every((content) => content.includes("noindex"))).toBe(
     true,
   )
+  expect(notFoundRobots.some((content) => content.includes("nofollow"))).toBe(
+    true,
+  )
 })
 
 test("complete user journeys preserve navigation and browser history", async ({
@@ -363,6 +366,7 @@ test("contact presents controlled rejected, unavailable and unexpected states", 
 })
 
 test("representative integrated navigation is console-clean and same-origin", async ({
+  context,
   page,
 }) => {
   const consoleFailures: string[] = []
@@ -388,6 +392,7 @@ test("representative integrated navigation is console-clean and same-origin", as
   expect(consoleFailures).toEqual([])
   expect(pageFailures).toEqual([])
   expect([...externalOrigins]).toEqual([])
+  expect(await context.cookies()).toEqual([])
 })
 
 for (const width of [390, 768, 1280, 1440]) {

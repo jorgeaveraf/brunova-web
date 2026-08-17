@@ -5,6 +5,7 @@ import { BrunovaLogo } from "@/components/brand/brunova-logo"
 
 export const metadata: Metadata = {
   title: "Page not found",
+  robots: { index: false, follow: false },
 }
 
 export default function NotFound() {

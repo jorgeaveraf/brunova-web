@@ -23,6 +23,13 @@ async function capture({
   const page = await context.newPage()
   await page.goto(new URL(route, baseUrl).href, { waitUntil: "networkidle" })
   if (prepare) await prepare(page)
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement)
+      document.activeElement.blur()
+  })
+  // Chromium can stitch an off-canvas fixed skip link into full-page captures.
+  // Its keyboard behavior is covered independently by Playwright assertions.
+  await page.addStyleTag({ content: ".skip-link { visibility: hidden !important; }" })
   await page.screenshot({
     fullPage: true,
     path: path.join(outputDirectory, `${name}.png`),
@@ -99,6 +106,9 @@ await capture({
     await page
       .getByRole("heading", { name: "Thanks. We received your note." })
       .waitFor()
+    await page.waitForFunction(() =>
+      document.activeElement?.classList.contains("contact-result"),
+    )
   },
 })
 
@@ -121,6 +131,9 @@ await capture({
     await fillContact(page)
     await page.getByRole("button", { name: "Send the context" }).click()
     await page.getByText("We couldn't send this right now.").waitFor()
+    await page.waitForFunction(() =>
+      document.activeElement?.classList.contains("contact-result"),
+    )
   },
 })
 
