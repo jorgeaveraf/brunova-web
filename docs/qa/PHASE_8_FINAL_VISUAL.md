@@ -10,6 +10,12 @@
 
 - Approved Phase 7 was integrated into `develop` with non-fast-forward merge `281d812` (`merge: integrate BR-017 system QA`) and pushed to `origin/develop`.
 - Phase 8 was created from that merge as `feature/br-017-final-visual` and pushed before audit work began.
+- Phase 8 commits:
+  - `48efcf3 fix: harden display heading reflow`
+  - `0210dc1 test: add Phase 8 visual acceptance gates`
+  - `f8d9bbc docs: publish Phase 8 final visual report`
+  - `f1b1030 test: make Phase 8 evidence capture deterministic`
+  - the commit containing this final verification update
 - `main` was not modified.
 - The private handoff, local environment and visual evidence remain ignored and were not staged, committed, copied or published.
 
@@ -116,7 +122,17 @@ The visual corrections preserve contrast, neutral visible focus, semantic contro
 
 ## Performance
 
-Phase 8 changes add no client runtime, font, image or component dependency. Bundle enforcement and Lighthouse deterministic floors remain passing against the production container. Route-specific transfer is unchanged from the Phase 7 baseline; the accepted shared Next.js/React runtime warning and timing-sensitive local LCP warning remain visible and are not Phase 8 regressions or Phase 9 blockers.
+Phase 8 changes add no client runtime, font, image or component dependency. Bundle enforcement and Lighthouse deterministic floors remain passing against the production container.
+
+| Route shape  | Performance | Accessibility | Best Practices | SEO | LCP range     | TBT range | CLS |
+| ------------ | ----------: | ------------: | -------------: | --: | ------------- | --------: | --: |
+| Homepage     |       95–99 |           100 |             96 | 100 | 2.123–2.926 s | 2.5–36 ms |   0 |
+| Contact      |          96 |           100 |             96 | 100 | 2.781–2.784 s |    5–6 ms |   0 |
+| Work dossier |          96 |           100 |             96 | 100 | 2.778–2.801 s |  11–17 ms |   0 |
+
+First-load JS is unchanged at 211,846 B gzip for static routes and 215,316 B for Contact; Contact route-specific JS remains 3,470 B and initial fonts remain 64,689 B. The reflow declarations add only 5 B gzip to shared core-route CSS (11,967 B) and 7 B to Contact CSS (13,674 B) versus Phase 7. This is the expected direct cost of the correction, not a meaningful regression.
+
+The accepted shared Next.js/React runtime warning remains visible. Timing-sensitive local LCP stays inside the Phase 7 range apart from a 17 ms dossier maximum variation, with unchanged deterministic floors and CLS 0. These observations are not Phase 8 regressions or Phase 9 blockers.
 
 ## DevOps
 
