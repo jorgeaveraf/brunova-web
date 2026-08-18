@@ -55,9 +55,7 @@ test("public routes expose unique, complete metadata", async ({ page }) => {
 
     expect(title, `${path} title`).not.toBe("")
     expect(description, `${path} description`).not.toBe("")
-    expect(canonical, `${path} canonical`).toMatch(
-      new RegExp(`${path === "/" ? "localhost:3000/?$" : `${path}$`}`),
-    )
+    expect(new URL(canonical).pathname, `${path} canonical`).toBe(path)
     expect(titles.has(title), `${path} unique title`).toBe(false)
     expect(descriptions.has(description), `${path} unique description`).toBe(
       false,
@@ -112,10 +110,9 @@ test("robots, sitemap and private boundaries follow the route policy", async ({
   const sitemap = await request.get("/sitemap.xml")
   const sitemapBody = await sitemap.text()
   expect(sitemap.status()).toBe(200)
+  const origin = new URL(sitemap.url()).origin
   for (const path of publicRoutes) {
-    expect(sitemapBody, path).toContain(
-      path === "/" ? "http://localhost:3000/" : path,
-    )
+    expect(sitemapBody, path).toContain(new URL(path, origin).href)
   }
   expect(sitemapBody).not.toContain("/portal")
   expect(sitemapBody).not.toContain("/api/")

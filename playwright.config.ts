@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test"
 
+const e2ePort = process.env.E2E_PORT ?? "3000"
+if (!/^\d{2,5}$/.test(e2ePort)) throw new Error("E2E_PORT must be numeric")
+const baseURL = `http://127.0.0.1:${e2ePort}`
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -7,7 +11,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   reporter: "list",
   use: {
-    baseURL: "http://127.0.0.1:3000",
+    baseURL,
     trace: "on-first-retry",
   },
   projects: [
@@ -17,8 +21,17 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "corepack pnpm dev",
-    url: "http://127.0.0.1:3000/api/health",
+    command: `corepack pnpm dev --hostname 127.0.0.1 --port ${e2ePort}`,
+    env: {
+      ...process.env,
+      SITE_URL: baseURL,
+      SEO_INDEXING_ENABLED: "false",
+      N8N_CONTACT_WEBHOOK_URL: "",
+      N8N_CONTACT_WEBHOOK_SECRET: "",
+      CONTACT_RATE_LIMIT_SALT: "",
+      PORTAL_URL: "https://portal.example.test",
+    },
+    url: `${baseURL}/api/health`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
