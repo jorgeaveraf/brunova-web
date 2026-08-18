@@ -1,6 +1,6 @@
 # Brunova Website v1 — Design Direction
 
-**Status:** Phase 6 approved and integrated. Phase 7 system QA is in progress without a design expansion or final Hallmark acceptance.
+**Status:** Phase 7 approved and integrated. Phase 8 final visual audit is complete on its feature branch and awaits human visual approval.
 
 Phase 6 hardening preserves this approved direction. Its only visible accessibility correction is programmatic focusability on main landmarks for skip navigation and stable, visually hidden contact submission announcements; neither changes composition, palette, typography or motion. Security, SEO and performance work introduces no new visual primitive. The incremental Hallmark regression check remains separate from the final Phase 8 whole-site audit.
 
@@ -318,3 +318,24 @@ Variety     5/5 — seven route bodies use distinct fingerprints inside one desi
 ```
 
 No incremental axis is below 3. The Phase 4 scan covers repeated page structures, duplicated homepage ledgers, generic service cards, fabricated case-study detail, badges, pills, excessive centering, gradients, glows, icon grids, unsupported metrics and clickable-label overflow. The final 58-gate completion audit remains intentionally deferred to Phase 8.
+
+## Phase 8 — Final visual acceptance candidate
+
+The complete site was reviewed as one system with the project-scoped Hallmark 1.1.0 audit. Route Atlas remains deliberately differentiated: the capability field, transfer map, editorial folio, technical dossier, company thesis, access threshold and legal document share tokens, grid logic, rule language and typography without collapsing into one template.
+
+The audit found two minor long-word reflow omissions: the About thesis display heading overrode the foundation wrapping rule, and the Contact form/result display heading did not declare the same protection locally. Both were corrected without changing copy, dimensions or macrostructure. The initial result was 57/58 gates; the corrected result is 58/58.
+
+No generic AI/SaaS/consulting fingerprint, fabricated proof, decorative motion or meaningless diagram was found. Repeated ordinal ledgers remain only where the information is genuinely sequential or record-based. The N6-adapted masthead, Ft2 footer and route-specific compositions are accepted continuity decisions rather than audit deviations requiring redesign.
+
+The current logo is classified **B: production-acceptable, with a transparent/vector source strongly preferred**. Its black raster plate remains legible and deliberate in both themes and at desktop/mobile sizes, but an approved transparent or vector source would permit more flexible future placement. No replacement geometry or wordmark was fabricated.
+
+Final favicon and Open Graph artwork remain external brand-asset requirements. Their technical integration points are ready, but no generic placeholder artwork is introduced. See `docs/qa/PHASE_8_FINAL_VISUAL.md` for the complete gate record, evidence inventory and acceptance blockers.
+
+### Phase 8 Hallmark critique
+
+```text
+Pre:  Philosophy 5/5 · Hierarchy 5/5 · Execution 4/5 · Specificity 5/5 · Restraint 5/5 · Variety 5/5
+Post: Philosophy 5/5 · Hierarchy 5/5 · Execution 5/5 · Specificity 5/5 · Restraint 5/5 · Variety 5/5
+```
+
+No axis is below 3. Phase 8 does not add motion, features, architecture or a new visual primitive.
