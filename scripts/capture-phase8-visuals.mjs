@@ -23,22 +23,23 @@ async function capture({
     localStorage.setItem("brunova-theme", selectedTheme)
   }, theme)
   const page = await context.newPage()
-  await page.goto(new URL(route, baseUrl).href, { waitUntil: "networkidle" })
+  console.log(`Capturing ${group}/${name}`)
+  await page.goto(new URL(route, baseUrl).href, { waitUntil: "load" })
   if (prepare) await prepare(page)
-  await page.locator("img").evaluateAll((images) =>
-    Promise.all(
-      images
+  for (const image of await page.locator("img").all())
+    if (await image.isVisible()) await image.scrollIntoViewIfNeeded()
+  await page.waitForFunction(
+    () =>
+      [...document.images]
         .filter((image) => {
           const bounds = image.getBoundingClientRect()
           return bounds.width > 0 && bounds.height > 0
         })
-        .map((image) =>
-          image instanceof HTMLImageElement
-            ? image.decode()
-            : Promise.resolve(),
-        ),
-    ),
+        .every((image) => image.complete && image.naturalWidth > 0),
+    undefined,
+    { timeout: 15_000 },
   )
+  await page.evaluate(() => window.scrollTo(0, 0))
   await page.evaluate(() => {
     if (document.activeElement instanceof HTMLElement)
       document.activeElement.blur()
