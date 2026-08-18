@@ -123,7 +123,9 @@
 
 .contact-form__heading h2,
 .contact-result h2 {
+  min-width: 0;
   margin: 0;
+  overflow-wrap: anywhere;
   font-family: var(--font-display);
   font-size: var(--text-xl);
   font-style: normal;
