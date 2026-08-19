@@ -8,6 +8,7 @@ import {
   getSitemapPaths,
   routeIndexingPolicy,
 } from "@/lib/seo"
+import { localizedPath } from "@/lib/i18n"
 
 const productionUrl = new URL("https://brunova.example")
 
@@ -23,9 +24,19 @@ describe("technical SEO contracts", () => {
     expect(paths.filter((path) => path.startsWith("/work/"))).toEqual(
       workCases.map((work) => `/work/${work.slug}`),
     )
+    expect(sitemap).toHaveLength(paths.length * 2)
     expect(sitemap.map(({ url }) => url)).toEqual(
-      paths.map((path) => new URL(path, productionUrl).href),
+      paths.flatMap((path) =>
+        (["en", "es"] as const).map(
+          (locale) => new URL(localizedPath(locale, path), productionUrl).href,
+        ),
+      ),
     )
+    expect(sitemap[0]?.alternates?.languages).toEqual({
+      "x-default": "https://brunova.example/",
+      en: "https://brunova.example/",
+      es: "https://brunova.example/es",
+    })
   })
 
   it("allows production crawling while excluding runtime boundaries", () => {
@@ -38,7 +49,7 @@ describe("technical SEO contracts", () => {
       rules: {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/portal"],
+        disallow: ["/api/", "/portal", "/es/portal"],
       },
       sitemap: "https://brunova.example/sitemap.xml",
       host: "https://brunova.example",

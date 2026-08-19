@@ -15,6 +15,7 @@ async function capture({
   viewport = { width: 1440, height: 1000 },
   fullPage = true,
   prepare,
+  resetScroll = true,
 }) {
   const directory = path.join(outputDirectory, group)
   await mkdir(directory, { recursive: true })
@@ -39,7 +40,7 @@ async function capture({
     undefined,
     { timeout: 15_000 },
   )
-  await page.evaluate(() => window.scrollTo(0, 0))
+  if (resetScroll) await page.evaluate(() => window.scrollTo(0, 0))
   await page.evaluate(() => {
     if (document.activeElement instanceof HTMLElement)
       document.activeElement.blur()
@@ -148,6 +149,87 @@ for (const theme of ["light", "dark"]) {
     prepare: (page) => page.getByRole("button", { name: "Menu" }).click(),
   })
 }
+
+for (const theme of ["dark", "light"]) {
+  await capture({
+    group: "phase8-amendment",
+    name: `desktop-${theme}-home-en-resting`,
+    theme,
+    fullPage: false,
+  })
+  await capture({
+    group: "phase8-amendment",
+    name: `desktop-${theme}-home-utility-expanded`,
+    theme,
+    fullPage: false,
+    prepare: (page) => page.getByRole("button", { name: "Appearance" }).click(),
+  })
+  await capture({
+    group: "phase8-amendment",
+    name: `desktop-${theme}-home-es`,
+    route: "/es",
+    theme,
+    fullPage: false,
+  })
+  await capture({
+    group: "phase8-amendment",
+    name: `mobile-${theme}-home-en`,
+    theme,
+    viewport: { width: 390, height: 844 },
+    fullPage: false,
+  })
+  await capture({
+    group: "phase8-amendment",
+    name: `mobile-${theme}-utility-open`,
+    theme,
+    viewport: { width: 390, height: 844 },
+    fullPage: false,
+    prepare: (page) => page.getByRole("button", { name: "Appearance" }).click(),
+  })
+  await capture({
+    group: "phase8-amendment",
+    name: `mobile-${theme}-home-es`,
+    route: "/es",
+    theme,
+    viewport: { width: 390, height: 844 },
+    fullPage: false,
+  })
+}
+
+await capture({
+  group: "phase8-amendment",
+  name: "desktop-dark-capabilities-es",
+  route: "/es/capabilities",
+  theme: "dark",
+})
+await capture({
+  group: "phase8-amendment",
+  name: "desktop-dark-contact-es",
+  route: "/es/contact",
+  theme: "dark",
+})
+for (const theme of ["dark", "light"])
+  await capture({
+    group: "phase8-amendment",
+    name: `mobile-${theme}-contact-es`,
+    route: "/es/contact",
+    theme,
+    viewport: { width: 390, height: 844 },
+  })
+
+await capture({
+  group: "phase8-amendment",
+  name: "desktop-dark-footer-utility-collision-check",
+  route: "/es/privacy",
+  theme: "dark",
+  fullPage: false,
+  resetScroll: false,
+  prepare: async (page) => {
+    await page.evaluate(() =>
+      window.scrollTo(0, document.documentElement.scrollHeight),
+    )
+  },
+})
 
 await browser.close()
 console.log(`Phase 8 screenshots written to ${outputDirectory}`)

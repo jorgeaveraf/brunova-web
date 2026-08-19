@@ -19,9 +19,8 @@ test("site shell and health endpoint are operational", async ({ page }) => {
   await expect(
     page.getByRole("link", { name: "Start a conversation" }).first(),
   ).toHaveAttribute("href", "/contact")
-  const themeControl = page
-    .getByRole("group", { name: "Theme" })
-    .filter({ visible: true })
+  await page.getByRole("button", { name: "Appearance" }).click()
+  const themeControl = page.getByRole("group", { name: "Appearance" })
   await expect(
     themeControl.getByRole("radio", { name: "System" }),
   ).toBeEnabled()
@@ -37,9 +36,8 @@ test("site shell and health endpoint are operational", async ({ page }) => {
 test("explicit theme preference persists", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto("/")
-  const themeControl = page
-    .getByRole("group", { name: "Theme" })
-    .filter({ visible: true })
+  await page.getByRole("button", { name: "Appearance" }).click()
+  const themeControl = page.getByRole("group", { name: "Appearance" })
   await themeControl.getByText("Dark", { exact: true }).click()
   const darkOption = themeControl.getByRole("radio", { name: "Dark" })
   await expect(darkOption).toBeChecked()

@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test"
 
 import { footerNavigation, primaryNavigation } from "@/content/navigation"
 import { workCases } from "@/content/work"
+import { localizedPath } from "@/lib/i18n"
 
 const pageRoutes = [
   {
@@ -106,7 +107,7 @@ test("authoritative route matrix renders with metadata, indexing and boundaries"
   expect(sitemap.status()).toBe(200)
   const expectedSitemapPaths = pageRoutes
     .filter((route) => route.indexable)
-    .map((route) => route.path)
+    .flatMap((route) => [route.path, localizedPath("es", route.path)])
   const sitemapPaths = [...sitemapBody.matchAll(/<loc>(.*?)<\/loc>/g)].map(
     (match) => new URL(match[1] ?? "", page.url()).pathname,
   )
@@ -256,15 +257,18 @@ test("theme choice persists across routes and system mode follows the browser", 
   await page.setViewportSize({ width: 390, height: 844 })
   await page.emulateMedia({ colorScheme: "dark" })
   await page.goto("/")
-  const menu = page.getByRole("button", { name: "Menu" })
-  await menu.click()
-  const dialog = page.getByRole("dialog", { name: "Navigation" })
-  const themes = dialog.getByRole("group", { name: "Theme" })
+  await page.getByRole("button", { name: "Appearance" }).click()
+  const themes = page.getByRole("group", { name: "Appearance" })
   await themes.getByText("System", { exact: true }).click()
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark")
   await themes.getByText("Light", { exact: true }).click()
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light")
-  await dialog.getByRole("link", { name: "Process" }).click()
+  await page.getByRole("button", { name: "Appearance" }).click()
+  await page.getByRole("button", { name: "Menu" }).click()
+  await page
+    .getByRole("dialog", { name: "Navigation" })
+    .getByRole("link", { name: "Process" })
+    .click()
   await expect(page).toHaveURL(/\/process$/)
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light")
   expect(await page.evaluate(() => localStorage.getItem("brunova-theme"))).toBe(
@@ -285,7 +289,7 @@ test("mobile dialog traps interaction, exposes utilities and restores focus", as
   await expect(
     dialog.getByRole("link", { name: "Start a conversation" }),
   ).toBeVisible()
-  await expect(dialog.getByRole("group", { name: "Theme" })).toBeVisible()
+  await expect(dialog.getByRole("group", { name: "Appearance" })).toHaveCount(0)
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
 
   const footerLink = page.getByRole("contentinfo").getByRole("link").first()

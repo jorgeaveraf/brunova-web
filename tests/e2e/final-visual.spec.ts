@@ -13,6 +13,16 @@ const completeRoutes = [
   "/portal",
   "/privacy",
   "/phase-8-not-found",
+  "/es",
+  "/es/capabilities",
+  "/es/process",
+  "/es/work",
+  ...workCases.map((work) => `/es/work/${work.slug}`),
+  "/es/about",
+  "/es/contact",
+  "/es/portal",
+  "/es/privacy",
+  "/es/phase-8-not-found",
 ] as const
 
 for (const width of [320, 375, 414, 768]) {

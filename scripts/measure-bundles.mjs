@@ -14,6 +14,10 @@ const routes = [
   "/contact",
   "/privacy",
   "/portal",
+  "/es",
+  "/es/capabilities",
+  "/es/contact",
+  "/es/work/document-intelligence-workflow",
 ]
 
 const budgets = {
