@@ -186,6 +186,10 @@
   font-weight: 400;
 }
 
+.system-diagram[data-locale="es"] .system-diagram__layer text {
+  font-size: var(--text-xs);
+}
+
 .home-section-intro {
   display: grid;
   max-width: 50rem;

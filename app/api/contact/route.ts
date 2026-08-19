@@ -132,6 +132,7 @@ function createEnvelope({
     source: "brunova_website",
     form: "contact_v1",
     submitted_at: submittedAt,
+    locale: request.locale,
     name: request.name,
     email: request.email,
     company: request.company,
@@ -194,6 +195,13 @@ export function createContactPostHandler(
       }
 
       const parsedRequest = contactRequestSchema.safeParse(rawRequest)
+      const requestLocale =
+        typeof rawRequest === "object" &&
+        rawRequest !== null &&
+        (("locale" in rawRequest && rawRequest.locale === "es") ||
+          ("pagePath" in rawRequest && rawRequest.pagePath === "/es/contact"))
+          ? "es"
+          : "en"
       const parsedKey = idempotencyKeySchema.safeParse(
         request.headers.get("idempotency-key"),
       )
@@ -203,14 +211,23 @@ export function createContactPostHandler(
           {
             ok: false,
             code: "VALIDATION_ERROR",
-            message: "Check the highlighted fields and try again.",
+            message:
+              requestLocale === "es"
+                ? "Revise los campos resaltados e inténtelo de nuevo."
+                : "Check the highlighted fields and try again.",
             fieldErrors: {
               ...(parsedRequest.success
                 ? {}
-                : contactFieldErrors(parsedRequest.error)),
+                : contactFieldErrors(parsedRequest.error, requestLocale)),
               ...(parsedKey.success
                 ? {}
-                : { idempotencyKey: ["A valid submission key is required."] }),
+                : {
+                    idempotencyKey: [
+                      requestLocale === "es"
+                        ? "Se requiere una clave de envío válida."
+                        : "A valid submission key is required.",
+                    ],
+                  }),
             },
           },
           400,

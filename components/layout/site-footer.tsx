@@ -3,21 +3,27 @@ import Link from "next/link"
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { BrunovaLogo } from "@/components/brand/brunova-logo"
 import { Container } from "@/components/layout/container"
-import { footerNavigation } from "@/content/navigation"
-import { siteConfig } from "@/content/site"
+import {
+  localizedNavigation,
+  localizedSiteConfig,
+  shellCopy,
+} from "@/content/locales"
+import type { Locale } from "@/lib/i18n"
 
-export function SiteFooter() {
+export function SiteFooter({ locale }: { locale: Locale }) {
+  const navigation = localizedNavigation[locale]
+  const site = localizedSiteConfig[locale]
   return (
     <footer className="site-footer">
       <Container className="site-footer__inner">
         <div className="site-footer__identity">
           <BrunovaLogo location="footer" />
-          <p>{siteConfig.descriptor}</p>
+          <p>{site.descriptor}</p>
         </div>
 
-        <nav aria-label="Footer navigation">
+        <nav aria-label={shellCopy[locale].footerNavigation}>
           <ul className="site-footer__links">
-            {footerNavigation.map((item) => (
+            {navigation.footer.map((item) => (
               <li key={item.href}>
                 {"analyticsEvent" in item && item.analyticsEvent ? (
                   <AnalyticsLink

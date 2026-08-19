@@ -1,60 +1,12 @@
 import type { Metadata } from "next"
-
-import "@/app/core-routes.css"
-
-import { Container } from "@/components/layout/container"
-import { Heading } from "@/components/layout/section-heading"
-import { privacyContent } from "@/content/privacy"
+import { PrivacyPageView } from "@/components/pages/privacy-page"
 import { createPageMetadata } from "@/lib/metadata"
-
-const description =
-  "How the Brunova website handles contact information, first-touch attribution, analytics and operational follow-up."
-
 export const metadata: Metadata = createPageMetadata({
   title: "Privacy",
-  description,
+  description:
+    "How the Brunova website handles contact information, first-touch attribution, analytics and operational follow-up.",
   path: "/privacy",
 })
-
-export default function PrivacyPage() {
-  return (
-    <main className="route-page privacy-page" id="main-content" tabIndex={-1}>
-      <header className="privacy-intro">
-        <Container className="privacy-intro__inner">
-          <div>
-            <p>{privacyContent.updatedLabel}</p>
-            <Heading level={1}>Privacy</Heading>
-          </div>
-          <p>{privacyContent.introduction}</p>
-        </Container>
-      </header>
-
-      <Container className="privacy-document">
-        <aside
-          aria-label="Privacy sections"
-          className="privacy-document__index"
-        >
-          <p>On this page</p>
-          <ol>
-            {privacyContent.sections.map((section) => (
-              <li key={section.id}>
-                <a href={`#${section.id}`}>{section.title}</a>
-              </li>
-            ))}
-          </ol>
-        </aside>
-
-        <div className="privacy-document__body">
-          {privacyContent.sections.map((section) => (
-            <section id={section.id} key={section.id}>
-              <Heading level={2}>{section.title}</Heading>
-              {section.paragraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </section>
-          ))}
-        </div>
-      </Container>
-    </main>
-  )
+export default function Page() {
+  return <PrivacyPageView locale="en" />
 }

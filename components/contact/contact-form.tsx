@@ -21,6 +21,7 @@ import {
   type IdempotencyState,
 } from "@/lib/contact/idempotency"
 import type { ContactFieldErrors, ContactResponse } from "@/lib/contact/types"
+import type { Locale } from "@/lib/i18n"
 
 type FormStatus =
   | "initial"
@@ -33,7 +34,7 @@ type FormStatus =
   | "rate_limited"
   | "unexpected_error"
 
-const statusCopy: Partial<
+const englishStatusCopy: Partial<
   Record<FormStatus, { title: string; message: string }>
 > = {
   validation: {
@@ -62,11 +63,53 @@ const statusCopy: Partial<
   },
 }
 
+const spanishStatusCopy: typeof englishStatusCopy = {
+  validation: {
+    title: "Revise los campos resaltados.",
+    message: "Algunos datos necesitan atención antes de enviar.",
+  },
+  service_error: {
+    title: "No pudimos enviar esto ahora.",
+    message: "Su información sigue aquí; inténtelo de nuevo.",
+  },
+  network_error: {
+    title: "La conexión se interrumpió.",
+    message:
+      "Su información sigue aquí. Revise la conexión e inténtelo de nuevo.",
+  },
+  rejected: {
+    title: "No se pudo aceptar esta solicitud.",
+    message: "Revise la información e inténtelo de nuevo desde esta página.",
+  },
+  rate_limited: {
+    title: "Espere antes de intentarlo de nuevo.",
+    message: "Se recibieron demasiados intentos en poco tiempo.",
+  },
+  unexpected_error: {
+    title: "No pudimos completar esta solicitud.",
+    message: "Su información sigue aquí; inténtelo de nuevo.",
+  },
+}
+
+const spanishCategoryLabels: Record<string, string> = {
+  fragmented_systems: "Sistemas fragmentados",
+  manual_operational_process: "Proceso operativo manual",
+  fragile_automation: "Automatización frágil",
+  data_reporting_reliability: "Confiabilidad de datos y reportes",
+  financial_operations: "Operaciones financieras",
+  internal_platform: "Plataforma interna",
+  something_else: "Otro problema",
+}
+
 function formValues(form: HTMLFormElement): Record<string, FormDataEntryValue> {
   return Object.fromEntries(new FormData(form).entries())
 }
 
-function createContactRequest(form: HTMLFormElement, formStartedAt: number) {
+function createContactRequest(
+  form: HTMLFormElement,
+  formStartedAt: number,
+  locale: Locale,
+) {
   const values = formValues(form)
   const value = (name: string) => String(values[name] ?? "")
 
@@ -77,7 +120,9 @@ function createContactRequest(form: HTMLFormElement, formStartedAt: number) {
     role: value("role"),
     problemCategory: value("problemCategory"),
     problemDescription: value("problemDescription"),
-    pagePath: "/contact" as const,
+    pagePath:
+      locale === "es" ? ("/es/contact" as const) : ("/contact" as const),
+    locale,
     utm: contactAttributionFromStorage(window.sessionStorage),
     website: value("website"),
     formStartedAt,
@@ -86,8 +131,9 @@ function createContactRequest(form: HTMLFormElement, formStartedAt: number) {
 
 function publicFieldErrors(
   request: ReturnType<typeof createContactRequest>,
+  locale: Locale,
 ): ContactFieldErrors {
-  return browserContactFieldErrors(request)
+  return browserContactFieldErrors(request, locale)
 }
 
 function intentSnapshot(form: HTMLFormElement): string {
@@ -120,7 +166,9 @@ function FieldMessage({
   )
 }
 
-export function ContactForm() {
+export function ContactForm({ locale = "en" }: { locale?: Locale }) {
+  const es = locale === "es"
+  const statusCopy = es ? spanishStatusCopy : englishStatusCopy
   const [status, setStatus] = useState<FormStatus>("initial")
   const [errors, setErrors] = useState<ContactFieldErrors>({})
   const [idempotency, setIdempotency] = useState<IdempotencyState>(() =>
@@ -160,7 +208,9 @@ export function ContactForm() {
 
     started.current = true
     if (formStartedAt.current === 0) formStartedAt.current = Date.now()
-    trackEvent("contact_form_started", { page_path: "/contact" })
+    trackEvent("contact_form_started", {
+      page_path: locale === "es" ? "/es/contact" : "/contact",
+    })
   }
 
   const handleInput = (event: FormEvent<HTMLFormElement>) => {
@@ -180,7 +230,8 @@ export function ContactForm() {
 
     if (errors[target.name]) {
       const nextErrors = publicFieldErrors(
-        createContactRequest(form, formStartedAt.current),
+        createContactRequest(form, formStartedAt.current, locale),
+        locale,
       )
       setErrors((current) => ({
         ...current,
@@ -208,7 +259,8 @@ export function ContactForm() {
     }
 
     const nextErrors = publicFieldErrors(
-      createContactRequest(form, formStartedAt.current),
+      createContactRequest(form, formStartedAt.current, locale),
+      locale,
     )
     setErrors((current) => ({
       ...current,
@@ -224,8 +276,9 @@ export function ContactForm() {
     const request = createContactRequest(
       form,
       formStartedAt.current || Date.now(),
+      locale,
     )
-    const nextErrors = publicFieldErrors(request)
+    const nextErrors = publicFieldErrors(request, locale)
 
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors)
@@ -268,7 +321,9 @@ export function ContactForm() {
         result = {
           ok: false,
           code: "INTERNAL_ERROR",
-          message: "The response could not be read.",
+          message: es
+            ? "No se pudo leer la respuesta."
+            : "The response could not be read.",
         }
       }
 
@@ -328,12 +383,18 @@ export function ContactForm() {
         <p className="contact-result__mark" aria-hidden="true">
           ✓
         </p>
-        <h2>Thanks. We received your note.</h2>
+        <h2>
+          {es
+            ? "Gracias. Recibimos su mensaje."
+            : "Thanks. We received your note."}
+        </h2>
         <p>
-          We’ll review the context and get back to you with the right next step.
+          {es
+            ? "Revisaremos el contexto y responderemos con el siguiente paso adecuado."
+            : "We’ll review the context and get back to you with the right next step."}
         </p>
         <button onClick={beginAnotherSubmission} type="button">
-          Send another note
+          {es ? "Enviar otro mensaje" : "Send another note"}
         </button>
       </div>
     )
@@ -357,16 +418,30 @@ export function ContactForm() {
         aria-live="polite"
         className="contact-form__announcement"
       >
-        {status === "submitting" ? "Sending your information." : ""}
+        {status === "submitting"
+          ? es
+            ? "Enviando su información."
+            : "Sending your information."
+          : ""}
       </p>
 
       <div className="contact-form__heading">
         <div>
-          <h2>Describe the operating problem.</h2>
-          <p>All fields are required.</p>
+          <h2>
+            {es
+              ? "Describa el problema operativo."
+              : "Describe the operating problem."}
+          </h2>
+          <p>
+            {es
+              ? "Todos los campos son obligatorios."
+              : "All fields are required."}
+          </p>
         </div>
         <p>
-          A concrete description is useful. You do not need a polished brief.
+          {es
+            ? "Una descripción concreta es útil. No necesita un brief elaborado."
+            : "A concrete description is useful. You do not need a polished brief."}
         </p>
       </div>
 
@@ -386,10 +461,10 @@ export function ContactForm() {
       ) : null}
 
       <fieldset className="contact-form__group">
-        <legend>About you</legend>
+        <legend>{es ? "Sobre usted" : "About you"}</legend>
         <div className="contact-form__fields contact-form__fields--identity">
           <div className="contact-field">
-            <label htmlFor="name">Name</label>
+            <label htmlFor="name">{es ? "Nombre" : "Name"}</label>
             <input
               aria-describedby={fieldDescriptionId("name")}
               aria-invalid={Boolean(errors.name)}
@@ -404,7 +479,9 @@ export function ContactForm() {
           </div>
 
           <div className="contact-field">
-            <label htmlFor="email">Work email</label>
+            <label htmlFor="email">
+              {es ? "Correo de trabajo" : "Work email"}
+            </label>
             <input
               aria-describedby={fieldDescriptionId("email")}
               aria-invalid={Boolean(errors.email)}
@@ -420,7 +497,7 @@ export function ContactForm() {
           </div>
 
           <div className="contact-field">
-            <label htmlFor="company">Company</label>
+            <label htmlFor="company">{es ? "Empresa" : "Company"}</label>
             <input
               aria-describedby={fieldDescriptionId("company")}
               aria-invalid={Boolean(errors.company)}
@@ -435,7 +512,7 @@ export function ContactForm() {
           </div>
 
           <div className="contact-field">
-            <label htmlFor="role">Role</label>
+            <label htmlFor="role">{es ? "Puesto" : "Role"}</label>
             <input
               aria-describedby={fieldDescriptionId("role")}
               aria-invalid={Boolean(errors.role)}
@@ -452,10 +529,12 @@ export function ContactForm() {
       </fieldset>
 
       <fieldset className="contact-form__group">
-        <legend>The operation</legend>
+        <legend>{es ? "La operación" : "The operation"}</legend>
         <div className="contact-form__fields">
           <div className="contact-field">
-            <label htmlFor="problemCategory">Problem category</label>
+            <label htmlFor="problemCategory">
+              {es ? "Categoría del problema" : "Problem category"}
+            </label>
             <select
               aria-describedby={fieldDescriptionId("problemCategory")}
               aria-invalid={Boolean(errors.problemCategory)}
@@ -465,11 +544,13 @@ export function ContactForm() {
               required
             >
               <option disabled value="">
-                Choose the closest category
+                {es
+                  ? "Elija la categoría más cercana"
+                  : "Choose the closest category"}
               </option>
               {problemCategories.map((category) => (
                 <option key={category.value} value={category.value}>
-                  {category.label}
+                  {es ? spanishCategoryLabels[category.value] : category.label}
                 </option>
               ))}
             </select>
@@ -480,7 +561,9 @@ export function ContactForm() {
           </div>
 
           <div className="contact-field">
-            <label htmlFor="problemDescription">Problem description</label>
+            <label htmlFor="problemDescription">
+              {es ? "Descripción del problema" : "Problem description"}
+            </label>
             <textarea
               aria-describedby={fieldDescriptionId("problemDescription")}
               aria-invalid={Boolean(errors.problemDescription)}
@@ -492,7 +575,11 @@ export function ContactForm() {
             />
             <FieldMessage
               error={errors.problemDescription}
-              helper="What is difficult to operate, where does the friction show up, and what do you already know?"
+              helper={
+                es
+                  ? "¿Qué es difícil de operar, dónde aparece la fricción y qué sabe ya?"
+                  : "What is difficult to operate, where does the friction show up, and what do you already know?"
+              }
               name="problemDescription"
             />
           </div>
@@ -500,7 +587,7 @@ export function ContactForm() {
       </fieldset>
 
       <div aria-hidden="true" className="contact-form__trap">
-        <label htmlFor="website">Website</label>
+        <label htmlFor="website">{es ? "Sitio web" : "Website"}</label>
         <input
           autoComplete="off"
           id="website"
@@ -516,11 +603,18 @@ export function ContactForm() {
           disabled={status === "submitting"}
           type="submit"
         >
-          {status === "submitting" ? "Sending…" : "Send the context"}
+          {status === "submitting"
+            ? es
+              ? "Enviando…"
+              : "Sending…"
+            : es
+              ? "Enviar contexto"
+              : "Send the context"}
         </button>
         <p>
-          Brunova uses this information only to evaluate and respond to the
-          operational context you share.
+          {es
+            ? "Brunova usa esta información únicamente para evaluar y responder al contexto operativo que usted comparta."
+            : "Brunova uses this information only to evaluate and respond to the operational context you share."}
         </p>
       </div>
     </form>

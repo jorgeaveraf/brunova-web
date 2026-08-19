@@ -6,6 +6,7 @@ import {
   type ProblemCategory,
 } from "@/lib/contact/categories"
 import type { ContactFieldErrors } from "@/lib/contact/types"
+import type { Locale } from "@/lib/i18n"
 
 export { problemCategories, problemCategoryValues }
 export type { ProblemCategory }
@@ -28,7 +29,8 @@ export const contactRequestSchema = z
     role: normalizedText(2, 100),
     problemCategory: z.enum(problemCategoryValues),
     problemDescription: normalizedText(30, 4000),
-    pagePath: z.literal("/contact"),
+    pagePath: z.enum(["/contact", "/es/contact"]),
+    locale: z.enum(["en", "es"]).default("en"),
     utm: z
       .object({
         source: utmValueSchema,
@@ -49,13 +51,30 @@ export type ContactRequest = z.infer<typeof contactRequestSchema>
 
 export function contactFieldErrors(
   error: z.ZodError<ContactRequest>,
+  locale: Locale = "en",
 ): ContactFieldErrors {
   const errors: Record<string, string[]> = {}
 
   for (const issue of error.issues) {
     const field = issue.path.join(".") || "form"
     errors[field] ??= []
-    errors[field].push(issue.message)
+    const spanishMessages: Record<string, string> = {
+      name: "Escriba su nombre con 2–100 caracteres.",
+      email: "Escriba un correo electrónico de trabajo válido.",
+      company: "Escriba su empresa con 2–120 caracteres.",
+      role: "Escriba su puesto con 2–100 caracteres.",
+      problemCategory: "Elija la categoría más cercana al problema.",
+      problemDescription:
+        "Describa el problema operativo con 30–4,000 caracteres.",
+      pagePath: "La ruta del formulario no es válida.",
+      locale: "El idioma del formulario no es válido.",
+      form: "La solicitud contiene campos no permitidos.",
+    }
+    errors[field].push(
+      locale === "es"
+        ? (spanishMessages[field] ?? "Revise este campo.")
+        : issue.message,
+    )
   }
 
   return errors

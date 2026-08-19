@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { languageAlternates, localizedPath, type Locale } from "@/lib/i18n"
 
 type PageMetadataInput = {
   title: string
@@ -6,6 +7,7 @@ type PageMetadataInput = {
   path: `/${string}`
   noIndex?: boolean
   followWhenNoIndex?: boolean
+  locale?: Locale
 }
 
 export function createPageMetadata({
@@ -14,17 +16,19 @@ export function createPageMetadata({
   path,
   noIndex = false,
   followWhenNoIndex = true,
+  locale = "en",
 }: PageMetadataInput): Metadata {
+  const localized = localizedPath(locale, path)
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: localized, languages: languageAlternates(path) },
     openGraph: {
       type: "website",
       siteName: "Brunova",
       title,
       description,
-      url: path,
+      url: localized,
     },
     twitter: {
       card: "summary",

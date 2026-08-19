@@ -1,119 +1,12 @@
 import type { Metadata } from "next"
-
-import "@/app/core-routes.css"
-
-import { AnalyticsLink } from "@/components/analytics/analytics-link"
-import { Container } from "@/components/layout/container"
-import { Heading } from "@/components/layout/section-heading"
-import { processStages } from "@/content/process"
+import { ProcessPageView } from "@/components/pages/process-page"
 import { createPageMetadata } from "@/lib/metadata"
-
-const lateralEntries = [
-  { known: "Known problem", enter: "Blueprint" },
-  { known: "Defined architecture", enter: "Implementation" },
-  { known: "Existing production system", enter: "Managed Evolution" },
-] as const
-
-const description =
-  "Brunova’s four engagement stages—Discovery, Blueprint, Implementation and Managed Evolution—with explicit lateral entry points."
-
 export const metadata: Metadata = createPageMetadata({
   title: "How Brunova works",
-  description,
+  description:
+    "Brunova’s four engagement stages—Discovery, Blueprint, Implementation and Managed Evolution—with explicit lateral entry points.",
   path: "/process",
 })
-
-export default function ProcessPage() {
-  return (
-    <main className="route-page process-page" id="main-content" tabIndex={-1}>
-      <header className="route-intro process-intro">
-        <Container className="process-intro__inner">
-          <Heading level={1}>Enter where the system is.</Heading>
-          <div className="route-intro__lede">
-            <p>
-              Brunova’s process is a set of useful system states, not a fixed
-              funnel. Discovery is available when the problem is unclear; it is
-              not a prerequisite for work that already has a defensible
-              boundary.
-            </p>
-          </div>
-        </Container>
-      </header>
-
-      <section aria-labelledby="lateral-entry-title" className="entry-map">
-        <Container className="entry-map__inner">
-          <div>
-            <Heading id="lateral-entry-title" level={2}>
-              Lateral entry is explicit.
-            </Heading>
-            <p>Begin at the stage that matches what is already known.</p>
-          </div>
-          <dl>
-            {lateralEntries.map((entry) => (
-              <div key={entry.known}>
-                <dt>{entry.known}</dt>
-                <dd>
-                  <span aria-hidden="true">→</span> {entry.enter}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </Container>
-      </section>
-
-      <Container className="process-path">
-        {processStages.map((stage) => (
-          <article className="process-stage" key={stage.index}>
-            <div className="process-stage__identity">
-              <span>{stage.index}</span>
-              <strong>{stage.verb}</strong>
-              <p>{stage.timeline}</p>
-            </div>
-            <div className="process-stage__main">
-              <Heading level={2}>{stage.name}</Heading>
-              <p>{stage.description}</p>
-            </div>
-            <div className="process-stage__question process-stage__problem">
-              <Heading level={3}>What this stage resolves</Heading>
-              <p>{stage.problemSolved}</p>
-            </div>
-            <div className="process-stage__question process-stage__entry">
-              <Heading level={3}>What to know before entering</Heading>
-              <p>{stage.entryKnowledge}</p>
-            </div>
-            <div className="process-stage__question process-stage__establishes">
-              <Heading level={3}>What Brunova establishes</Heading>
-              <ul>
-                {stage.establishes.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="process-stage__question process-stage__next">
-              <Heading level={3}>What typically comes next</Heading>
-              <p>{stage.nextStep}</p>
-            </div>
-          </article>
-        ))}
-      </Container>
-
-      <section aria-labelledby="process-next" className="route-cta">
-        <Container className="route-cta__inner">
-          <div>
-            <Heading id="process-next" level={2}>
-              Not sure which stage matches?
-            </Heading>
-            <p>Bring the operation and what you already know.</p>
-          </div>
-          <AnalyticsLink
-            eventName="cta_start_conversation"
-            href="/contact"
-            variant="primary"
-          >
-            Start a conversation
-          </AnalyticsLink>
-        </Container>
-      </section>
-    </main>
-  )
+export default function Page() {
+  return <ProcessPageView locale="en" />
 }

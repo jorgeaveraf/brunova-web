@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next"
 
-import { siteConfig } from "@/content/site"
+import { localizedSiteConfig } from "@/content/locales"
 import { workCases } from "@/content/work"
+import { languageAlternates, localizedPath, type Locale } from "@/lib/i18n"
 
 export const routeIndexingPolicy = [
   {
@@ -96,9 +97,21 @@ export function getSitemapPaths(): string[] {
 }
 
 export function createSitemap(siteUrl: URL): MetadataRoute.Sitemap {
-  return getSitemapPaths().map((path) => ({
-    url: new URL(path, siteUrl).href,
-  }))
+  return getSitemapPaths().flatMap((path) =>
+    (["en", "es"] as const).map((locale) => ({
+      url: new URL(localizedPath(locale, path), siteUrl).href,
+      alternates: {
+        languages: Object.fromEntries(
+          Object.entries(languageAlternates(path)).map(
+            ([language, alternate]) => [
+              language,
+              new URL(alternate, siteUrl).href,
+            ],
+          ),
+        ),
+      },
+    })),
+  )
 }
 
 export function createRobots({
@@ -113,7 +126,7 @@ export function createRobots({
       ? {
           userAgent: "*",
           allow: "/",
-          disallow: ["/api/", "/portal"],
+          disallow: ["/api/", "/portal", "/es/portal"],
         }
       : {
           userAgent: "*",
@@ -124,7 +137,11 @@ export function createRobots({
   }
 }
 
-export function createOrganizationStructuredData(siteUrl: URL) {
+export function createOrganizationStructuredData(
+  siteUrl: URL,
+  locale: Locale = "en",
+) {
+  const siteConfig = localizedSiteConfig[locale]
   return {
     "@context": "https://schema.org",
     "@type": "Organization",

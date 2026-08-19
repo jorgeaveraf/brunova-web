@@ -674,6 +674,7 @@
 }
 
 .about-thesis .heading--1 {
+  min-width: 0;
   max-width: 12ch;
   overflow-wrap: anywhere;
   font-size: clamp(var(--text-2xl), 7vw, var(--text-display));
