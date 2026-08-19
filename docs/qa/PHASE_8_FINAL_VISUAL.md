@@ -2,6 +2,8 @@
 
 # Brunova Website — Phase 8 Final Visual Audit
 
+> The original candidate documented below was visually approved subject to the final utility/localization amendment. The current engineering candidate and latest verification are recorded in [PHASE_8_APPROVED_AMENDMENT.md](./PHASE_8_APPROVED_AMENDMENT.md).
+
 **Date:** 2026-08-18  
 **Status:** Engineering and Hallmark audit complete on `feature/br-017-final-visual`; awaiting human visual approval and intentionally unmerged.  
 **Scope:** Final whole-site visual, brand and Hallmark acceptance candidate only. No feature, architecture, performance-optimization or deployment work was performed.
