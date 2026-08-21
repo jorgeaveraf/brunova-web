@@ -4,66 +4,36 @@ const diagramCopy = {
   en: {
     mobileLabel: "From fragmented inputs to a reliable operating system",
     mobile: [
-      ["Fragmented inputs", "Processes · Data · Automations · People"],
-      ["Unclear handoffs", "Manual movement · Missing state"],
-      ["Defined boundary", "Process · Trusted data · Decisions · Ownership"],
-      ["Reliable operation", "Controlled · Operable · Scalable"],
+      ["Fragmented operation", "Disconnected work · data · systems"],
+      ["Defined boundary", "State · decisions · ownership"],
+      ["Reliable operation", "Controlled · operable · scalable"],
     ],
     title: "From fragmented operations to a reliable operating system",
     description:
       "Separate processes, data and automations cross unclear manual handoffs. Brunova defines a system boundary that connects process, trusted state, decisions and ownership into a controlled operational flow.",
-    groups: [
-      "Fragmented inputs",
-      "Defined system boundary",
-      "Reliable operation",
-    ],
-    inputs: ["Processes", "Data", "Automations", "People"],
-    handoffs: ["manual handoffs", "unclear state"],
-    operatingSystem: "Operating system",
-    layers: [
-      ["Process", "known states"],
-      ["Trusted data", "shared meaning"],
-      ["Decisions", "governed paths"],
-      ["Ownership", "explicit control"],
-    ],
-    flow: "controlled operational flow",
-    output: ["Reliable", "operations", "operable", "scalable"],
+    groups: ["Fragmented operation", "Defined boundary", "Reliable operation"],
+    fragments: ["Work", "Data", "Systems"],
+    controls: ["State", "Decisions", "Ownership"],
+    operatingSystem: "Operating model",
+    output: ["Controlled", "Operable", "Scalable"],
     caption:
       "Brunova makes boundaries, state, decisions and ownership explicit before implementation tools are selected.",
   },
   es: {
     mobileLabel: "De entradas fragmentadas a un sistema operativo confiable",
     mobile: [
-      [
-        "Entradas fragmentadas",
-        "Procesos · Datos · Automatizaciones · Personas",
-      ],
-      ["Relevos poco claros", "Movimiento manual · Estado ausente"],
-      [
-        "Límite definido",
-        "Proceso · Datos confiables · Decisiones · Responsabilidad",
-      ],
-      ["Operación confiable", "Controlada · Operable · Escalable"],
+      ["Operación fragmentada", "Trabajo · datos · sistemas desconectados"],
+      ["Límite definido", "Estado · decisiones · responsabilidad"],
+      ["Operación confiable", "Controlada · operable · escalable"],
     ],
     title: "De operaciones fragmentadas a un sistema operativo confiable",
     description:
       "Procesos, datos y automatizaciones separados atraviesan relevos manuales poco claros. Brunova define un límite de sistema que conecta proceso, estado confiable, decisiones y responsabilidad en un flujo operativo controlado.",
-    groups: [
-      "Entradas fragmentadas",
-      "Límite de sistema definido",
-      "Operación confiable",
-    ],
-    inputs: ["Procesos", "Datos", "Automatizaciones", "Personas"],
-    handoffs: ["relevos manuales", "estado poco claro"],
-    operatingSystem: "Sistema operativo",
-    layers: [
-      ["Proceso", "estados conocidos"],
-      ["Datos confiables", "significado compartido"],
-      ["Decisiones", "rutas gobernadas"],
-      ["Responsabilidad", "control explícito"],
-    ],
-    flow: "flujo operativo controlado",
-    output: ["Operaciones", "confiables", "operables", "escalables"],
+    groups: ["Operación fragmentada", "Límite definido", "Operación confiable"],
+    fragments: ["Trabajo", "Datos", "Sistemas"],
+    controls: ["Estado", "Decisiones", "Responsabilidad"],
+    operatingSystem: "Modelo operativo",
+    output: ["Controlada", "Operable", "Escalable"],
     caption:
       "Brunova hace explícitos los límites, el estado, las decisiones y la responsabilidad antes de seleccionar herramientas de implementación.",
   },
@@ -85,7 +55,7 @@ export function SystemBoundaryDiagram({ locale }: { locale: Locale }) {
         aria-labelledby="system-diagram-title system-diagram-description"
         className="system-diagram__svg"
         role="img"
-        viewBox="0 0 720 480"
+        viewBox="0 0 720 380"
       >
         <title id="system-diagram-title">{copy.title}</title>
         <desc id="system-diagram-description">{copy.description}</desc>
@@ -103,148 +73,89 @@ export function SystemBoundaryDiagram({ locale }: { locale: Locale }) {
           </marker>
         </defs>
 
-        <text className="system-diagram__group-label" x="18" y="24">
+        <text className="system-diagram__group-label" x="18" y="30">
           {copy.groups[0]}
         </text>
-        <text className="system-diagram__group-label" x="286" y="24">
+        <text
+          className="system-diagram__group-label"
+          textAnchor="middle"
+          x="380"
+          y="30"
+        >
           {copy.groups[1]}
         </text>
-        <text className="system-diagram__group-label" x="586" y="24">
+        <text
+          className="system-diagram__group-label"
+          textAnchor="end"
+          x="702"
+          y="30"
+        >
           {copy.groups[2]}
         </text>
 
-        <g className="system-diagram__input">
-          <rect height="64" width="136" x="18" y="70" />
-          <text x="34" y="108">
-            {copy.inputs[0]}
+        <g className="system-diagram__fragments">
+          <path d="M18 102H126" />
+          <text x="18" y="90">
+            {copy.fragments[0]}
           </text>
-        </g>
-        <g className="system-diagram__input">
-          <rect height="64" width="136" x="18" y="170" />
-          <text x="34" y="208">
-            {copy.inputs[1]}
+          <path d="M58 190H190" />
+          <text x="58" y="178">
+            {copy.fragments[1]}
           </text>
-        </g>
-        <g className="system-diagram__input">
-          <rect height="64" width="136" x="18" y="270" />
-          <text x="34" y="308">
-            {copy.inputs[2]}
+          <path d="M18 278H146" />
+          <text x="18" y="266">
+            {copy.fragments[2]}
           </text>
-        </g>
-        <g className="system-diagram__input system-diagram__input--offset">
-          <rect height="64" width="136" x="18" y="370" />
-          <text x="34" y="408">
-            {copy.inputs[3]}
-          </text>
+          <path
+            className="system-diagram__broken-flow"
+            d="M126 102L214 154M190 190L214 190M146 278L214 226"
+          />
         </g>
 
-        <g className="system-diagram__handoffs">
-          <path d="M154 102H224" markerEnd="url(#diagram-arrow)" />
-          <path d="M154 202H224" markerEnd="url(#diagram-arrow)" />
-          <path d="M154 302H224" markerEnd="url(#diagram-arrow)" />
-          <path d="M154 402H224" markerEnd="url(#diagram-arrow)" />
-          <line x1="224" x2="224" y1="86" y2="418" />
-          <text x="210" y="238" textAnchor="end">
-            {copy.handoffs[0]}
-          </text>
-          <text x="210" y="258" textAnchor="end">
-            {copy.handoffs[1]}
-          </text>
-        </g>
+        <path
+          className="system-diagram__entry-line"
+          d="M214 190H254"
+          markerEnd="url(#diagram-arrow)"
+        />
 
         <g className="system-diagram__boundary">
-          <rect height="384" width="276" x="270" y="50" />
-          <text className="system-diagram__boundary-title" x="290" y="84">
+          <rect height="272" width="252" x="254" y="58" />
+          <text
+            className="system-diagram__boundary-title"
+            textAnchor="middle"
+            x="380"
+            y="104"
+          >
             {copy.operatingSystem}
           </text>
-
-          <g className="system-diagram__layer">
-            <line x1="290" x2="526" y1="120" y2="120" />
-            <text x="290" y="151">
-              {copy.layers[0][0]}
-            </text>
-            <text
-              className="system-diagram__layer-note"
-              x="526"
-              y="151"
-              textAnchor="end"
-            >
-              {copy.layers[0][1]}
-            </text>
-          </g>
-          <g className="system-diagram__layer">
-            <line x1="290" x2="526" y1="184" y2="184" />
-            <text x="290" y="215">
-              {copy.layers[1][0]}
-            </text>
-            <text
-              className="system-diagram__layer-note"
-              x="526"
-              y="215"
-              textAnchor="end"
-            >
-              {copy.layers[1][1]}
-            </text>
-          </g>
-          <g className="system-diagram__layer">
-            <line x1="290" x2="526" y1="248" y2="248" />
-            <text x="290" y="279">
-              {copy.layers[2][0]}
-            </text>
-            <text
-              className="system-diagram__layer-note"
-              x="526"
-              y="279"
-              textAnchor="end"
-            >
-              {copy.layers[2][1]}
-            </text>
-          </g>
-          <g className="system-diagram__layer">
-            <line x1="290" x2="526" y1="312" y2="312" />
-            <text x="290" y="343">
-              {copy.layers[3][0]}
-            </text>
-            <text
-              className="system-diagram__layer-note"
-              x="526"
-              y="343"
-              textAnchor="end"
-            >
-              {copy.layers[3][1]}
-            </text>
-          </g>
-
+          <path className="system-diagram__model-line" d="M286 170H474" />
+          {copy.controls.map((control, index) => (
+            <g className="system-diagram__control" key={control}>
+              <circle cx={304 + index * 76} cy="170" r="5" />
+              <text textAnchor="middle" x={304 + index * 76} y="204">
+                {control}
+              </text>
+            </g>
+          ))}
           <path
             className="system-diagram__controlled-flow"
-            d="M290 386H516"
+            d="M286 270H464"
             markerEnd="url(#diagram-arrow)"
           />
-          <text className="system-diagram__flow-label" x="290" y="411">
-            {copy.flow}
-          </text>
         </g>
 
         <path
           className="system-diagram__output-line"
-          d="M546 242H584"
+          d="M506 190H554"
           markerEnd="url(#diagram-arrow)"
         />
         <g className="system-diagram__output">
-          <rect height="132" width="118" x="584" y="176" />
-          <text x="602" y="216">
-            {copy.output[0]}
-          </text>
-          <text x="602" y="239">
-            {copy.output[1]}
-          </text>
-          <line x1="602" x2="684" y1="260" y2="260" />
-          <text className="system-diagram__output-note" x="602" y="282">
-            {copy.output[2]}
-          </text>
-          <text className="system-diagram__output-note" x="602" y="301">
-            {copy.output[3]}
-          </text>
+          <path d="M554 190H702" />
+          {copy.output.map((output, index) => (
+            <text key={output} textAnchor="end" x="702" y={226 + index * 28}>
+              {output}
+            </text>
+          ))}
         </g>
       </svg>
       <figcaption>{copy.caption}</figcaption>

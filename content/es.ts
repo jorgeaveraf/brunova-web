@@ -16,10 +16,14 @@ export const esHomepage = {
     primaryAction: "Iniciar una conversación",
     secondaryAction: "Explorar proyectos",
   },
+  category:
+    "Ingeniería de sistemas para operaciones demasiado complejas para gestionarse solo con herramientas.",
   problem: {
     title: "Cuando las operaciones se convierten en problemas de sistemas.",
     description:
       "El crecimiento suele revelar un problema que ninguna herramienta por sí sola puede resolver: la operación dejó de comportarse como un sistema.",
+    transition:
+      "La solución no es otra herramienta. Es un sistema mejor diseñado.",
   },
   operationalIntelligence: {
     title:
@@ -36,7 +40,7 @@ export const esHomepage = {
     title: "Cómo trabaja Brunova",
     entryTitle: "Entre donde el sistema necesita trabajo.",
     entryDescription:
-      "El descubrimiento está disponible cuando el problema no es claro; no es un primer paso obligatorio. Podemos comenzar con la arquitectura, una implementación definida o un sistema existente en producción.",
+      "El descubrimiento está disponible cuando el problema no es claro; no es un primer paso obligatorio.",
   },
   differentiatorsTitle: "Principios con los que operamos",
   finalCta: {

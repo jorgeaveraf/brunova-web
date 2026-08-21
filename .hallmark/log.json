@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-08-21",
+    "scope": "homepage",
+    "macrostructure": "Architectural Narrative / recognition-first amendment",
+    "theme": "custom",
+    "theme_axes": "light-dark peers / geometric-sans / neutral",
+    "vibe": "calm, precise, architectural, premium",
+    "nav": "N6 adapted masthead (preserved)",
+    "footer": "Ft2 inline rule (preserved)",
+    "enrichment": "Tier B reduced boundary + operating control loop",
+    "brief": "Phase 8.2 premium homepage refinement"
+  },
+  {
+    "date": "2026-08-21",
+    "scope": "app",
+    "macrostructure": "Architectural Narrative / Route Atlas, recognition-first amendment",
+    "theme": "custom",
+    "theme_axes": "light-dark peers / geometric-sans / neutral",
+    "vibe": "calm, precise, architectural, executive",
+    "nav": "N6 adapted masthead with contextual active state",
+    "footer": "Ft2 inline rule (approved shell)",
+    "enrichment": "Tier B semantic system visuals",
+    "brief": "Phase 8.1 editorial density, progressive disclosure and wayfinding"
+  },
+  {
     "date": "2026-08-16",
     "macrostructure": "Split Studio adapted to Route Atlas",
     "theme": "custom",

@@ -339,3 +339,120 @@ Post: Philosophy 5/5 · Hierarchy 5/5 · Execution 5/5 · Specificity 5/5 · Res
 ```
 
 No axis is below 3. Phase 8 does not add motion, features, architecture or a new visual primitive.
+
+## Phase 8.1 — Editorial and visual system restructure
+
+Human review supersedes the earlier conclusion that a 58/58 anti-pattern audit implied visual completion. Phase 8 remains open. The systemic issue was not standards compliance; it was executive readability: too much visible detail, too many rules and ledgers, insufficient semantic visual communication, and weak route-depth orientation.
+
+### Executive-density principle
+
+Brunova communicates in layers. A first scan must establish the operating problem and Brunova's role without requiring every paragraph. Headings carry the conclusion, one supporting thought supplies qualification, and a semantic visual or selected proof supplies evidence. Additional technical explanation appears only when the visitor moves deeper or explicitly opens it.
+
+Density is reduced by editorial selection, not smaller type or compressed spacing. Specificity and evidence remain intact. No page receives content merely because it exists in the source model.
+
+### Three-level information depth
+
+1. **Recognition** — `/` answers what Brunova is, the operational problem it addresses, how it thinks, what it builds, whether it has relevant experience, how engagement begins, why it is credible, and how to make contact.
+2. **Exploration** — `/capabilities`, `/process`, `/work`, and `/about` let a prospect establish relevance through fast overview structures and deliberate disclosure.
+3. **Evidence** — `/work/[slug]` and future deep routes retain system boundaries, engineering decisions, operational safeguards, outcomes, and relationship context.
+
+Level 3 density does not appear on the homepage. Level 2 pages expose the shape of their subject before the supporting detail.
+
+### Progressive disclosure
+
+Capabilities presents all five responsibilities as one connected field, then keeps problem class, approach, outcomes, operational concerns, and related work inside native, keyboard-operable disclosure regions. Process presents lateral entry and the four operating states first; the full stage questions remain available on demand. Evidence routes remain naturally long because their purpose is evaluation rather than recognition.
+
+Disclosure is not used to hide essential positioning or to shorten legal text. Contact, Portal, and Privacy retain their purpose-specific reading models.
+
+### Brunova visual storytelling vocabulary
+
+The system uses semantic, code-native visual primitives: system boundaries, fragmented-to-controlled transformations, operating states, data/work/system relationships, ownership, handoffs, decision paths, failure/recovery paths, layers, interfaces, and capability relationships. Every visual must communicate a named operational fact in static form.
+
+No gradients, stock imagery, fake dashboards, decorative networks, glowing nodes, abstract AI art, or ornamental 3D are introduced. The hero retains the approved fragmented inputs → defined boundary → reliable operation concept, but the broader site now repeats its logic through simpler, route-appropriate abstractions.
+
+### Composition vocabulary
+
+- Editorial statement
+- System visual
+- Split narrative
+- Transformation
+- Selected proof
+- Sequence
+- Principle
+- Immersive hinge
+
+No route must use every composition. Adjacent primary sections should not share the same structure. The homepage alternates statement, transformation, relationship field, capability field, inverse hinge, selected proof, state sequence, principles, and conversion.
+
+### Ledger and rule policy
+
+Rules, indices, and ledger rows are **essential** when content is genuinely ordinal, navigational, legal, or dossier-like; **useful** when they clarify a system boundary; and **repetitive** when they merely separate parallel prose. Repetitive uses are replaced by space, surface contrast, relationship diagrams, or controlled disclosure. Selectivity restores the authority of the remaining rules.
+
+### Wayfinding system
+
+The N6-adapted masthead remains structurally unchanged. Its four primary destinations gain a restrained neutral hairline active state, including parent activation on dossier routes. A compact route-context trail sits between shell and page body:
+
+- Exploration: `Explore / Capabilities`, `Explore / Process`, `Explore / Selected Work`, `Explore / About`.
+- Evidence: `Selected Work / <system>`, followed by an explicit return link, local dossier index, related capabilities, and next-system navigation.
+- Utility/legal: `Brunova / Contact`, `Brunova / Portal`, `Brunova / Privacy`.
+
+The trail is not a banner, pill, or application sidebar. Long current labels truncate safely on narrow screens while the parent remains legible.
+
+### Page-length philosophy
+
+Page length must be earned by depth. Recognition pages remove duplicated explanation and secondary records. Exploration pages show overview first and allow depth by choice. Dossiers and Privacy may remain long because evidence and legal trust require sustained reading. Mobile preserves these priorities rather than stacking the former desktop density into a longer document.
+
+### EN/ES density parity
+
+English and Spanish share information priority, component order, disclosure state, and type scale. Spanish may wrap differently and consume more space. It is never reduced in size to force English geometry. Copy reduction is semantic: when an element is removed or moved deeper in English, the Spanish counterpart follows.
+
+### Phase boundary
+
+Phase 8.1 establishes the governing editorial, visual, disclosure, and orientation system with the minimum cross-route implementation needed to make it real. Detailed page-by-page visual refinement remains a later Phase 8 review increment. Phase 9 does not begin, and no merge to `develop` or change to `main` is authorized.
+
+### Phase 8.1 pre-emit critique
+
+```text
+Philosophy  5/5 — information depth now follows executive recognition and evaluator intent
+Hierarchy   5/5 — essential meaning precedes optional technical detail across every public route
+Execution   4/5 — shared patterns are implemented; human page-level refinement remains deliberately open
+Specificity 5/5 — visuals and labels express Brunova system boundaries, states, ownership and evidence
+Restraint   5/5 — no external imagery, fabricated proof, decorative motion or new masthead chrome
+Variety     5/5 — eight governed compositions replace repeated ledgers without fragmenting the brand
+```
+
+No score is below 3. This critique is a regression constraint, not a claim of production approval.
+
+## Phase 8.2 — Homepage signature refinement
+
+Phase 8.2 keeps the Phase 8.1 information architecture and focuses the homepage on premium executive recognition. The homepage signature is now a reduced operating-boundary language rather than a family of explanatory boxes: fragmented operational signals converge at one explicit boundary, and controlled state leaves as a reliable operation.
+
+### Executive scanning principles
+
+The homepage is composed for three reading depths:
+
+- **30 seconds:** recognize Brunova's category, the systems problem, the operating-model point of view, relevant proof, and the conversation path.
+- **2 minutes:** understand Operational Intelligence, the combined capability field, the architecture-before-tools principle, and the available engagement entry points.
+- **5 minutes:** follow capability, process, and evidence links into the appropriate deeper route.
+
+Headings state conclusions. Supporting copy qualifies each conclusion once. Visual models express relationships or transitions and never repeat prose merely as decoration.
+
+### Refined composition vocabulary
+
+- **Boundary model:** fragmentation → explicit state/decision/ownership boundary → reliable operation.
+- **Category bridge:** one inverse statement that names systems engineering without becoming another slogan.
+- **Recognition field:** three operational symptoms resolved by one “better system” transition.
+- **Control loop:** observe → decide → act, with operational state returning to the model.
+- **Capability field:** five engineering disciplines arranged around one operational system.
+- **Principle hinge:** one high-contrast architecture-before-tools decision moment.
+- **Selected evidence:** one dominant system story and one supporting editorial record.
+- **State-entry process:** buyer situation → Brunova action → resulting operational state.
+
+### Operational Intelligence visual language
+
+Operational Intelligence is the decision layer between observed operations and governed execution. Operations, data, and systems establish context. Meaning, boundaries, and ownership govern decisions. Automation, software, and AI act within those controls. AI is deliberately placed beside the other execution capabilities: it is not the center, the product, or an unbounded visual motif.
+
+### Information density
+
+The homepage exposes one decisive idea per section. It does not duplicate route-level capability descriptions, process questions, technical case detail, or secondary proof. Repetition is reserved for meaning: three-state transformation, three-part control, five related disciplines, two levels of evidence, four lateral entry states, and three operating principles.
+
+Phase 8.2 introduces no gradient, glass, glow, external imagery, dashboard simulation, client identity, fabricated metric, new animation, or SaaS component pattern. The black/bone peer themes, Manrope + IBM Plex Sans pairing, N6-adapted masthead, Ft2 footer, Route Atlas, and motion-cut stance remain locked.

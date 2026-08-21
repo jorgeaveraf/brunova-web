@@ -29,15 +29,22 @@ test("homepage follows the approved narrative and record counts", async ({
     narrativeHeadings,
   )
 
-  await expect(page.locator(".capability-ledger__item")).toHaveCount(5)
-  await expect(page.locator(".work-ledger__item")).toHaveCount(4)
-  await expect(page.locator(".process-track > li")).toHaveCount(4)
+  await expect(page.locator(".capability-field-preview__item")).toHaveCount(5)
+  await expect(page.locator(".selected-proof article")).toHaveCount(2)
+  await expect(page.locator(".process-sequence > li")).toHaveCount(4)
   await expect(page.locator(".principles > li")).toHaveCount(3)
   await expect(
     page.getByRole("img", {
       name: "From fragmented operations to a reliable operating system",
     }),
   ).toBeVisible()
+  await expect(page.locator(".home-category")).toContainText(
+    "Systems engineering for operations too complex to manage through tools alone.",
+  )
+  await expect(page.locator(".problem-shift__transition")).toHaveText(
+    "The solution is not another tool. It is a better system.",
+  )
+  await expect(page.locator(".operational-model__phase")).toHaveCount(3)
 })
 
 test("the essential hero content fits the 1280 by 800 fold", async ({
@@ -124,3 +131,19 @@ test("mobile uses the readable system sequence and honors reduced motion", async
   )
   expect(animations).toBe(0)
 })
+
+for (const width of [320, 375, 390, 414, 768]) {
+  test(`homepage preserves meaning without horizontal overflow at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto(width % 2 === 0 ? "/es" : "/")
+
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    )
+    expect(overflow).toBeLessThanOrEqual(0)
+    await expect(page.locator(".operational-model__phase")).toHaveCount(3)
+    await expect(page.locator(".process-sequence > li")).toHaveCount(4)
+  })
+}
