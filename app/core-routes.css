@@ -1,3 +1,4 @@
+/* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V5 */
 /* Hallmark · route: custom (bespoke) · structure: Route Atlas within Architectural Narrative · idea: "one design system, seven purpose-built reading models"
  * paper: oklch(97.3% 0.008 75) · accent: oklch(20% 0.008 70) · display: Manrope · body: IBM Plex Sans
  * axes: light / geometric-sans / neutral · nav: N6 adapted · footer: Ft2 · motion: cut · studied: no
@@ -471,7 +472,7 @@
 
 .case-intro .heading--1 {
   max-width: 20ch;
-  font-size: clamp(var(--text-xl), 6vw, var(--text-display));
+  font-size: var(--text-display-depth);
 }
 
 .case-intro__summary {
@@ -1218,5 +1219,296 @@
 @media (prefers-reduced-motion: reduce) {
   .system-flow li::after {
     transform: none;
+  }
+}
+
+/* Phase 8.1 · route depth, progressive disclosure and wayfinding */
+.route-context {
+  border-block-end: var(--rule-hair) solid var(--color-border);
+}
+
+.route-context ol {
+  display: flex;
+  min-height: var(--control-height);
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0;
+  margin: 0;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+  list-style: none;
+  overflow: hidden;
+}
+
+.route-context li {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.route-context li:not(:last-child)::after {
+  padding-inline-start: var(--space-sm);
+  color: var(--color-border);
+  content: "/";
+}
+
+.route-context a {
+  color: var(--color-foreground);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.capability-field__details {
+  gap: var(--space-sm);
+}
+
+.capability-spread {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: var(--color-surface);
+}
+
+.capability-spread__title,
+.process-stage__summary {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  cursor: pointer;
+  list-style: none;
+}
+
+.capability-spread__title::-webkit-details-marker,
+.process-stage__summary::-webkit-details-marker {
+  display: none;
+}
+
+.capability-spread__title {
+  grid-template-columns: var(--space-2xl) minmax(0, 1fr) var(--space-lg);
+}
+
+.capability-spread__summary-copy {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-xs);
+}
+
+.capability-spread__summary-copy .heading {
+  overflow-wrap: anywhere;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: var(--leading-display);
+}
+
+.capability-spread__summary-copy > span {
+  max-width: var(--measure);
+  color: var(--color-muted-foreground);
+}
+
+.disclosure-mark {
+  position: relative;
+  width: var(--space-md);
+  height: var(--space-md);
+}
+
+.disclosure-mark::before,
+.disclosure-mark::after {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline: 0;
+  height: var(--rule-hair);
+  background: currentColor;
+  content: "";
+}
+
+.disclosure-mark::after {
+  transform: rotate(90deg);
+}
+
+details[open] > summary .disclosure-mark::after {
+  transform: rotate(0);
+}
+
+.capability-spread__body {
+  display: grid;
+  gap: var(--space-2xl);
+  padding: 0 var(--space-xl) var(--space-2xl);
+}
+
+.process-map-wrap {
+  padding-block: var(--space-xl) var(--space-4xl);
+}
+
+.process-state-map {
+  display: grid;
+  gap: var(--space-xs);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.process-state-map li {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--space-2xl) minmax(0, 1fr);
+  gap: var(--space-xs) var(--space-md);
+  padding: var(--space-lg);
+  background: var(--color-surface-raised);
+}
+
+.process-state-map li > span {
+  grid-row: 1 / span 3;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+}
+
+.process-state-map strong {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+}
+
+.process-state-map small,
+.process-state-map p {
+  color: var(--color-muted-foreground);
+}
+
+.process-state-map p {
+  margin: var(--space-sm) 0 0;
+  font-size: var(--text-sm);
+}
+
+.process-path {
+  display: grid;
+  gap: var(--space-sm);
+  padding-block-start: 0;
+}
+
+.process-stage {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: var(--color-surface);
+}
+
+.process-stage__summary {
+  grid-template-columns: var(--space-2xl) minmax(0, 1fr) var(--space-lg);
+}
+
+.process-stage__summary > span:nth-child(2) {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.process-stage__summary .heading {
+  overflow-wrap: anywhere;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+}
+
+.process-stage__summary small {
+  color: var(--color-muted-foreground);
+}
+
+.process-stage__body {
+  display: grid;
+  gap: var(--space-xl);
+  padding: 0 var(--space-xl) var(--space-2xl);
+}
+
+.process-stage__description {
+  max-width: var(--measure);
+  margin: 0;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-md);
+}
+
+.case-dossier__back {
+  display: inline-flex;
+  min-height: var(--control-height);
+  align-items: center;
+  color: var(--color-foreground);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.portal-page {
+  display: block;
+  min-height: 0;
+  padding: 0;
+}
+
+.portal-threshold {
+  min-height: 56dvh;
+  align-content: center;
+  padding-block: var(--space-4xl);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .route-context a:hover,
+  .case-dossier__back:hover {
+    text-decoration: underline;
+    text-underline-offset: var(--space-2xs);
+  }
+
+  .capability-spread__title:hover,
+  .process-stage__summary:hover {
+    background: var(--color-surface-raised);
+  }
+}
+
+@media (min-width: 40rem) {
+  .capability-spread__body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .capability-spread__work {
+    grid-column: 1 / -1;
+  }
+
+  .process-stage__body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .process-stage__description {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 60rem) {
+  .process-state-map {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .process-state-map li:not(:last-child)::after {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: calc(var(--space-sm) * -1);
+    z-index: var(--z-content);
+    color: var(--color-muted-foreground);
+    content: "→";
+    transform: translateY(-50%);
+  }
+
+  .process-stage__body {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .process-stage__description {
+    grid-column: 1 / 9;
+  }
+
+  .process-stage__problem,
+  .process-stage__establishes {
+    grid-column: 1 / 7;
+  }
+
+  .process-stage__entry,
+  .process-stage__next {
+    grid-column: 7 / -1;
   }
 }

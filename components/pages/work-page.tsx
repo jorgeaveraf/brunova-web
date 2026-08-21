@@ -2,6 +2,7 @@ import "@/app/core-routes.css"
 
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { Container } from "@/components/layout/container"
+import { RouteContext } from "@/components/layout/route-context"
 import { Heading } from "@/components/layout/section-heading"
 import { localizedContent } from "@/content/locales"
 import { localizedPath, type Locale } from "@/lib/i18n"
@@ -15,6 +16,13 @@ export function WorkPageView({ locale }: { locale: Locale }) {
 
   return (
     <main className="route-page work-page" id="main-content" tabIndex={-1}>
+      <RouteContext
+        ariaLabel={es ? "Contexto de página" : "Page context"}
+        items={[
+          { label: es ? "Explorar" : "Explore" },
+          { label: es ? "Proyectos seleccionados" : "Selected Work" },
+        ]}
+      />
       <header className="route-intro work-intro">
         <Container className="work-intro__inner">
           <Heading level={1}>

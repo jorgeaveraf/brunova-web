@@ -1,17 +1,24 @@
 import "@/app/core-routes.css"
 
 import { Container } from "@/components/layout/container"
+import { RouteContext } from "@/components/layout/route-context"
 import { Heading } from "@/components/layout/section-heading"
 import { ActionLink } from "@/components/ui/action-link"
 import { localizedContent } from "@/content/locales"
 import { localizedPath, type Locale } from "@/lib/i18n"
 
 export function AboutPageView({ locale }: { locale: Locale }) {
-  const { aboutNarrative, companyModel, differentiators } =
-    localizedContent[locale]
+  const { aboutNarrative, companyModel } = localizedContent[locale]
   const es = locale === "es"
   return (
     <main className="route-page about-page" id="main-content" tabIndex={-1}>
+      <RouteContext
+        ariaLabel={es ? "Contexto de página" : "Page context"}
+        items={[
+          { label: es ? "Explorar" : "Explore" },
+          { label: es ? "Nosotros" : "About" },
+        ]}
+      />
       <header className="about-thesis">
         <Container className="about-thesis__inner">
           <Heading level={1}>
@@ -46,27 +53,6 @@ export function AboutPageView({ locale }: { locale: Locale }) {
                 <Heading level={3}>{facet.title}</Heading>
                 <p>{facet.description}</p>
               </article>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      <section
-        aria-labelledby="company-principles-title"
-        className="about-principles"
-      >
-        <Container className="about-principles__inner">
-          <Heading id="company-principles-title" level={2}>
-            {es
-              ? "La disciplina detrás del trabajo."
-              : "The discipline behind the work."}
-          </Heading>
-          <div className="about-principles__statements">
-            {differentiators.map((principle) => (
-              <blockquote key={principle.title}>
-                <p>{principle.description}</p>
-                <cite>{principle.title}</cite>
-              </blockquote>
             ))}
           </div>
         </Container>

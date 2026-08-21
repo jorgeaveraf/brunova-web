@@ -2,6 +2,7 @@ import "@/app/core-routes.css"
 
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { Container } from "@/components/layout/container"
+import { RouteContext } from "@/components/layout/route-context"
 import { Heading } from "@/components/layout/section-heading"
 import { ActionLink } from "@/components/ui/action-link"
 import { localizedContent } from "@/content/locales"
@@ -18,6 +19,13 @@ export function CapabilitiesPageView({ locale }: { locale: Locale }) {
       id="main-content"
       tabIndex={-1}
     >
+      <RouteContext
+        ariaLabel={es ? "Contexto de página" : "Page context"}
+        items={[
+          { label: es ? "Explorar" : "Explore" },
+          { label: es ? "Capacidades" : "Capabilities" },
+        ]}
+      />
       <header className="route-intro capability-intro">
         <Container className="capability-intro__inner">
           <Heading level={1}>
@@ -30,11 +38,6 @@ export function CapabilitiesPageView({ locale }: { locale: Locale }) {
               {es
                 ? "Brunova reúne arquitectura, datos, automatización y procesos dentro de un solo límite operativo. Las cinco capacidades son responsabilidades conectadas, no líneas de servicio aisladas."
                 : "Brunova brings architecture, data, automation and process work into one operating boundary. The five capabilities are connected responsibilities—not isolated service lines."}
-            </p>
-            <p>
-              {es
-                ? "La combinación correcta depende de dónde la operación está perdiendo confianza, control o capacidad de evolucionar."
-                : "The right combination depends on where the operation is losing trust, control or the ability to evolve."}
             </p>
           </div>
         </Container>
@@ -69,78 +72,85 @@ export function CapabilitiesPageView({ locale }: { locale: Locale }) {
               .filter((work): work is NonNullable<typeof work> => Boolean(work))
 
             return (
-              <article
-                className="capability-spread"
+              <details
+                className="capability-spread capability-disclosure"
                 id={capability.slug}
                 key={capability.slug}
               >
-                <div className="capability-spread__title">
+                <summary className="capability-spread__title">
                   <span>{capability.index}</span>
-                  <Heading level={2}>{capability.name}</Heading>
-                  <p>{capability.shortDescription}</p>
-                </div>
+                  <span className="capability-spread__summary-copy">
+                    <Heading level={2}>{capability.name}</Heading>
+                    <span>{capability.shortDescription}</span>
+                  </span>
+                  <span aria-hidden="true" className="disclosure-mark" />
+                </summary>
 
-                <div className="capability-spread__problem">
-                  <Heading level={3}>
-                    {es ? "La clase de problema" : "The class of problem"}
-                  </Heading>
-                  <p>{capability.problemClass}</p>
-                </div>
+                <div className="capability-spread__body">
+                  <div className="capability-spread__problem">
+                    <Heading level={3}>
+                      {es ? "La clase de problema" : "The class of problem"}
+                    </Heading>
+                    <p>{capability.problemClass}</p>
+                  </div>
 
-                <div className="capability-spread__approach">
-                  <Heading level={3}>
-                    {es
-                      ? "Cómo lo aborda Brunova"
-                      : "How Brunova approaches it"}
-                  </Heading>
-                  <p>{capability.approach}</p>
-                </div>
+                  <div className="capability-spread__approach">
+                    <Heading level={3}>
+                      {es
+                        ? "Cómo lo aborda Brunova"
+                        : "How Brunova approaches it"}
+                    </Heading>
+                    <p>{capability.approach}</p>
+                  </div>
 
-                <div className="capability-spread__outcomes">
-                  <Heading level={3}>
-                    {es
-                      ? "Resultados típicos del sistema"
-                      : "Typical system outcomes"}
-                  </Heading>
-                  <ul>
-                    {capability.outcomes.map((outcome) => (
-                      <li key={outcome}>{outcome}</li>
-                    ))}
-                  </ul>
-                </div>
+                  <div className="capability-spread__outcomes">
+                    <Heading level={3}>
+                      {es
+                        ? "Resultados típicos del sistema"
+                        : "Typical system outcomes"}
+                    </Heading>
+                    <ul>
+                      {capability.outcomes.map((outcome) => (
+                        <li key={outcome}>{outcome}</li>
+                      ))}
+                    </ul>
+                  </div>
 
-                <div className="capability-spread__concerns">
-                  <Heading level={3}>
-                    {es ? "Consideraciones operativas" : "Operational concerns"}
-                  </Heading>
-                  <ul>
-                    {capability.operationalConcerns.map((concern) => (
-                      <li key={concern}>{concern}</li>
-                    ))}
-                  </ul>
-                </div>
+                  <div className="capability-spread__concerns">
+                    <Heading level={3}>
+                      {es
+                        ? "Consideraciones operativas"
+                        : "Operational concerns"}
+                    </Heading>
+                    <ul>
+                      {capability.operationalConcerns.map((concern) => (
+                        <li key={concern}>{concern}</li>
+                      ))}
+                    </ul>
+                  </div>
 
-                <div className="capability-spread__work">
-                  <Heading level={3}>
-                    {es
-                      ? "Proyectos seleccionados relacionados"
-                      : "Related selected work"}
-                  </Heading>
-                  <ul>
-                    {relatedWork.map((work) => (
-                      <li key={work.slug}>
-                        <span>{work.homepageTitle}</span>
-                        <ActionLink
-                          href={localizedPath(locale, `/work/${work.slug}`)}
-                          variant="text"
-                        >
-                          {es ? "Ver sistema" : "View system"}
-                        </ActionLink>
-                      </li>
-                    ))}
-                  </ul>
+                  <div className="capability-spread__work">
+                    <Heading level={3}>
+                      {es
+                        ? "Proyectos seleccionados relacionados"
+                        : "Related selected work"}
+                    </Heading>
+                    <ul>
+                      {relatedWork.map((work) => (
+                        <li key={work.slug}>
+                          <span>{work.homepageTitle}</span>
+                          <ActionLink
+                            href={localizedPath(locale, `/work/${work.slug}`)}
+                            variant="text"
+                          >
+                            {es ? "Ver sistema" : "View system"}
+                          </ActionLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-              </article>
+              </details>
             )
           })}
         </div>

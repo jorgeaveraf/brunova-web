@@ -640,3 +640,31 @@
     transform: none !important;
   }
 }
+
+/* Phase 8.1 · orientation without masthead chrome */
+.desktop-navigation a,
+.mobile-navigation__links a {
+  position: relative;
+}
+
+.desktop-navigation a[aria-current="page"]::after {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: var(--rule-hair);
+  background: var(--color-foreground);
+  content: "";
+}
+
+.mobile-navigation__links a[aria-current="page"] {
+  color: var(--color-foreground);
+}
+
+.mobile-navigation__links a[aria-current="page"]::after {
+  position: absolute;
+  inset-block: var(--space-sm);
+  inset-inline-end: 0;
+  width: var(--rule-focus);
+  background: var(--color-foreground);
+  content: "";
+}

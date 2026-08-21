@@ -1,7 +1,6 @@
-import Link from "next/link"
-
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { BrunovaLogo } from "@/components/brand/brunova-logo"
+import { ActiveNavigationLink } from "@/components/layout/active-navigation-link"
 import { Container } from "@/components/layout/container"
 import { MobileNavigation } from "@/components/layout/mobile-navigation"
 import {
@@ -33,7 +32,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
           <ul className="desktop-navigation__links">
             {navigation.primary.map((item) => (
               <li key={item.href}>
-                <Link href={item.href}>{item.label}</Link>
+                <ActiveNavigationLink item={item} />
               </li>
             ))}
           </ul>

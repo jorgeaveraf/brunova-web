@@ -2,6 +2,7 @@ import "@/app/core-routes.css"
 
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { Container } from "@/components/layout/container"
+import { RouteContext } from "@/components/layout/route-context"
 import { Heading } from "@/components/layout/section-heading"
 import { localizedContent } from "@/content/locales"
 import { localizedPath, type Locale } from "@/lib/i18n"
@@ -23,8 +24,28 @@ export function ProcessPageView({ locale }: { locale: Locale }) {
         { known: "Defined architecture", enter: "Implementation" },
         { known: "Existing production system", enter: "Managed Evolution" },
       ]
+  const stateOutputs = es
+    ? [
+        "Evidencia y límite",
+        "Diseño listo",
+        "Capacidad en producción",
+        "Mejora continua",
+      ]
+    : [
+        "Evidence and boundary",
+        "Build-ready design",
+        "Production capability",
+        "Continuing improvement",
+      ]
   return (
     <main className="route-page process-page" id="main-content" tabIndex={-1}>
+      <RouteContext
+        ariaLabel={es ? "Contexto de página" : "Page context"}
+        items={[
+          { label: es ? "Explorar" : "Explore" },
+          { label: es ? "Proceso" : "Process" },
+        ]}
+      />
       <header className="route-intro process-intro">
         <Container className="process-intro__inner">
           <Heading level={1}>
@@ -67,49 +88,67 @@ export function ProcessPageView({ locale }: { locale: Locale }) {
         </Container>
       </section>
 
-      <Container className="process-path">
-        {processStages.map((stage) => (
-          <article className="process-stage" key={stage.index}>
-            <div className="process-stage__identity">
+      <Container className="process-map-wrap">
+        <ol
+          className="process-state-map"
+          aria-label={es ? "Estados del proceso" : "Process states"}
+        >
+          {processStages.map((stage, index) => (
+            <li key={stage.index}>
               <span>{stage.index}</span>
               <strong>{stage.verb}</strong>
-              <p>{stage.timeline}</p>
+              <small>{stage.name}</small>
+              <p>{stateOutputs[index]}</p>
+            </li>
+          ))}
+        </ol>
+      </Container>
+
+      <Container className="process-path">
+        {processStages.map((stage) => (
+          <details className="process-stage" key={stage.index}>
+            <summary className="process-stage__summary">
+              <span>{stage.index}</span>
+              <span>
+                <Heading level={2}>{stage.name}</Heading>
+                <small>{stage.timeline}</small>
+              </span>
+              <span aria-hidden="true" className="disclosure-mark" />
+            </summary>
+            <div className="process-stage__body">
+              <p className="process-stage__description">{stage.description}</p>
+              <div className="process-stage__question process-stage__problem">
+                <Heading level={3}>
+                  {es ? "Qué resuelve esta etapa" : "What this stage resolves"}
+                </Heading>
+                <p>{stage.problemSolved}</p>
+              </div>
+              <div className="process-stage__question process-stage__entry">
+                <Heading level={3}>
+                  {es
+                    ? "Qué saber antes de entrar"
+                    : "What to know before entering"}
+                </Heading>
+                <p>{stage.entryKnowledge}</p>
+              </div>
+              <div className="process-stage__question process-stage__establishes">
+                <Heading level={3}>
+                  {es ? "Qué establece Brunova" : "What Brunova establishes"}
+                </Heading>
+                <ul>
+                  {stage.establishes.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="process-stage__question process-stage__next">
+                <Heading level={3}>
+                  {es ? "Qué suele seguir" : "What typically comes next"}
+                </Heading>
+                <p>{stage.nextStep}</p>
+              </div>
             </div>
-            <div className="process-stage__main">
-              <Heading level={2}>{stage.name}</Heading>
-              <p>{stage.description}</p>
-            </div>
-            <div className="process-stage__question process-stage__problem">
-              <Heading level={3}>
-                {es ? "Qué resuelve esta etapa" : "What this stage resolves"}
-              </Heading>
-              <p>{stage.problemSolved}</p>
-            </div>
-            <div className="process-stage__question process-stage__entry">
-              <Heading level={3}>
-                {es
-                  ? "Qué saber antes de entrar"
-                  : "What to know before entering"}
-              </Heading>
-              <p>{stage.entryKnowledge}</p>
-            </div>
-            <div className="process-stage__question process-stage__establishes">
-              <Heading level={3}>
-                {es ? "Qué establece Brunova" : "What Brunova establishes"}
-              </Heading>
-              <ul>
-                {stage.establishes.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="process-stage__question process-stage__next">
-              <Heading level={3}>
-                {es ? "Qué suele seguir" : "What typically comes next"}
-              </Heading>
-              <p>{stage.nextStep}</p>
-            </div>
-          </article>
+          </details>
         ))}
       </Container>
 

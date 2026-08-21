@@ -1,6 +1,7 @@
 import "@/app/core-routes.css"
 
 import { Container } from "@/components/layout/container"
+import { RouteContext } from "@/components/layout/route-context"
 import { Heading } from "@/components/layout/section-heading"
 import { getPortalUrl } from "@/lib/env"
 import type { Locale } from "@/lib/i18n"
@@ -14,6 +15,13 @@ export function PortalPageView({ locale }: { locale: Locale }) {
 
   return (
     <main className="route-page portal-page" id="main-content" tabIndex={-1}>
+      <RouteContext
+        ariaLabel={es ? "Contexto de página" : "Page context"}
+        items={[
+          { href: es ? "/es" : "/", label: "Brunova" },
+          { label: "Portal" },
+        ]}
+      />
       <Container className="portal-threshold">
         <div className="portal-threshold__identity">
           <p>

@@ -3,6 +3,7 @@ import "@/app/core-routes.css"
 
 import { ContactForm } from "@/components/contact/contact-form"
 import { Container } from "@/components/layout/container"
+import { RouteContext } from "@/components/layout/route-context"
 import { Heading } from "@/components/layout/section-heading"
 import type { Locale } from "@/lib/i18n"
 
@@ -45,6 +46,13 @@ export function ContactPageView({ locale }: { locale: Locale }) {
       ]
   return (
     <main className="route-page contact-page" id="main-content" tabIndex={-1}>
+      <RouteContext
+        ariaLabel={es ? "Contexto de página" : "Page context"}
+        items={[
+          { href: es ? "/es" : "/", label: "Brunova" },
+          { label: es ? "Contacto" : "Contact" },
+        ]}
+      />
       <Container className="contact-studio">
         <section className="contact-studio__context">
           <div className="contact-studio__opening">

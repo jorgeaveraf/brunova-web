@@ -4,6 +4,7 @@ import "@/app/core-routes.css"
 
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { Container } from "@/components/layout/container"
+import { RouteContext } from "@/components/layout/route-context"
 import { Heading } from "@/components/layout/section-heading"
 import { SystemFlow } from "@/components/work/system-flow"
 import { localizedContent } from "@/content/locales"
@@ -41,6 +42,16 @@ export function WorkDetailPageView({
 
   return (
     <main className="route-page case-page" id="main-content" tabIndex={-1}>
+      <RouteContext
+        ariaLabel={es ? "Contexto del expediente" : "Dossier context"}
+        items={[
+          {
+            href: localizedPath(locale, "/work"),
+            label: es ? "Proyectos seleccionados" : "Selected Work",
+          },
+          { label: work.homepageTitle },
+        ]}
+      />
       <header className="case-intro">
         <Container className="case-intro__inner">
           <div className="case-intro__identity">
@@ -60,6 +71,12 @@ export function WorkDetailPageView({
           className="case-dossier__index"
           aria-label={es ? "Secciones del expediente" : "Case study sections"}
         >
+          <a
+            className="case-dossier__back"
+            href={localizedPath(locale, "/work")}
+          >
+            {es ? "← Volver a Proyectos" : "← Back to Work"}
+          </a>
           <p>{work.homepageTitle}</p>
           <ul>
             <li>
@@ -179,7 +196,9 @@ export function WorkDetailPageView({
           {relatedWork.length > 0 ? (
             <section className="case-related">
               <Heading level={2}>
-                {es ? "Proyectos relacionados" : "Related work"}
+                {es
+                  ? "Explore el siguiente sistema"
+                  : "Explore the next system"}
               </Heading>
               <ul>
                 {relatedWork.map((related) => (

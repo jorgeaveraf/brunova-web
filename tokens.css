@@ -83,6 +83,7 @@
   --text-2xl: 2.44140625rem;
   --text-display: clamp(2.75rem, 5vw + 1rem, 5.25rem);
   --text-display-home: clamp(2.75rem, 4.2vw, 4.5rem);
+  --text-display-depth: clamp(2.5rem, 4.5vw, 4.5rem);
   --text-display-contact: clamp(var(--text-2xl), 5vw, 4rem);
 
   --leading-display: 1.05;

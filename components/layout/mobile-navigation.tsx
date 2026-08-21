@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useEffect, useId, useRef, useState } from "react"
 
 import type { NavigationItem } from "@/content/types"
@@ -27,6 +28,7 @@ export function MobileNavigation({
     mobileNavigation: string
   }
 }) {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const dialogId = useId()
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -103,6 +105,12 @@ export function MobileNavigation({
               {primaryItems.map((item, index) => (
                 <li key={item.href}>
                   <Link
+                    aria-current={
+                      pathname === item.href ||
+                      pathname?.startsWith(`${item.href}/`)
+                        ? "page"
+                        : undefined
+                    }
                     href={item.href}
                     onClick={() => handleTrackedNavigation(item)}
                     ref={index === 0 ? firstLinkRef : undefined}
