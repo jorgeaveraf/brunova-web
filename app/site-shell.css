@@ -1,7 +1,8 @@
 /* Hallmark · macrostructure: Architectural Narrative · tone: architectural restraint · anchor hue: warm neutral
- * nav: N6 adapted (two-band masthead, single rules) · footer: Ft2 inline rule · enrichment: none
- * pre-emit critique: P5 H5 E5 S5 R5 V5 · focused shell gates: pass · final 58: Phase 8 amendment
- * contrast: pass (40–41) · responsive/mobile: pass (34, 49–57) · honest/tokens/icons: pass (30, 46–48)
+ * nav: N9 adapted (single-row brand rail, inline navigation) · footer: Ft2 inline rule · enrichment: none
+ * pre-emit critique: P5 H5 E5 S5 R5 V5 · focused shell gates: pass · final 58: pass
+ * contrast: pass (40–41) · nav: N9 · footer: Ft2 · slop: pass (42–45) · mobile: pass (34, 49–57)
+ * honest/chrome/tokens/icons: pass (30, 46–48)
  */
 
 .container {
@@ -56,13 +57,25 @@
 .brunova-logo {
   display: block;
   flex: 0 0 auto;
-  background: var(--color-logo-field);
+  background: transparent;
 }
 
-.brunova-logo img {
+.brunova-logo__asset {
   display: block;
   width: 100%;
   height: auto;
+}
+
+.brunova-logo__asset--light {
+  display: none;
+}
+
+[data-theme="dark"] .brunova-logo__asset--dark {
+  display: none;
+}
+
+[data-theme="dark"] .brunova-logo__asset--light {
+  display: block;
 }
 
 .brunova-logo--header {
@@ -74,14 +87,15 @@
 }
 
 .site-header {
-  position: relative;
+  position: sticky;
+  inset-block-start: 0;
   z-index: var(--z-sticky-nav);
   background: var(--color-background);
   color: var(--color-foreground);
 }
 
-.site-header__identity {
-  display: none;
+#main-content {
+  scroll-margin-block-start: var(--site-header-height);
 }
 
 .site-header__bar {
@@ -94,7 +108,7 @@
   border-block-end: var(--rule-hair) solid var(--color-border);
 }
 
-.site-header__mobile-brand {
+.site-header__brand {
   display: block;
 }
 
@@ -555,61 +569,6 @@
 }
 
 @media (min-width: 60rem) {
-  .brunova-logo--header {
-    width: var(--header-logo-width);
-  }
-
-  .site-header__identity {
-    display: flex;
-    min-height: 5.5rem;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-2xl);
-    padding-block: var(--space-md);
-  }
-
-  .site-header__identity p {
-    max-width: 28rem;
-    margin: 0;
-    color: var(--color-muted-foreground);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    text-align: end;
-  }
-
-  .site-header__bar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    border-block-start: var(--rule-hair) solid var(--color-border);
-  }
-
-  .site-header__mobile-brand,
-  .mobile-navigation {
-    display: none;
-  }
-
-  .desktop-navigation,
-  .site-header__utilities {
-    display: flex;
-    align-items: center;
-  }
-
-  .desktop-navigation__links {
-    display: flex;
-    gap: var(--space-xl);
-  }
-
-  .desktop-navigation a {
-    display: inline-flex;
-    min-height: var(--control-height);
-    align-items: center;
-    font-weight: 600;
-  }
-
-  .site-header__utilities {
-    gap: var(--space-sm);
-  }
-
   .shell-review__inner {
     grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
     align-items: start;
@@ -629,6 +588,71 @@
   .site-footer__copyright {
     padding-block-end: var(--space-sm);
     white-space: nowrap;
+  }
+}
+
+@media (min-width: 72rem) {
+  .brunova-logo--header {
+    width: var(--header-logo-width);
+  }
+
+  .site-header__bar {
+    display: grid;
+    min-height: var(--site-header-height);
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: var(--space-xl);
+  }
+
+  .mobile-navigation {
+    display: none;
+  }
+
+  .desktop-navigation,
+  .site-header__utilities {
+    display: flex;
+    align-items: center;
+  }
+
+  .desktop-navigation {
+    min-width: 0;
+    justify-self: center;
+  }
+
+  .desktop-navigation__links {
+    display: flex;
+    gap: var(--space-xl);
+  }
+
+  .desktop-navigation a {
+    display: inline-flex;
+    min-height: var(--control-height);
+    align-items: center;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .site-header__utilities {
+    justify-self: end;
+    gap: var(--space-md);
+  }
+
+  .site-header__utilities .action-link {
+    transition:
+      background-color var(--dur-base) var(--ease-out),
+      color var(--dur-base) var(--ease-out);
+  }
+
+  .site-header__utilities .action-link--utility {
+    padding-inline: var(--space-sm);
+  }
+
+  .site-header__utilities .action-link--primary {
+    padding-inline: var(--space-lg);
+  }
+
+  .site-header__utilities .action-link--primary:hover,
+  .site-header__utilities .action-link:active {
+    transform: none;
   }
 }
 

@@ -1,5 +1,5 @@
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
-import { SystemBoundaryDiagram } from "@/components/home/system-boundary-diagram"
+import { HomeVisual } from "@/components/home/home-visual"
 import { Container } from "@/components/layout/container"
 import { Heading } from "@/components/layout/section-heading"
 import { Section } from "@/components/layout/section"
@@ -11,12 +11,10 @@ import "@/app/homepage.css"
 
 export function HomePageView({ locale }: { locale: Locale }) {
   const {
-    architectureInputs,
     capabilities,
     differentiators,
     homepage,
     homepageSymptoms,
-    operationalIntelligenceElements,
     processStages,
     workCases,
   } = localizedContent[locale]
@@ -26,7 +24,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
     homepageSymptoms[2],
     homepageSymptoms[4],
   ]
-  const selectedWork = workCases.slice(0, 2)
+  const selectedWork = workCases.slice(0, 3)
   const processOutputs = es
     ? [
         "Evidencia y límite",
@@ -76,7 +74,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
               </AnalyticsLink>
             </div>
           </div>
-          <SystemBoundaryDiagram locale={locale} />
+          <HomeVisual kind="hero" locale={locale} priority />
         </Container>
       </Section>
 
@@ -106,14 +104,14 @@ export function HomePageView({ locale }: { locale: Locale }) {
                 : "From fragmentation to operational control"
             }
           >
-            <ul className="problem-shift__signals">
+            <ol className="problem-shift__signals">
               {recognitionSymptoms.map((symptom) => (
                 <li key={symptom.name}>
                   <strong>{symptom.name}</strong>
                   <span>{symptom.consequence}</span>
                 </li>
               ))}
-            </ul>
+            </ol>
             <p className="problem-shift__transition">
               {homepage.problem.transition}
             </p>
@@ -132,48 +130,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
             </Heading>
             <p>{homepage.operationalIntelligence.description}</p>
           </div>
-          <div
-            className="operational-model"
-            role="group"
-            aria-label={homepage.operationalIntelligence.title}
-          >
-            <div className="operational-model__phase operational-model__observe">
-              <span>{es ? "Observar" : "Observe"}</span>
-              <strong>
-                {es
-                  ? "Operaciones · Datos · Sistemas"
-                  : "Operations · Data · Systems"}
-              </strong>
-            </div>
-            <div className="operational-model__phase operational-model__decide">
-              <span>{es ? "Decidir" : "Decide"}</span>
-              <strong>
-                {es ? "Inteligencia operativa" : "Operational intelligence"}
-              </strong>
-              <small>
-                {es
-                  ? "Significado · Límites · Responsabilidad"
-                  : "Meaning · Boundaries · Ownership"}
-              </small>
-            </div>
-            <div className="operational-model__phase operational-model__act">
-              <span>{es ? "Actuar" : "Act"}</span>
-              <strong>
-                {operationalIntelligenceElements
-                  .slice(3)
-                  .map((element) => element.name)
-                  .join(" · ")}
-              </strong>
-              <small>
-                {es ? "Capacidades gobernadas" : "Governed capabilities"}
-              </small>
-            </div>
-            <p className="operational-model__return">
-              {es
-                ? "El estado operativo regresa al modelo"
-                : "Operational state returns to the model"}
-            </p>
-          </div>
+          <HomeVisual kind="operational-intelligence" locale={locale} />
         </Container>
       </Section>
 
@@ -200,14 +157,16 @@ export function HomePageView({ locale }: { locale: Locale }) {
             <p className="capability-field-preview__core">
               {es ? "Un sistema operativo" : "One operational system"}
             </p>
-            {capabilities.map((capability) => (
-              <div
-                className="capability-field-preview__item"
-                key={capability.slug}
-              >
-                <Heading level={3}>{capability.name}</Heading>
-              </div>
-            ))}
+            <ol className="capability-field-preview__disciplines">
+              {capabilities.map((capability) => (
+                <li
+                  className="capability-field-preview__item"
+                  key={capability.slug}
+                >
+                  <Heading level={3}>{capability.name}</Heading>
+                </li>
+              ))}
+            </ol>
           </div>
           <ActionLink
             className="home-capabilities__action"
@@ -228,11 +187,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
             <span>{homepage.architecture.question}</span>{" "}
             <span>{homepage.architecture.answer}</span>
           </Heading>
-          <ul className="architecture-hinge__inputs">
-            {architectureInputs.map((input) => (
-              <li key={input}>{input}</li>
-            ))}
-          </ul>
+          <HomeVisual kind="architecture-boundary" locale={locale} />
         </Container>
       </Section>
 
@@ -244,36 +199,57 @@ export function HomePageView({ locale }: { locale: Locale }) {
             </Heading>
             <p>
               {es
-                ? "Ejemplos anonimizados de sistemas construidos alrededor de límites operativos reales."
-                : "Anonymized system examples built around real operational boundaries."}
+                ? "Distintos problemas operativos. La misma disciplina de ingeniería de sistemas."
+                : "Different operational problems. The same systems engineering discipline."}
             </p>
           </div>
-          <div className="selected-proof">
+          <ol className="selected-proof">
             {selectedWork.map((work, index) => (
-              <article
-                className={
-                  index === 0
-                    ? "selected-proof__lead"
-                    : "selected-proof__support"
-                }
-                key={work.slug}
-              >
-                <div>
-                  <p className="selected-proof__type">{work.homepageTitle}</p>
-                  <Heading level={3}>{work.title}</Heading>
-                  <p>{work.summary}</p>
-                </div>
+              <li key={work.slug}>
                 <AnalyticsLink
+                  className="selected-proof__record"
                   eventName="case_study_opened"
                   eventProperties={{ case_slug: work.slug }}
                   href={localizedPath(locale, `/work/${work.slug}`)}
-                  variant="text"
+                  variant="utility"
                 >
-                  {es ? "Ver sistema" : "View system"}
+                  <article>
+                    <div className="selected-proof__record-head">
+                      <span
+                        aria-hidden="true"
+                        className="selected-proof__index"
+                      >
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <p className="selected-proof__type">
+                        {work.homepageTitle}
+                      </p>
+                    </div>
+                    <div className="selected-proof__record-body">
+                      <Heading level={3}>{work.title}</Heading>
+                      <div className="selected-proof__reveal">
+                        <div className="selected-proof__reveal-inner">
+                          <p>{work.summary}</p>
+                          <span className="selected-proof__record-action">
+                            {es ? "Ver sistema" : "View system"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
                 </AnalyticsLink>
-              </article>
+              </li>
             ))}
-          </div>
+          </ol>
+          <ActionLink
+            className="selected-work__action"
+            href={localizedPath(locale, "/work")}
+            variant="text"
+          >
+            {es
+              ? "Explorar sistemas construidos"
+              : "Explore engineered systems"}
+          </ActionLink>
         </Container>
       </Section>
 
@@ -286,66 +262,52 @@ export function HomePageView({ locale }: { locale: Locale }) {
               </Heading>
               <p>
                 {es
-                  ? "Una ruta comercial pública diseñada alrededor del estado de la operación, no como un embudo fijo."
-                  : "A public commercial path designed around the state of the operation—not a fixed funnel."}
+                  ? "Un enfoque operativo diseñado alrededor del estado del sistema, no como un embudo fijo."
+                  : "An operating approach designed around the state of the system—not a fixed funnel."}
               </p>
             </div>
             <aside className="home-process__entry">
               <strong>{homepage.process.entryTitle}</strong>
-              <p>{homepage.process.entryDescription}</p>
             </aside>
           </div>
-          <ol className="process-sequence" aria-label={homepage.process.title}>
-            {processStages.map((stage, index) => (
-              <li key={stage.index}>
-                <span className="process-sequence__input">
-                  {processInputs[index]}
-                </span>
-                <strong>{stage.verb}</strong>
-                <span aria-hidden="true" className="process-sequence__arrow">
-                  →
-                </span>
-                <p>{processOutputs[index]}</p>
-              </li>
-            ))}
-          </ol>
-        </Container>
-      </Section>
-
-      <Section
-        aria-labelledby="differentiators-title"
-        className="home-differentiators"
-      >
-        <Container>
-          <Heading id="differentiators-title" level={2}>
-            {homepage.differentiatorsTitle}
-          </Heading>
-          <ol className="principles">
-            {differentiators.map((principle) => (
-              <li key={principle.title}>
-                <Heading level={3}>{principle.title}</Heading>
-                <p>{principle.description}</p>
-              </li>
-            ))}
-          </ol>
-        </Container>
-      </Section>
-
-      <Section aria-labelledby="final-cta-title" className="home-final-cta">
-        <Container className="home-final-cta__inner">
-          <div>
-            <Heading id="final-cta-title" level={2}>
-              {homepage.finalCta.title}
-            </Heading>
-            <p>{homepage.finalCta.description}</p>
+          <div className="home-process__model">
+            <ol
+              className="process-sequence"
+              aria-label={homepage.process.title}
+            >
+              {processStages.map((stage, index) => (
+                <li key={stage.index}>
+                  <span className="process-sequence__input">
+                    {processInputs[index]}
+                  </span>
+                  <strong>{stage.verb}</strong>
+                  <span aria-hidden="true" className="process-sequence__arrow">
+                    →
+                  </span>
+                  <p>{processOutputs[index]}</p>
+                </li>
+              ))}
+            </ol>
+            <div
+              aria-labelledby="operating-principles-title"
+              className="home-process__principles"
+              role="group"
+            >
+              <p
+                className="home-process__principles-title"
+                id="operating-principles-title"
+              >
+                {homepage.differentiatorsTitle}
+              </p>
+              <ol className="principles">
+                {differentiators.map((principle) => (
+                  <li key={principle.title}>
+                    <Heading level={3}>{principle.title}</Heading>
+                  </li>
+                ))}
+              </ol>
+            </div>
           </div>
-          <AnalyticsLink
-            eventName="cta_start_conversation"
-            href={localizedPath(locale, "/contact")}
-            variant="primary"
-          >
-            {homepage.finalCta.action}
-          </AnalyticsLink>
         </Container>
       </Section>
     </main>

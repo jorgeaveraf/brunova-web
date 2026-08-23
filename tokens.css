@@ -48,6 +48,11 @@
 }
 
 :root {
+  --color-model-surface: oklch(10% 0.006 70);
+  --color-model-foreground: oklch(96% 0.008 75);
+  --color-model-muted: oklch(74% 0.009 75);
+  --color-model-border: oklch(32% 0.008 70);
+
   --font-display: var(
     --font-manrope,
     "Manrope",
@@ -112,6 +117,7 @@
   --page-max-copy: 72rem;
   --measure: 65ch;
   --control-height: 2.75rem;
+  --site-header-height: calc(var(--control-height) + var(--space-xl));
   --header-logo-width: 10.75rem;
   --header-logo-width-mobile: 8.25rem;
   --footer-logo-width: 10.75rem;
@@ -121,6 +127,14 @@
   --z-sticky: 200;
   --z-sticky-nav: 300;
   --z-dialog: 500;
+}
+
+@media (min-width: 72rem) {
+  :root {
+    --site-header-height: calc(
+      var(--control-height) + var(--space-xl) + var(--space-xs)
+    );
+  }
 }
 
 @theme inline {

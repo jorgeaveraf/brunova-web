@@ -152,7 +152,7 @@ test("complete user journeys preserve navigation and browser history", async ({
 }) => {
   await page.goto("/")
   await follow(page, "Capabilities")
-  await page.getByRole("link", { name: "View system" }).first().click()
+  await page.locator(".selected-proof__record").first().click()
   await expect(page).toHaveURL(/\/work\//)
 
   await page.goto("/")
@@ -389,7 +389,7 @@ test("representative integrated navigation is console-clean and same-origin", as
 
   await page.goto("/")
   await follow(page, "Capabilities")
-  await page.getByRole("link", { name: "View system" }).first().click()
+  await page.locator(".selected-proof__record").first().click()
   await page.goto("/contact")
   await page.goto("/privacy")
 

@@ -43,11 +43,6 @@ export const esHomepage = {
       "El descubrimiento está disponible cuando el problema no es claro; no es un primer paso obligatorio.",
   },
   differentiatorsTitle: "Principios con los que operamos",
-  finalCta: {
-    title: "¿Tiene una operación que ya superó la forma en que fue construida?",
-    description: "Mapeemos el sistema que la sostiene.",
-    action: "Iniciar una conversación",
-  },
 } as const
 
 export const esHomepageSymptoms = [

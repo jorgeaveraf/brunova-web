@@ -1049,7 +1049,7 @@
   .case-dossier__index,
   .privacy-document__index {
     position: sticky;
-    inset-block-start: var(--space-lg);
+    inset-block-start: calc(var(--site-header-height) + var(--space-lg));
   }
 
   .capability-spread {

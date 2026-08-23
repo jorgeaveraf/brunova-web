@@ -19,13 +19,8 @@ export function SiteHeader({ locale }: { locale: Locale }) {
       <a className="skip-link" href="#main-content">
         {copy.skip}
       </a>
-      <Container className="site-header__identity">
-        <BrunovaLogo location="header" />
-        <p>{site.descriptor}</p>
-      </Container>
-
       <Container className="site-header__bar">
-        <div className="site-header__mobile-brand">
+        <div className="site-header__brand">
           <BrunovaLogo location="header" />
         </div>
         <nav aria-label={copy.primaryNavigation} className="desktop-navigation">

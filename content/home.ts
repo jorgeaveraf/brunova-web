@@ -38,11 +38,6 @@ export const homepage = {
       "Discovery is available when the problem is unclear—not a mandatory first step.",
   },
   differentiatorsTitle: "Principles we operate by",
-  finalCta: {
-    title: "Have an operation that has outgrown the way it was built?",
-    description: "Let’s map the system behind it.",
-    action: "Start a conversation",
-  },
 } as const
 
 export const homepageSymptoms = [

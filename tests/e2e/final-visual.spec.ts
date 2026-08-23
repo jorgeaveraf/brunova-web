@@ -68,6 +68,7 @@ for (const width of [320, 375, 414, 768]) {
                 text.length > 0 &&
                 style.display !== "none" &&
                 element.getBoundingClientRect().width > 0 &&
+                !element.matches(".selected-proof__record") &&
                 style.whiteSpace !== "nowrap"
               )
             })
@@ -101,25 +102,29 @@ test("homepage hero remains a complete deliberate 1280 by 800 composition", asyn
   const geometry = await page.evaluate(() => {
     const inner = document.querySelector<HTMLElement>(".home-hero__inner")
     const actions = document.querySelector<HTMLElement>(".home-hero__actions")
-    const visual = document.querySelector<SVGElement>(".system-diagram__svg")
+    const visual = document.querySelector<HTMLImageElement>(
+      ".home-visual--hero .home-visual__asset",
+    )
     if (!inner || !actions || !visual) throw new Error("Hero is incomplete")
     const style = getComputedStyle(inner)
     return {
       actionsBottom: actions.getBoundingClientRect().bottom,
-      visualBottom: visual.getBoundingClientRect().bottom,
+      visualWidth: visual.naturalWidth,
+      visualHeight: visual.naturalHeight,
+      visualSource: visual.getAttribute("src"),
       paddingTop: Number.parseFloat(style.paddingTop),
       paddingBottom: Number.parseFloat(style.paddingBottom),
     }
   })
 
   expect(geometry.actionsBottom).toBeLessThanOrEqual(800)
-  expect(geometry.visualBottom).toBeLessThanOrEqual(800)
-  expect(geometry.paddingBottom).toBeGreaterThanOrEqual(
-    geometry.paddingTop * 1.3,
-  )
+  expect(geometry.visualWidth).toBe(1440)
+  expect(geometry.visualHeight).toBe(420)
+  expect(geometry.visualSource).toBe("/brand/visuals/hero-operating-model.svg")
+  expect(geometry.paddingBottom).toBeGreaterThanOrEqual(geometry.paddingTop)
 })
 
-test("brand plates remain wired and visible in both themes", async ({
+test("transparent wordmarks remain wired and visible in both themes", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 1000 })
@@ -132,12 +137,32 @@ test("brand plates remain wired and visible in both themes", async ({
     await page.reload()
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme)
     const visibleLogos = page.locator(".brunova-logo img:visible")
+    const expectedAsset =
+      theme === "light"
+        ? /brunova-wordmark-dark\.svg/
+        : /brunova-wordmark-light\.svg/
     await expect(visibleLogos).toHaveCount(2)
     for (const logo of await visibleLogos.all()) {
       await expect(logo).toBeVisible()
-      await expect(logo).toHaveAttribute("src", /brunova-wordmark-dark\.webp/)
-      await expect(logo).toHaveAttribute("width", "1045")
-      await expect(logo).toHaveAttribute("height", "295")
+      await expect(logo).toHaveAttribute("src", expectedAsset)
+      await expect(logo).toHaveAttribute("width", "899")
+      await expect(logo).toHaveAttribute("height", "181")
     }
+
+    await expect(page.locator(".brunova-logo--header")).toHaveCSS(
+      "background-color",
+      "rgba(0, 0, 0, 0)",
+    )
+  }
+
+  for (const asset of ["light", "dark"] as const) {
+    const response = await page.request.get(
+      `/brand/brunova-wordmark-${asset}.svg`,
+    )
+    const source = await response.text()
+
+    expect(response.ok()).toBe(true)
+    expect(source.match(/<path\b/g)).toHaveLength(7)
+    expect(source).not.toMatch(/<(?:image|rect|text|filter|linearGradient)\b/)
   }
 })

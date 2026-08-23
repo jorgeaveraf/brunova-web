@@ -53,6 +53,90 @@ test("explicit theme preference persists", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark")
 })
 
+for (const width of [1280, 1440]) {
+  test(`desktop header is a balanced single-row brand rail at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto("/")
+
+    const layout = await page.locator(".site-header").evaluate((header) => {
+      const bar = header.querySelector<HTMLElement>(".site-header__bar")
+      const navigation = header.querySelector<HTMLElement>(
+        ".desktop-navigation",
+      )
+      const logo = header.querySelector<HTMLElement>(".brunova-logo--header")
+      const logoImage = [
+        ...(logo?.querySelectorAll<HTMLImageElement>("img") ?? []),
+      ].find((image) => getComputedStyle(image).display !== "none")
+      const visibleItems = bar
+        ? [...bar.children].filter(
+            (item) => getComputedStyle(item).display !== "none",
+          )
+        : []
+      const centers = visibleItems.map((item) => {
+        const rect = item.getBoundingClientRect()
+        return rect.y + rect.height / 2
+      })
+      const navigationRect = navigation?.getBoundingClientRect()
+      const logoRect = logo?.getBoundingClientRect()
+      const logoImageRect = logoImage?.getBoundingClientRect()
+
+      return {
+        centerDelta: Math.max(...centers) - Math.min(...centers),
+        height: header.getBoundingClientRect().height,
+        logoInsetBlock:
+          logoRect && logoImageRect
+            ? logoRect.height - logoImageRect.height
+            : 0,
+        logoInsetInline:
+          logoRect && logoImageRect ? logoRect.width - logoImageRect.width : 0,
+        navigationCenterDelta: navigationRect
+          ? Math.abs(
+              navigationRect.left + navigationRect.width / 2 - innerWidth / 2,
+            )
+          : Number.POSITIVE_INFINITY,
+      }
+    })
+
+    expect(layout.height).toBeGreaterThanOrEqual(80)
+    expect(layout.height).toBeLessThanOrEqual(88)
+    expect(layout.centerDelta).toBeLessThanOrEqual(1)
+    expect(layout.navigationCenterDelta).toBeLessThanOrEqual(1)
+    expect(layout.logoInsetBlock).toBeLessThanOrEqual(1)
+    expect(layout.logoInsetInline).toBeLessThanOrEqual(1)
+
+    await page.evaluate(() => window.scrollTo(0, 700))
+    await expect
+      .poll(() =>
+        page
+          .locator(".site-header")
+          .evaluate((header) => Math.round(header.getBoundingClientRect().top)),
+      )
+      .toBe(0)
+  })
+}
+
+for (const width of [375, 390]) {
+  test(`mobile header preserves its navigation behavior at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 844 })
+    await page.goto("/")
+
+    await expect(page.locator(".desktop-navigation")).toBeHidden()
+    await expect(page.locator(".site-header__utilities")).toBeHidden()
+    await expect(page.getByRole("button", { name: "Menu" })).toBeVisible()
+    await expect(page.locator(".brunova-logo--header")).toBeVisible()
+    await expect(page.locator(".site-header")).toHaveCSS("position", "sticky")
+
+    const height = await page
+      .locator(".site-header")
+      .evaluate((header) => header.getBoundingClientRect().height)
+    expect(height).toBeLessThanOrEqual(80)
+  })
+}
+
 test("mobile navigation manages focus, Escape, explicit close, and backdrop", async ({
   page,
 }) => {

@@ -43,11 +43,15 @@ Source: `docs/logo.png`
 - Warm-white wordmark on a black square field.
 - The wordmark occupies a horizontal band inside substantial black padding.
 
-The source remains unchanged. The Phase 1 runtime asset is `public/brand/brunova-wordmark-dark.webp`: a 1045×295, non-transparent, lossless WebP crop retaining the source’s black background and original wordmark pixels. It may be used in either theme as a controlled black brand field. Do not invert it, trace it, remove its background, recreate it with a font, or fabricate a vector/light variant.
+The source remains unchanged and the Phase 1 WebP crop is retained as an archival reference. Production surfaces use two tightly cropped, transparent SVG traces of the approved wordmark silhouette:
+
+- `public/brand/brunova-wordmark-light.svg`: bone wordmark for dark surfaces.
+- `public/brand/brunova-wordmark-dark.svg`: near-black wordmark for light surfaces.
+
+Both assets contain vector paths only. They must remain free of raster images, background rectangles, effects and artificial padding. Do not redraw or reinterpret the letterforms.
 
 Missing future brand assets:
 
-- Production vector or transparent wordmark, if the raster treatment proves limiting.
 - Favicon.
 - Production Open Graph artwork.
 
