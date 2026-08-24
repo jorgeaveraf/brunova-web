@@ -1,6 +1,6 @@
 # Brunova Production Deployment
 
-Status: pre-deployment contract. No production VPS deployment has been performed.
+Status: application and HTTP reverse-proxy staging completed on the production VPS on 2026-08-24. Public cutover and TLS issuance remain blocked because production DNS does not yet resolve to that VPS.
 
 This is the authoritative operating document for the Brunova public website. The repository is the deployment package; operators must not edit application source or Compose YAML on the VPS.
 
@@ -106,6 +106,26 @@ Verified on 2026-08-24 from a clean clone of the remote deployment branch, witho
 - container logs contained no startup warning or error during the verification window.
 
 This record proves the repository deployment mechanism in an isolated local Docker environment. It does not prove DNS, firewall, TLS, reverse-proxy behavior, n8n delivery, host capacity or real-user performance on the future VPS.
+
+## Production staging record
+
+Non-secret state verified on 2026-08-24:
+
+| Area                | Staged production state                                                                                     |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Canonical domain    | `https://brunova.mx`                                                                                        |
+| VPS                 | Ubuntu 24.04.3 LTS                                                                                          |
+| Repository          | `/root/brunova/brunova-web`                                                                                 |
+| Deployed revision   | `105d5f7a48e0bba824f4be0757d14d231cac0de5`                                                                  |
+| Container           | `brunova-web-web-1`, healthy                                                                                |
+| Application binding | `127.0.0.1:3000`; externally unreachable                                                                    |
+| Reverse proxy       | Nginx 1.24.0, dedicated HTTP site at `/etc/nginx/sites-available/brunova.mx`, proxying to the loopback port |
+| Proxy headers       | `Host`, `X-Real-IP`, `X-Forwarded-For` and `X-Forwarded-Proto` are overwritten at the trusted boundary      |
+| Certificate tooling | Certbot 2.9.0 with an active renewal timer; Brunova certificate not yet requested                           |
+| Contact delivery    | Disabled as a complete group; endpoint remains fail-closed until the missing secret and salt are supplied   |
+| Portal              | No external destination configured                                                                          |
+
+The container, loopback routes, canonical metadata, production robots/sitemap, Nginx host routing and security headers pass. The existing DNS A/AAAA records point to a different host and `www` has no address record. Do not request the Brunova certificate until DNS is corrected and independently verified from public resolvers.
 
 ## DNS
 
