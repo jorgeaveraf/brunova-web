@@ -93,6 +93,20 @@ Test-only variables such as `E2E_PORT`, `LHCI_BASE_URL`, `BUNDLE_BASE_URL`, `QA_
 
 The contact integration is optional as a complete group. With all three contact values absent, the public site remains healthy and `/api/contact` returns a controlled 503. `/api/health` deliberately does not depend on n8n.
 
+## Pre-deployment verification record
+
+Verified on 2026-08-24 from a clean clone of the remote deployment branch, without local dependencies or build output:
+
+- a no-cache multi-stage image build completed successfully;
+- `./scripts/deploy.sh` completed from the clean clone with a safe non-production HTTPS origin and contact delivery intentionally disabled;
+- the resulting image was approximately 71 MiB;
+- the container ran as `nextjs`, with a read-only root filesystem, no persistent mounts, bounded tmpfs mounts, `no-new-privileges`, loopback-only host publishing and the expected restart policy;
+- the OCI revision label matched the deployed Git SHA;
+- health, public routes, representative dossier, Spanish route, security headers, robots, sitemap, branded 404 and disabled-contact behavior passed the container smoke;
+- container logs contained no startup warning or error during the verification window.
+
+This record proves the repository deployment mechanism in an isolated local Docker environment. It does not prove DNS, firewall, TLS, reverse-proxy behavior, n8n delivery, host capacity or real-user performance on the future VPS.
+
 ## DNS
 
 No DNS change is part of this pre-deployment increment. Before launch the human/operator must decide:
