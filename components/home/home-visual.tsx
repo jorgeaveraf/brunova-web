@@ -14,7 +14,7 @@ type VisualCopy = {
 const visualCopy: Record<Locale, Record<HomeVisualKind, VisualCopy>> = {
   en: {
     hero: {
-      alt: "From fragmented operations to a reliable operating system",
+      alt: "From fragmented operations to a reliable operational system",
       mobileLabel: "From fragmented operation to reliable operation",
       mobile: [
         ["Fragmented operation", "Work · Data · Systems"],
@@ -34,46 +34,46 @@ const visualCopy: Record<Locale, Record<HomeVisualKind, VisualCopy>> = {
       ],
     },
     "architecture-boundary": {
-      alt: "Architecture before tools: from external context to operational capability",
+      alt: "Architecture before tools: fragmented operational context becomes a defined operating model that enables operational capability",
       mobileLabel: "Architecture before tools",
       mobile: [
-        ["External context", "Inputs and operating conditions"],
-        ["Defined system boundary", "Process · Data · Decisions · Ownership"],
+        ["Operational context", "Fragmented inputs · Unclear state"],
+        ["Defined operating model", "Process · Data · Decisions · Ownership"],
         ["Operational capability", "Automation · Software · AI"],
       ],
     },
   },
   es: {
     hero: {
-      alt: "De operaciones fragmentadas a un sistema operativo confiable",
-      mobileLabel: "De operación fragmentada a operación confiable",
+      alt: "De una operación fragmentada a una operación confiable",
+      mobileLabel: "De una operación fragmentada a una operación confiable",
       mobile: [
         ["Operación fragmentada", "Trabajo · Datos · Sistemas"],
-        ["Límite definido", "Estado · Decisiones · Responsabilidad"],
+        ["Límite definido", "Estado · Decisiones · Gobernanza"],
         ["Operación confiable", "Controlada · Operable · Escalable"],
       ],
     },
     "operational-intelligence": {
-      alt: "Ciclo de inteligencia operacional: observar, decidir y actuar",
+      alt: "Ciclo de inteligencia operativa: observar, decidir y actuar",
       caption:
-        "El estado operativo regresa al modelo. Automatización, software e IA permanecen como capacidades gobernadas, no como el centro del sistema.",
-      mobileLabel: "Ciclo de control de inteligencia operacional",
+        "El estado operativo vuelve al modelo. La automatización, el software y la IA actúan como capacidades gobernadas, no como el centro del sistema.",
+      mobileLabel: "Ciclo de control de inteligencia operativa",
       mobile: [
         ["Observar", "Operaciones · Datos · Sistemas"],
-        ["Decidir", "Significado · Límites · Responsabilidad"],
+        ["Decidir", "Significado · Límites · Gobernanza"],
         ["Actuar", "Automatización · Software · IA"],
       ],
     },
     "architecture-boundary": {
-      alt: "Arquitectura antes que herramientas: del contexto externo a la capacidad operacional",
+      alt: "Arquitectura antes que herramientas: el contexto operativo fragmentado se convierte en un modelo operativo definido que habilita capacidad operativa",
       mobileLabel: "Arquitectura antes que herramientas",
       mobile: [
-        ["Contexto externo", "Entradas y condiciones operativas"],
+        ["Contexto operativo", "Entradas fragmentadas · Estado poco claro"],
         [
-          "Límite del sistema",
-          "Proceso · Datos · Decisiones · Responsabilidad",
+          "Modelo operativo definido",
+          "Proceso · Datos · Decisiones · Gobernanza",
         ],
-        ["Capacidad operacional", "Automatización · Software · IA"],
+        ["Capacidad operativa", "Automatización · Software · IA"],
       ],
     },
   },

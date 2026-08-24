@@ -10,96 +10,102 @@ import type {
 
 export const esHomepage = {
   hero: {
-    title: "Sistemas para operaciones que ya superaron sus herramientas.",
+    title:
+      "Sistemas para operaciones que han crecido más allá de sus herramientas.",
     description:
-      "Brunova diseña y construye sistemas confiables que convierten procesos fragmentados, datos desconectados y automatizaciones frágiles en operaciones empresariales escalables.",
-    primaryAction: "Iniciar una conversación",
-    secondaryAction: "Explorar proyectos",
+      "Brunova diseña y construye sistemas operacionales confiables que integran procesos, datos y automatizaciones hoy fragmentados, para que operaciones complejas puedan crecer con control.",
+    primaryAction: "Hablemos",
+    secondaryAction: "Explorar sistemas",
   },
   category:
-    "Ingeniería de sistemas para operaciones demasiado complejas para gestionarse solo con herramientas.",
+    "Ingeniería de sistemas para operaciones cuya complejidad ya no se resuelve sumando herramientas.",
   problem: {
-    title: "Cuando las operaciones se convierten en problemas de sistemas.",
+    title:
+      "Cuando el crecimiento convierte la operación en un problema de sistemas.",
     description:
-      "El crecimiento suele revelar un problema que ninguna herramienta por sí sola puede resolver: la operación dejó de comportarse como un sistema.",
+      "El crecimiento revela problemas que ninguna herramienta aislada puede resolver: la operación necesita un sistema detrás.",
     transition:
-      "La solución no es otra herramienta. Es un sistema mejor diseñado.",
+      "La respuesta no es sumar otra herramienta, sino diseñar mejor el sistema.",
   },
   operationalIntelligence: {
     title:
-      "La inteligencia operativa surge cuando los procesos, los datos y los sistemas dejan de vivir por separado.",
+      "La inteligencia operativa conecta procesos, datos y sistemas en una sola operación.",
     description:
-      "Tratamos la operación como un modelo conectado: cómo avanza el trabajo, qué significan los datos, dónde se toman decisiones, qué controla el software y dónde la automatización o la IA pueden asistir de forma segura.",
+      "Modelamos la operación como un sistema conectado: cómo fluye el trabajo, qué significan los datos, dónde se toman las decisiones, qué funciones corresponden al software y dónde la automatización o la IA pueden aportar valor con control.",
   },
   architecture: {
-    question: "No empezamos preguntando «¿Qué deberíamos automatizar?»",
-    answer: "Empezamos con «¿Cómo debería funcionar esta operación?»",
+    question: "No empezamos por «¿qué automatizamos?»",
+    answer: "Primero definimos «¿cómo debe funcionar la operación?»",
   },
-  workTitle: "Sistemas seleccionados que hemos desarrollado",
+  workTitle: "Sistemas que hemos diseñado y construido",
   process: {
     title: "Cómo trabaja Brunova",
-    entryTitle: "Entre donde el sistema necesita trabajo.",
+    entryTitle: "Empezamos donde el sistema lo necesita.",
     entryDescription:
-      "El descubrimiento está disponible cuando el problema no es claro; no es un primer paso obligatorio.",
+      "Cuando el problema aún no está claro, podemos empezar con un diagnóstico; si ya existe claridad suficiente, avanzamos desde ahí.",
   },
-  differentiatorsTitle: "Principios con los que operamos",
+  differentiatorsTitle: "Principios que guían nuestro trabajo",
 } as const
 
 export const esHomepageSymptoms = [
   {
     name: "Sistemas desconectados",
-    consequence: "El contexto crítico queda atrapado entre herramientas.",
+    consequence: "La información crítica queda atrapada entre herramientas.",
   },
   {
     name: "Operaciones dependientes de hojas de cálculo",
     consequence:
-      "El modelo operativo vive en archivos en vez de vivir en el sistema.",
+      "La lógica de la operación queda dispersa en archivos, fuera del sistema.",
   },
   {
     name: "Automatizaciones frágiles",
     consequence:
-      "Pequeños cambios de origen producen fallas silenciosas más adelante.",
+      "Un cambio en el origen provoca fallas silenciosas en etapas posteriores.",
   },
   {
     name: "Reportes poco confiables",
-    consequence:
-      "Los equipos discuten las cifras antes de poder actuar sobre ellas.",
+    consequence: "Los equipos primero deben acordar qué cifra es correcta.",
   },
   {
-    name: "Relevos manuales",
-    consequence: "El estado y la responsabilidad se pierden entre personas.",
+    name: "Transferencias manuales",
+    consequence:
+      "El estado, el contexto y la gobernanza se diluyen entre equipos.",
   },
   {
     name: "Dependencia de personas clave",
-    consequence: "La operación depende de conocimiento que no puede escalar.",
+    consequence:
+      "La operación depende de conocimiento que no está institucionalizado.",
   },
   {
     name: "Excepciones que rompen el proceso",
-    consequence: "El proceso estándar funciona; las excepciones lo rompen.",
+    consequence:
+      "El flujo funciona en condiciones normales, pero pierde control ante las excepciones.",
   },
   {
     name: "Datos sin confianza operativa",
-    consequence:
-      "La información existe, pero la empresa no puede depender de ella.",
+    consequence: "La información existe, pero no es confiable para operar.",
   },
 ] as const satisfies readonly HomepageSymptom[]
 
 export const esOperationalIntelligenceElements = [
   {
     name: "Operaciones",
-    role: "definen el trabajo y sus restricciones reales",
+    role: "marcan el trabajo real y sus restricciones",
   },
-  { name: "Datos", role: "dan significado compartido al estado operativo" },
-  { name: "Sistemas", role: "establecen límites, control y responsabilidades" },
+  { name: "Datos", role: "dan un significado común al estado operativo" },
+  { name: "Sistemas", role: "definen límites, controles y gobernanza" },
   {
     name: "Automatización",
-    role: "ejecuta rutas conocidas con recuperación confiable",
+    role: "ejecuta rutas conocidas con mecanismos de recuperación",
   },
   {
     name: "Software",
-    role: "convierte el modelo operativo en una capacidad duradera",
+    role: "convierte el modelo en una capacidad operativa duradera",
   },
-  { name: "IA", role: "asiste donde el juicio puede delimitarse y gobernarse" },
+  {
+    name: "IA",
+    role: "asiste donde el criterio tiene límites y controles claros",
+  },
 ] as const satisfies readonly OperationalIntelligenceElement[]
 
 export const esArchitectureInputs = [
@@ -107,24 +113,25 @@ export const esArchitectureInputs = [
   "Límites del sistema",
   "Datos",
   "Decisiones",
-  "Rutas de falla",
-  "Responsabilidad",
+  "Escenarios de falla",
+  "Gobernanza",
 ] as const
 
 export const esDifferentiators = [
   {
     title: "Arquitectura antes que herramientas",
-    description: "Entendemos el sistema antes de elegir la herramienta.",
+    description:
+      "Primero definimos el sistema; después elegimos las herramientas.",
   },
   {
-    title: "Sistemas, no flujos aislados",
+    title: "Sistemas, no automatizaciones aisladas.",
     description:
-      "Construimos algo que la empresa pueda operar y mantener, no solo algo que se ejecute.",
+      "Construimos capacidades que la empresa puede operar y mantener, no automatizaciones que solo logran ejecutarse.",
   },
   {
-    title: "Cerca de las operaciones",
+    title: "Con la operación en el centro",
     description:
-      "Nos mantenemos lo bastante cerca del proceso real para entender excepciones, responsabilidades, relevos y puntos de falla.",
+      "Trabajamos sobre el proceso real para entender excepciones, responsables, relevos y puntos de falla.",
   },
 ] as const satisfies readonly Differentiator[]
 
@@ -132,25 +139,22 @@ export const esCapabilities = [
   {
     slug: "systems-architecture-internal-platforms",
     index: "01",
-    name: "Arquitectura de Sistemas y Plataformas Internas",
+    name: "Arquitectura de sistemas y plataformas internas",
     navigationLabel: "Arquitectura",
     shortDescription:
-      "Diseñamos límites de sistemas, servicios, modelos operativos y plataformas internas alrededor de operaciones empresariales críticas.",
+      "Diseñamos límites, servicios, modelos operativos y plataformas internas para sostener operaciones críticas.",
     problemClass:
-      "Las operaciones críticas crecieron entre herramientas y decisiones locales sin un límite compartido, un modelo de servicios o responsabilidades claras.",
+      "Las operaciones críticas crecieron sin límites compartidos ni una gobernanza clara.",
     approach:
-      "Brunova comienza con la operación —sus datos, decisiones, rutas de falla y responsables— y después define los límites, servicios y la plataforma interna necesarios para sostenerla.",
+      "Definimos el modelo operativo, los servicios y la plataforma alrededor de la operación.",
     operationalConcerns: [
       "Límites del sistema",
-      "Responsabilidad de servicios",
-      "Dependencia de personas clave",
-      "Mantenibilidad conforme cambia la operación",
+      "Gobernanza de servicios",
+      "Mantenibilidad",
     ],
     outcomes: [
       "Servicios internos reutilizables",
       "Plataformas internas",
-      "Responsabilidad de sistema mantenible",
-      "Menor dependencia de personas clave",
       "Arquitectura más clara",
     ],
     relatedWork: ["multi-tenant-financial-integration-platform"],
@@ -158,25 +162,22 @@ export const esCapabilities = [
   {
     slug: "data-integration-engineering",
     index: "02",
-    name: "Ingeniería de Datos e Integraciones",
+    name: "Ingeniería de datos e integraciones",
     navigationLabel: "Datos e integraciones",
     shortDescription:
-      "Conectamos APIs, bases de datos, plataformas SaaS, almacenes y flujos de datos operativos con semántica y responsabilidades explícitas.",
+      "Conectamos APIs, bases de datos, plataformas SaaS y almacenes con definiciones y gobernanza claras para cada flujo de datos.",
     problemClass:
-      "Los datos operativos están distribuidos entre sistemas, pero su significado, movimiento y responsabilidad no son lo bastante confiables para un uso compartido.",
+      "Los datos distribuidos carecen de significado, recorrido y gobernanza consistentes.",
     approach:
-      "Brunova define la semántica y la responsabilidad de cada flujo antes de conectar APIs, bases de datos, plataformas SaaS y almacenes en un límite de integración controlado.",
+      "Definimos la semántica y gobernanza de los datos antes de conectar sus fuentes dentro de un límite controlado.",
     operationalConcerns: [
-      "Responsabilidad de origen",
+      "Fuentes y gobernanza definidas",
       "Resolución de referencias",
       "Sincronización y recuperación",
-      "Confianza en reportes",
     ],
     outcomes: [
       "Sincronización confiable",
-      "Pipelines de datos",
-      "Almacenes de datos",
-      "Servicios de integración compartidos",
+      "Flujos de datos",
       "Bases confiables para reportes",
     ],
     relatedWork: [
@@ -187,24 +188,22 @@ export const esCapabilities = [
   {
     slug: "financial-operational-automation",
     index: "03",
-    name: "Automatización Financiera y Operativa",
+    name: "Automatización financiera y operativa",
     navigationLabel: "Automatización financiera",
     shortDescription:
-      "Construimos automatización controlada para flujos financieros y operativos críticos, incluidas integraciones contables, conciliación, reportes, cuentas por cobrar/pagar y operaciones relacionadas con inventario.",
+      "Construimos automatizaciones controladas para procesos financieros y operativos críticos: integraciones contables, conciliación, reportes, cuentas por cobrar y por pagar e inventario.",
     problemClass:
-      "El trabajo financiero y operativo importante depende de relevos manuales o automatizaciones poco conectadas entre procesos contables, de reportes e inventario.",
+      "El trabajo financiero crítico depende de relevos manuales y automatizaciones desconectadas.",
     approach:
-      "Brunova diseña el sistema alrededor de reglas operativas, conciliación, excepciones y responsabilidades. El trabajo apoya las operaciones financieras; no es asesoría ni servicio contable.",
+      "Integramos reglas, conciliaciones, excepciones y gobernanza en un sistema controlado.",
     operationalConcerns: [
       "Conciliación",
       "Manejo de excepciones",
-      "Responsabilidad operativa",
-      "Continuidad de reportes",
+      "Gobernanza operativa",
     ],
     outcomes: [
       "Flujos financieros controlados",
       "Infraestructura de conciliación",
-      "Reportes operativos",
       "Integraciones contables confiables",
     ],
     relatedWork: [
@@ -215,24 +214,22 @@ export const esCapabilities = [
   {
     slug: "workflow-process-engineering",
     index: "04",
-    name: "Ingeniería de Flujos y Procesos",
+    name: "Ingeniería de flujos y procesos",
     navigationLabel: "Ingeniería de procesos",
     shortDescription:
       "Rediseñamos el proceso antes de automatizarlo: estados, responsables, aprobaciones, excepciones, revisión humana y escalamiento.",
     problemClass:
-      "Un proceso funciona en su ruta estándar, pero pierde control cuando cambia la responsabilidad, aparecen excepciones o se requiere criterio.",
+      "Un proceso pierde control cuando cambia de manos, aparecen excepciones o se requiere criterio.",
     approach:
-      "Brunova hace explícitos los estados, responsables, aprobaciones, excepciones, revisión humana y escalamiento antes de decidir qué automatizar.",
+      "Definimos estados, responsables, aprobaciones, excepciones y revisión humana antes de automatizar.",
     operationalConcerns: [
       "Estados y relevos",
       "Aprobaciones y escalamiento",
       "Rutas de excepción",
-      "Revisión humana",
     ],
     outcomes: [
       "Relevos más claros",
       "Estado explícito",
-      "Menos pasos manuales ocultos",
       "Automatización que resiste excepciones reales",
     ],
     relatedWork: ["document-intelligence-workflow"],
@@ -240,28 +237,20 @@ export const esCapabilities = [
   {
     slug: "modernization-fragile-automations",
     index: "05",
-    name: "Modernización de Automatizaciones Frágiles",
+    name: "Modernización de automatizaciones frágiles",
     navigationLabel: "Modernización",
     shortDescription:
-      "Llevamos automatizaciones que funcionan, pero son frágiles, opacas o dependientes de una persona, hacia una arquitectura y operación más sólidas.",
+      "Modernizamos automatizaciones valiosas que se han vuelto frágiles, opacas o dependientes de una persona, sin reemplazar lo que todavía funciona.",
     problemClass:
-      "Las automatizaciones existentes aportan valor, pero son frágiles, opacas, difíciles de recuperar o dependen de una sola persona.",
+      "Automatizaciones útiles se han vuelto frágiles, opacas o dependientes de una persona.",
     approach:
-      "Brunova conserva el comportamiento que funciona cuando es posible e incorpora límites más claros, observabilidad, recuperación, idempotencia, disciplina de despliegue y documentación.",
+      "Conservamos el comportamiento útil e incorporamos los controles necesarios para operarlo y hacerlo evolucionar.",
     operationalConcerns: [
       "Observabilidad",
       "Recuperación e idempotencia",
       "Disciplina de despliegue",
-      "Documentación y responsabilidad",
     ],
-    outcomes: [
-      "Observabilidad",
-      "Recuperación",
-      "Idempotencia",
-      "Documentación",
-      "Mantenibilidad",
-      "Responsabilidad más clara",
-    ],
+    outcomes: ["Observabilidad", "Recuperación", "Mantenibilidad"],
     relatedWork: ["fragile-automation-modernization"],
   },
 ] as const satisfies readonly Capability[]
@@ -269,94 +258,102 @@ export const esCapabilities = [
 export const esProcessStages = [
   {
     index: "01",
-    verb: "Descubrir",
-    name: "Descubrimiento de Sistemas",
+    verb: "Diagnosticar",
+    name: "Diagnóstico del sistema",
     description:
-      "Convertimos un problema operativo poco claro en un problema de sistema definido, con evidencia, límites y un siguiente paso recomendado.",
+      "Convertimos una situación operativa poco clara en un problema de sistema definido.",
     timeline: "1–2 semanas",
     problemSolved:
-      "La operación importa, pero el problema real del sistema, su límite y la fuente de la falla aún no están claros.",
+      "El problema de sistema, sus límites y el origen de la falla no están claros.",
     entryKnowledge:
-      "Puede identificar la operación y las consecuencias de su comportamiento actual; no se requiere un diagnóstico técnico completo.",
+      "Se conocen la operación y las consecuencias de su funcionamiento actual.",
     establishes: [
       "Evidencia sobre la operación actual",
-      "Un problema y límite de sistema defendibles",
-      "Un siguiente paso recomendado",
+      "Un problema y límites sustentados en evidencia",
+      "Un siguiente paso concreto",
     ],
     nextStep:
-      "Un problema de sistema conocido puede pasar a un Plano de Arquitectura cuando se necesita un diseño listo para construir.",
+      "Con el problema definido, el trabajo puede avanzar al Diseño de arquitectura.",
   },
   {
     index: "02",
     verb: "Diseñar",
-    name: "Plano de Arquitectura",
+    name: "Diseño de arquitectura",
     description:
-      "Convertimos un problema operativo conocido en un diseño técnico y operativo listo para construir.",
+      "Convertimos un problema definido en un diseño operativo y técnico listo para implementar.",
     timeline: "2–4 semanas",
     problemSolved:
-      "El problema se entiende, pero el diseño técnico y operativo todavía no es suficientemente preciso para construir con responsabilidad.",
+      "El problema está claro, pero el sistema aún no está suficientemente definido para construirlo.",
     entryKnowledge:
-      "El problema operativo y el límite deseado son conocidos, ya sea por Descubrimiento o por trabajo interno previo.",
+      "El problema y los límites deseados están claros por el Diagnóstico o por trabajo previo.",
     establishes: [
-      "Un límite de sistema listo para construir",
+      "Límites del sistema listos para implementar",
       "Decisiones de diseño técnico y operativo",
       "Una ruta de implementación definida",
     ],
     nextStep:
-      "Una arquitectura definida puede pasar a un Sprint de Implementación con Brunova o con un equipo de entrega adecuado.",
+      "Con la arquitectura definida, el trabajo puede avanzar al Sprint de implementación.",
   },
   {
     index: "03",
     verb: "Construir",
-    name: "Sprint de Implementación",
+    name: "Sprint de implementación",
     description:
-      "Construimos y ponemos en operación una capacidad de sistema de producción definida.",
+      "Construimos y ponemos en operación una capacidad definida del sistema.",
     timeline: "4–8 semanas por alcance definido",
     problemSolved:
-      "Una capacidad definida debe convertirse en un sistema de producción operable, no solo en un entregable técnico.",
+      "El diseño debe convertirse en un sistema operable en producción.",
     entryKnowledge:
-      "La arquitectura, el alcance y la responsabilidad operativa se definen antes de comenzar la implementación.",
+      "La arquitectura, el alcance y la gobernanza operativa están definidos.",
     establishes: [
-      "La capacidad de producción acordada",
-      "Responsabilidad operativa y transferencia",
+      "La capacidad acordada en producción",
+      "Gobernanza operativa y transferencia",
       "Los controles requeridos por el alcance definido",
     ],
     nextStep:
-      "El sistema puede transferirse a su responsable operativo o continuar a Evolución Gestionada cuando la cercanía sostenida aporta valor.",
+      "El sistema puede transferirse al equipo responsable o continuar en Evolución continua.",
   },
   {
     index: "04",
     verb: "Evolucionar",
-    name: "Evolución Gestionada",
+    name: "Evolución continua",
     description:
-      "Nos mantenemos cerca de sistemas de producción importantes y mejoramos de forma continua su confiabilidad, arquitectura y capacidad conforme cambia la empresa.",
+      "Mejoramos la confiabilidad, arquitectura y capacidad de sistemas críticos en producción.",
     timeline: "Colaboración mensual continua",
     problemSolved:
-      "Un sistema de producción importante debe seguir mejorando conforme cambian las condiciones operativas, los riesgos y las necesidades del negocio.",
+      "Un sistema en producción debe evolucionar cuando cambian la operación y los riesgos.",
     entryKnowledge:
-      "Ya existe un sistema en producción y sus responsables actuales pueden identificar la presión de confiabilidad o capacidad alrededor de él.",
+      "Existe un sistema en producción y su equipo puede identificar la presión actual.",
     establishes: [
-      "Un límite de mejora continua",
+      "Un alcance claro de mejora continua",
       "Trabajo priorizado de confiabilidad y arquitectura",
-      "Contexto operativo que permanece cerca de la entrega",
+      "Contexto operativo cercano al trabajo",
     ],
     nextStep:
-      "La evolución continúa mientras el sistema siga siendo importante y la colaboración siga siendo útil.",
+      "La evolución continúa mientras el sistema sea crítico y el trabajo aporte valor.",
   },
 ] as const satisfies readonly ProcessStage[]
 
 export const esWorkCases = [
   {
     slug: "multi-tenant-financial-integration-platform",
-    homepageTitle: "Plataforma de Integración Financiera Multiempresa",
+    homepageTitle:
+      "Plataforma de integración financiera para múltiples entidades",
     title:
-      "Una capa compartida de integración financiera para múltiples entidades operativas",
+      "Integración financiera compartida para múltiples entidades operativas",
     summary:
-      "Una plataforma reutilizable de integración contable que centraliza el ciclo de vida de OAuth, lecturas y escrituras financieras, resolución de referencias, reportes recurrentes y acceso operativo posterior.",
+      "Una plataforma reutilizable que centraliza el ciclo de OAuth, las operaciones contables, la resolución de referencias y los reportes recurrentes para múltiples entidades.",
+    systemsClass: "Plataforma financiera para múltiples entidades",
+    systemsTitle:
+      "Acceso compartido a operaciones financieras para múltiples entidades",
+    systemsSummary:
+      "Conecta a varias entidades para que puedan consultar y actualizar información contable y generar reportes recurrentes mediante un mismo sistema reutilizable, en lugar de administrar una conexión distinta para cada una.",
+    systemType: "Operaciones financieras",
+    focus: ["Contabilidad multi-entidad", "Reportes financieros recurrentes"],
     capabilitySignals: [
-      "Arquitectura de Sistemas",
-      "Automatización Financiera",
-      "Ingeniería de APIs e Integraciones",
+      "Arquitectura de sistemas",
+      "Automatización financiera",
+      "Ingeniería de APIs e integraciones",
       "Confiabilidad",
     ],
     publicationStatus: "approved-summary",
@@ -364,30 +361,48 @@ export const esWorkCases = [
   },
   {
     slug: "operational-finance-data-infrastructure",
-    homepageTitle: "Infraestructura de Datos Financieros Operativos",
+    homepageTitle: "Infraestructura de datos para finanzas operativas",
     title:
-      "Convertir los reportes financieros recurrentes en infraestructura operativa compartida",
+      "Reportes financieros recurrentes convertidos en infraestructura compartida",
     summary:
-      "Pipelines automatizados de extracción y reporte que conectan sistemas contables y operativos con un almacén de datos y hojas de cálculo orientadas al negocio, para dar acceso consistente a información financiera a equipos no técnicos.",
+      "Flujos automatizados de extracción y reporte conectan sistemas contables y operativos con un almacén de datos y las hojas de cálculo que usan los equipos, para dar acceso consistente a la información financiera.",
+    systemsClass: "Sistema de reportes financieros",
+    systemsTitle:
+      "Reportes financieros actualizados desde una fuente compartida de información",
+    systemsSummary:
+      "Conecta información contable y operativa para preparar reportes recurrentes de forma consistente en las hojas de cálculo que ya usan los equipos, sin reconstruir los mismos datos en cada tarea de reporte.",
+    systemType: "Reportes operativos",
+    focus: ["Reportes financieros", "Acceso a datos del negocio"],
     capabilitySignals: [
-      "Ingeniería de Datos",
-      "Inteligencia Operativa",
-      "Infraestructura de Reportes",
-      "Ingeniería de Integraciones",
+      "Ingeniería de datos",
+      "Inteligencia operativa",
+      "Infraestructura de reportes",
+      "Ingeniería de integraciones",
     ],
     publicationStatus: "approved-summary",
     detailStatus: "publication-review-required",
   },
   {
     slug: "document-intelligence-workflow",
-    homepageTitle: "Flujo de Inteligencia Documental",
-    title: "Procesamiento documental asistido por IA con control incorporado",
+    homepageTitle: "Flujo de inteligencia documental",
+    title: "Procesamiento documental con IA y controles explícitos",
     summary:
-      "Un sistema de procesamiento documental que combina clasificación, extracción estructurada, validación, revisión humana e integración con flujos posteriores para documentos operativamente sensibles.",
+      "Un sistema que combina clasificación, extracción estructurada, validación y revisión humana para procesar documentos sensibles sin perder control operativo.",
+    systemsClass: "Sistema controlado de procesamiento documental",
+    systemsTitle:
+      "Procesamiento documental asistido por IA con revisión humana incorporada",
+    systemsSummary:
+      "Clasifica y extrae información de documentos sensibles para la operación, y exige validación y revisión humana antes de incorporarla al siguiente proceso operativo.",
+    systemType: "Procesamiento documental",
+    focus: [
+      "Clasificación y extracción documental",
+      "Validación y revisión humana",
+      "Procesos posteriores",
+    ],
     capabilitySignals: [
-      "Ingeniería de Flujos",
-      "Sistemas con IA",
-      "Humano en el circuito",
+      "Ingeniería de flujos",
+      "IA aplicada con control",
+      "Revisión humana",
       "Confiabilidad",
     ],
     publicationStatus: "approved-summary",
@@ -395,15 +410,26 @@ export const esWorkCases = [
   },
   {
     slug: "fragile-automation-modernization",
-    homepageTitle: "Modernización de Automatizaciones Frágiles",
-    title: "De flujos dependientes de personas a sistemas operables",
+    homepageTitle: "Modernización de automatizaciones frágiles",
+    title: "De automatizaciones dependientes de personas a sistemas operables",
     summary:
       "Modernización de conjuntos de automatizaciones mediante límites más claros, observabilidad, recuperación, idempotencia, disciplina de despliegue y documentación operativa, sin reescribir innecesariamente el comportamiento que funciona.",
+    systemsClass: "Modernización de automatizaciones operativas",
+    systemsTitle:
+      "Automatizaciones críticas más fáciles de operar, recuperar y modificar",
+    systemsSummary:
+      "Conserva las automatizaciones que aún funcionan e incorpora una gobernanza más clara, controles de recuperación, disciplina de despliegue y documentación operativa.",
+    systemType: "Operación de automatizaciones",
+    focus: [
+      "Automatizaciones existentes",
+      "Recuperación y observabilidad",
+      "Despliegues gestionados",
+    ],
     capabilitySignals: [
       "Modernización",
-      "Arquitectura de Sistemas",
+      "Arquitectura de sistemas",
       "Confiabilidad",
-      "Ingeniería Operativa",
+      "Ingeniería operativa",
     ],
     publicationStatus: "approved-summary",
     detailStatus: "publication-review-required",
@@ -412,33 +438,34 @@ export const esWorkCases = [
 
 export const esAboutNarrative = {
   observation:
-    "Brunova nació de una observación sencilla: conforme las empresas crecen, las operaciones importantes suelen convertirse en conjuntos de hojas de cálculo, herramientas SaaS, scripts y automatizaciones antes de que alguien diseñe deliberadamente el sistema que las sostiene.",
+    "Al crecer una empresa, sus operaciones críticas suelen repartirse entre hojas de cálculo, herramientas SaaS, scripts y automatizaciones antes de que alguien diseñe el sistema que debe sostenerlas.",
   boundary:
-    "Trabajamos en ese límite —donde se encuentran los procesos, los datos, el software y la automatización— para convertir esas operaciones en sistemas más confiables, operables y fáciles de evolucionar.",
+    "Brunova trabaja donde convergen procesos, datos, software y automatización para construir sistemas confiables, operables y capaces de evolucionar.",
 } as const
 
 export const esCompanyModel = [
   {
-    title: "Arquitectura dirigida por el fundador",
+    title: "Arquitectura liderada por el fundador",
     description:
-      "La dirección del sistema permanece cerca del problema operativo, las decisiones críticas y las personas responsables del resultado.",
+      "Las decisiones de arquitectura se mantienen cerca del problema operativo y de quienes responden por el resultado.",
   },
   {
-    title: "Entrega basada en equipos",
+    title: "Equipos según las necesidades del sistema",
     description:
-      "La entrega reúne las responsabilidades de ingeniería que el sistema realmente necesita, sin presentar a una sola persona generalista como toda la empresa.",
+      "Cada sistema reúne las disciplinas de ingeniería que realmente necesita.",
   },
   {
-    title: "Cerca de las operaciones",
+    title: "Vinculados a la operación",
     description:
-      "El trabajo permanece lo bastante cerca del proceso real para entender excepciones, responsabilidades, relevos y puntos de falla.",
-  },
-  {
-    title: "Inteligencia operativa",
-    description:
-      "Los procesos, datos, sistemas y automatización se tratan como un solo modelo operativo que la empresa puede entender y mejorar.",
+      "El trabajo se mantiene cerca del proceso real, sus excepciones, traspasos y puntos de falla.",
   },
 ] as const
+
+export const esOperationalLens = {
+  title: "Inteligencia operativa",
+  description:
+    "La inteligencia operativa conecta procesos, datos, sistemas y automatización en todo el modelo.",
+} as const
 
 export const esPrivacyContent = {
   reviewStatus: "legal-human-review-required-before-production",
@@ -450,7 +477,7 @@ export const esPrivacyContent = {
       id: "contact-information",
       title: "Información de contacto",
       paragraphs: [
-        "El formulario de contacto recopila su nombre, correo electrónico de trabajo, empresa, puesto, categoría del problema y la descripción que proporcione sobre un problema operativo.",
+        "El formulario de contacto recopila su nombre, correo electrónico de trabajo, empresa, cargo, categoría del problema y la descripción que proporcione sobre un problema operativo.",
         "Brunova usa esta información para revisar el contexto, determinar un siguiente paso adecuado y dar seguimiento a la conversación.",
       ],
     },
@@ -485,51 +512,51 @@ export const esWorkDetails = [
   {
     slug: "multi-tenant-financial-integration-platform",
     context:
-      "Múltiples entidades operativas necesitaban una forma compartida de acceder a operaciones contables e información financiera recurrente.",
+      "Varias entidades operativas necesitaban una misma forma de consultar información contable y reportes financieros recurrentes.",
     operationalProblem:
-      "El ciclo de autenticación, las lecturas y escrituras financieras, la resolución de referencias y los reportes pertenecían a un mismo límite operativo, pero cada aspecto requería un manejo consistente entre entidades.",
+      "Las conexiones, las actualizaciones contables y los reportes se administraban sin un sistema compartido entre entidades.",
     systemApproach:
-      "Una plataforma reutilizable de integración contable centralizó el ciclo de OAuth, las lecturas y escrituras financieras, la resolución de referencias, los reportes recurrentes y el acceso operativo posterior.",
+      "Brunova construyó un sistema reutilizable que permite a cada entidad consultar y actualizar información contable y generar reportes recurrentes mediante un mismo punto controlado.",
     systemBoundary: {
       summary:
-        "Las entidades operativas entran a un límite de integración controlado antes de que las operaciones financieras y los reportes estén disponibles para otros sistemas.",
+        "Un mismo punto controla cómo se conectan las entidades con las operaciones contables y los reportes.",
       steps: [
         {
           label: "Entidades operativas",
-          role: "Múltiples entidades que requieren acceso contable consistente",
+          role: "Entidades que requieren un acceso contable consistente",
         },
         {
           label: "Ciclo de conexión",
-          role: "OAuth y resolución de referencias centralizados",
+          role: "Conexiones de cuenta (OAuth) y coincidencia de registros centralizadas",
         },
         {
           label: "Operaciones financieras",
-          role: "Lecturas, escrituras y reportes recurrentes",
+          role: "Consulta y actualización de información contable, además de reportes recurrentes",
         },
         {
           label: "Acceso operativo",
-          role: "Acceso reutilizable a la capa compartida",
+          role: "Servicios compartidos disponibles para otros sistemas",
         },
       ],
     },
     engineeringDecisions: [
-      "Centralizar el ciclo de conexión y la resolución de referencias en una capa compartida.",
-      "Admitir lecturas y escrituras financieras dentro del mismo límite definido.",
-      "Hacer de los reportes recurrentes y el acceso operativo consumidores de la plataforma reutilizable.",
+      "Centralizar las conexiones de cuenta y la coincidencia de registros en una capa de integración compartida.",
+      "Permitir la consulta y actualización de información contable dentro del mismo límite controlado.",
+      "Ofrecer reportes recurrentes y acceso operativo mediante servicios reutilizables de la plataforma.",
     ],
     outcome:
-      "Una capa compartida de integración financiera diseñada para reutilizarse entre múltiples entidades operativas.",
+      "Varias entidades pueden trabajar con información financiera mediante un sistema consistente y reutilizable.",
     capabilities: [
       {
-        label: "Arquitectura de Sistemas",
+        label: "Arquitectura de sistemas",
         capabilitySlug: "systems-architecture-internal-platforms",
       },
       {
-        label: "Automatización Financiera",
+        label: "Automatización financiera",
         capabilitySlug: "financial-operational-automation",
       },
       {
-        label: "Ingeniería de APIs e Integraciones",
+        label: "Ingeniería de APIs e integraciones",
         capabilitySlug: "data-integration-engineering",
       },
     ],
@@ -537,48 +564,48 @@ export const esWorkDetails = [
   {
     slug: "operational-finance-data-infrastructure",
     context:
-      "Los reportes financieros recurrentes dependían de información distribuida entre sistemas contables y operativos, mientras los equipos no técnicos necesitaban acceso consistente orientado al negocio.",
+      "Los reportes financieros recurrentes dependían de información distribuida entre sistemas contables y operativos.",
     operationalProblem:
-      "Los sistemas de origen, el pipeline de reportes y el acceso por hojas de cálculo debían comportarse como infraestructura operativa compartida, no como tareas de reporte separadas.",
+      "Cada tarea de reporte reunía la información por separado, lo que dificultaba un acceso consistente para los equipos del negocio.",
     systemApproach:
-      "Pipelines automatizados de extracción y reporte conectaron sistemas contables y operativos con un almacén de datos y hojas de cálculo orientadas al negocio.",
+      "Brunova construyó un sistema compartido que recopila y prepara la información antes de entregarla en las hojas de cálculo que ya usan los equipos.",
     systemBoundary: {
       summary:
-        "Los datos de origen pasan por un límite compartido de reportes antes de llegar a la capa de hojas de cálculo para el negocio.",
+        "La información contable y operativa se prepara una sola vez en una base compartida antes de llegar a los reportes del negocio.",
       steps: [
         {
           label: "Sistemas de origen",
           role: "Información contable y operativa",
         },
         {
-          label: "Pipeline de extracción",
-          role: "Movimiento automatizado desde fuentes operativas",
+          label: "Flujo de extracción",
+          role: "Recopilación y preparación automatizada de información de origen",
         },
         { label: "Almacén de datos", role: "Base compartida para reportes" },
         {
           label: "Acceso del negocio",
-          role: "Información consistente en hojas de cálculo conocidas",
+          role: "Información consistente en herramientas conocidas por los equipos",
         },
       ],
     },
     engineeringDecisions: [
-      "Conectar las fuentes contables y operativas mediante un solo pipeline de reportes.",
+      "Integrar las fuentes contables y operativas mediante un solo flujo de reportes.",
       "Usar el almacén como infraestructura compartida y no como interfaz final.",
       "Conservar el acceso mediante hojas de cálculo para equipos no técnicos.",
     ],
     outcome:
-      "Una ruta de reportes que da a equipos no técnicos acceso consistente a información financiera recurrente.",
+      "Los equipos del negocio acceden de forma consistente a información financiera recurrente desde hojas de cálculo conocidas.",
     capabilities: [
       {
-        label: "Ingeniería de Datos",
+        label: "Ingeniería de datos",
         capabilitySlug: "data-integration-engineering",
       },
       {
-        label: "Automatización Financiera",
+        label: "Automatización financiera",
         capabilitySlug: "financial-operational-automation",
       },
       {
-        label: "Arquitectura de Sistemas",
+        label: "Arquitectura de sistemas",
         capabilitySlug: "systems-architecture-internal-platforms",
       },
     ],
@@ -586,18 +613,18 @@ export const esWorkDetails = [
   {
     slug: "document-intelligence-workflow",
     context:
-      "Documentos operativamente sensibles requerían procesamiento estructurado sin eliminar los controles que exige el juicio humano.",
+      "Los documentos sensibles para la operación requerían un procesamiento consistente sin eliminar la supervisión humana.",
     operationalProblem:
-      "La clasificación y la extracción no bastaban; el flujo también necesitaba validación, revisión humana y una transferencia controlada hacia el proceso posterior.",
+      "La clasificación y extracción automatizadas no garantizaban por sí solas que la información estuviera lista para el siguiente proceso operativo.",
     systemApproach:
-      "Un sistema de procesamiento documental combinó clasificación, extracción estructurada, validación, revisión humana e integración con el flujo posterior.",
+      "Brunova construyó un proceso asistido por IA que exige validación y revisión humana antes de permitir que la información avance.",
     systemBoundary: {
       summary:
-        "La automatización prepara información estructurada, mientras la validación y la revisión humana siguen siendo controles explícitos antes del uso posterior.",
+        "La IA prepara información estructurada; la validación y la revisión humana determinan si puede avanzar.",
       steps: [
         {
           label: "Ingreso de documentos",
-          role: "Documentos fuente operativamente sensibles",
+          role: "Documentos fuente sensibles para la operación",
         },
         {
           label: "Clasificación y extracción",
@@ -605,33 +632,33 @@ export const esWorkDetails = [
         },
         {
           label: "Validación y revisión",
-          role: "Límite de control con juicio humano",
+          role: "Control explícito basado en criterio humano",
         },
         {
-          label: "Flujo posterior",
-          role: "La información revisada entra al proceso operativo",
+          label: "Proceso siguiente",
+          role: "La información validada avanza al proceso operativo",
         },
       ],
     },
     engineeringDecisions: [
       "Separar la clasificación y la extracción estructurada de la validación.",
-      "Mantener la revisión humana dentro del límite del sistema, no como una excepción externa.",
-      "Integrar las salidas revisadas con el proceso operativo posterior.",
+      "Incorporar la revisión humana al sistema como un control explícito, no como una excepción externa.",
+      "Integrar la información validada con el siguiente proceso operativo.",
     ],
     safeguards: [
-      "Validación estructurada antes del uso posterior",
-      "Revisión humana para documentos operativamente sensibles",
-      "Una transferencia definida al flujo posterior",
+      "Validación estructurada antes de continuar",
+      "Revisión humana para documentos sensibles",
+      "Entrega controlada al siguiente proceso",
     ],
     outcome:
-      "Un flujo controlado de inteligencia documental en el que la IA asiste mientras el juicio permanece delimitado y gobernado.",
+      "Los documentos pueden procesarse con asistencia de IA mientras el criterio humano permanece dentro de la operación.",
     capabilities: [
       {
-        label: "Ingeniería de Flujos",
+        label: "Ingeniería de flujos",
         capabilitySlug: "workflow-process-engineering",
       },
       {
-        label: "Arquitectura de Sistemas",
+        label: "Arquitectura de sistemas",
         capabilitySlug: "systems-architecture-internal-platforms",
       },
     ],
@@ -639,16 +666,16 @@ export const esWorkDetails = [
   {
     slug: "fragile-automation-modernization",
     context:
-      "Un conjunto existente de automatizaciones aportaba valor, pero se había vuelto frágil, opaco y dependiente del conocimiento individual.",
+      "Las automatizaciones existentes seguían sosteniendo la operación, pero eran frágiles, difíciles de entender y dependientes de una persona.",
     operationalProblem:
-      "El riesgo operativo provenía de límites poco claros, observabilidad y recuperación débiles, y documentación insuficiente de despliegue y operación.",
+      "Una gobernanza poco clara y controles operativos débiles hacían riesgosos los cambios y la recuperación.",
     scalingConstraint:
-      "El comportamiento que funcionaba no justificaba una reescritura innecesaria, pero el modelo operativo que lo rodeaba no era suficientemente sólido para seguir cambiando.",
+      "No se justificaba reescribir lo que aún funcionaba, pero el modelo operativo existente ya no soportaba nuevos cambios.",
     systemApproach:
-      "La modernización incorporó límites más claros, observabilidad, recuperación, idempotencia, disciplina de despliegue y documentación operativa, conservando el comportamiento funcional cuando fue posible.",
+      "Brunova conservó el comportamiento funcional e incorporó los controles necesarios para operar, recuperar y modificar la automatización con menos riesgo.",
     systemBoundary: {
       summary:
-        "La automatización útil permanece, mientras se añade un límite operativo explícito alrededor de fallas, recuperación, despliegue y responsabilidad.",
+        "La automatización se conserva, con gobernanza y controles explícitos para fallas, recuperación y despliegue.",
       steps: [
         {
           label: "Comportamiento funcional",
@@ -656,38 +683,38 @@ export const esWorkDetails = [
         },
         {
           label: "Límites claros",
-          role: "Responsabilidades y propiedad definidas",
+          role: "Alcance y gobernanza definidos",
         },
         {
           label: "Controles de operabilidad",
-          role: "Observabilidad, recuperación e idempotencia",
+          role: "Monitoreo, recuperación y prevención de procesamiento duplicado (idempotencia)",
         },
         {
           label: "Sistema gestionado",
-          role: "Despliegue disciplinado y documentación operativa",
+          role: "Despliegues disciplinados y documentación operativa",
         },
       ],
     },
     engineeringDecisions: [
       "Conservar el comportamiento funcional en vez de reescribirlo sin causa.",
-      "Introducir límites de sistema más claros antes de ampliar capacidades.",
-      "Tratar la disciplina de despliegue y la documentación como parte del sistema.",
+      "Aclarar los límites del sistema antes de ampliar sus capacidades.",
+      "Incorporar la disciplina de despliegue y la documentación al propio sistema.",
     ],
     safeguards: [
       "Observabilidad",
       "Recuperación",
-      "Idempotencia",
+      "Prevención de procesamiento duplicado (idempotencia)",
       "Documentación operativa",
     ],
     outcome:
-      "Un conjunto de automatizaciones más operable, con responsabilidades más claras y mejor mantenibilidad.",
+      "La operación conserva el valor de sus automatizaciones con una gobernanza más clara y un sistema más fácil de mantener.",
     capabilities: [
       {
         label: "Modernización",
         capabilitySlug: "modernization-fragile-automations",
       },
       {
-        label: "Arquitectura de Sistemas",
+        label: "Arquitectura de sistemas",
         capabilitySlug: "systems-architecture-internal-platforms",
       },
     ],

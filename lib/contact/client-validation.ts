@@ -33,7 +33,7 @@ export function browserContactFieldErrors(
   if (!hasTrimmedLength(request.name, 2, 100)) {
     errors.name = [
       es
-        ? "Escriba su nombre con 2–100 caracteres."
+        ? "El nombre debe tener entre 2 y 100 caracteres."
         : "Enter your name using 2–100 characters.",
     ]
   }
@@ -43,21 +43,21 @@ export function browserContactFieldErrors(
   ) {
     errors.email = [
       es
-        ? "Escriba un correo electrónico de trabajo válido."
+        ? "Ingrese un correo corporativo válido."
         : "Enter a valid work email address.",
     ]
   }
   if (!hasTrimmedLength(request.company, 2, 120)) {
     errors.company = [
       es
-        ? "Escriba su empresa con 2–120 caracteres."
+        ? "El nombre de la empresa debe tener entre 2 y 120 caracteres."
         : "Enter your company using 2–120 characters.",
     ]
   }
   if (!hasTrimmedLength(request.role, 2, 100)) {
     errors.role = [
       es
-        ? "Escriba su puesto con 2–100 caracteres."
+        ? "El cargo debe tener entre 2 y 100 caracteres."
         : "Enter your role using 2–100 characters.",
     ]
   }
@@ -68,14 +68,14 @@ export function browserContactFieldErrors(
   ) {
     errors.problemCategory = [
       es
-        ? "Elija la categoría más cercana al problema."
+        ? "Seleccione la opción que mejor describa la situación."
         : "Choose the category closest to the problem.",
     ]
   }
   if (!hasTrimmedLength(request.problemDescription, 30, 4000)) {
     errors.problemDescription = [
       es
-        ? "Describa el problema operativo con 30–4,000 caracteres."
+        ? "La descripción debe tener entre 30 y 4.000 caracteres."
         : "Describe the operational problem using 30–4,000 characters.",
     ]
   }

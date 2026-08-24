@@ -6,7 +6,7 @@ export function generateMetadata(): Metadata {
   return createPageMetadata({
     title: "Portal de Clientes Brunova",
     description:
-      "Un espacio dedicado para sistemas de clientes activos, contexto de entrega y acceso operativo.",
+      "Un espacio dedicado para sistemas de clientes activos, contexto de proyectos y acceso operativo.",
     path: "/portal",
     locale: "es",
     noIndex: true,

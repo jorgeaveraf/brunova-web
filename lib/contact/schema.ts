@@ -59,13 +59,13 @@ export function contactFieldErrors(
     const field = issue.path.join(".") || "form"
     errors[field] ??= []
     const spanishMessages: Record<string, string> = {
-      name: "Escriba su nombre con 2–100 caracteres.",
-      email: "Escriba un correo electrónico de trabajo válido.",
-      company: "Escriba su empresa con 2–120 caracteres.",
-      role: "Escriba su puesto con 2–100 caracteres.",
-      problemCategory: "Elija la categoría más cercana al problema.",
+      name: "El nombre debe tener entre 2 y 100 caracteres.",
+      email: "Ingrese un correo corporativo válido.",
+      company: "El nombre de la empresa debe tener entre 2 y 120 caracteres.",
+      role: "El cargo debe tener entre 2 y 100 caracteres.",
+      problemCategory: "Seleccione la opción que mejor describa la situación.",
       problemDescription:
-        "Describa el problema operativo con 30–4,000 caracteres.",
+        "La descripción debe tener entre 30 y 4.000 caracteres.",
       pagePath: "La ruta del formulario no es válida.",
       locale: "El idioma del formulario no es válido.",
       form: "La solicitud contiene campos no permitidos.",

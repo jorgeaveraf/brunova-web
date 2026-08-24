@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="720" height="520" viewBox="0 0 720 520" role="img" aria-labelledby="title desc">
-  <!-- Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 -->
+  <!-- Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4 -->
   <title id="title">Arquitectura antes que herramientas</title>
-  <desc id="desc">El contexto operativo entra en un límite de sistema definido. Proceso, datos, decisiones y responsabilidad establecen la capacidad operacional que gobierna automatización, software e IA.</desc>
+  <desc id="desc">El contexto operativo fragmentado se convierte en un modelo operativo definido. Proceso, datos y decisiones funcionan bajo gobernanza para habilitar capacidad operativa mediante automatización, software e IA.</desc>
   <style>
     :root {
       --asset-accent: #CDBB9D;
@@ -22,37 +22,42 @@
     </marker>
   </defs>
   <g font-family="var(--asset-font)">
-    <g fill="none" stroke="var(--asset-boundary)" stroke-width="1.5">
-      <path d="M360 34v30" marker-end="url(#arrow)"/>
-      <rect x="72" y="66" width="576" height="286"/>
-    </g>
-    <text x="360" y="22" fill="var(--asset-muted)" font-size="11" font-weight="600" letter-spacing="1.5" text-anchor="middle">CONTEXTO OPERATIVO</text>
-    <text x="96" y="99" fill="var(--asset-label)" font-size="11" font-weight="600" letter-spacing="1.6">LÍMITE DEL SISTEMA</text>
-    <path d="M96 116h528" fill="none" stroke="var(--asset-rule)"/>
-    <g font-size="18" font-weight="500" fill="var(--asset-foreground)">
-      <text x="96" y="157">Proceso</text>
-      <text x="96" y="211">Datos</text>
-      <text x="96" y="265">Decisiones</text>
-      <text x="96" y="319">Responsabilidad</text>
+    <text x="360" y="21" fill="var(--asset-muted)" font-size="11" font-weight="600" letter-spacing="1.5" text-anchor="middle">CONTEXTO OPERATIVO</text>
+    <text x="360" y="45" fill="var(--asset-secondary)" font-size="14" font-weight="500" text-anchor="middle">Entradas fragmentadas · Estado poco claro</text>
+    <path d="M360 59v35" fill="none" stroke="var(--asset-accent)" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+    <rect x="72" y="98" width="576" height="254" fill="none" stroke="var(--asset-boundary)" stroke-width="1.5"/>
+    <text x="96" y="129" fill="var(--asset-label)" font-size="11" font-weight="600" letter-spacing="1.6">MODELO OPERATIVO DEFINIDO</text>
+    <path d="M96 146h528" fill="none" stroke="var(--asset-rule)"/>
+
+    <g fill="var(--asset-foreground)" font-size="18" font-weight="500">
+      <text x="96" y="188">Proceso</text>
+      <text x="120" y="242">Datos</text>
+      <text x="144" y="296">Decisiones</text>
     </g>
     <g fill="none" stroke="var(--asset-rule-subtle)">
-      <path d="M96 174h528"/>
-      <path d="M96 228h528"/>
-      <path d="M96 282h528"/>
+      <path d="M96 204h392"/>
+      <path d="M120 258h368"/>
+      <path d="M144 312h344"/>
     </g>
+
+    <path d="M516 164v164" fill="none" stroke="var(--asset-boundary)"/>
+    <text x="570" y="251" fill="var(--asset-foreground)" font-size="17" font-weight="600" text-anchor="middle">Gobernanza</text>
+
     <path d="M360 352v34" fill="none" stroke="var(--asset-accent)" stroke-width="1.5" marker-end="url(#arrow)"/>
-    <text x="360" y="421" fill="var(--asset-foreground)" font-size="20" font-weight="700" text-anchor="middle">Capacidad operacional</text>
+    <text x="360" y="417" fill="var(--asset-foreground)" font-size="20" font-weight="700" text-anchor="middle">Capacidad operativa</text>
+    <text x="360" y="440" fill="var(--asset-muted)" font-size="10" font-weight="600" letter-spacing="1.25" text-anchor="middle">HABILITADA POR EL MODELO OPERATIVO</text>
     <g fill="none" stroke="var(--asset-relationship)">
-      <path d="M360 438v22"/>
-      <path d="M164 460h392"/>
-      <path d="M164 460v17"/>
-      <path d="M360 460v17"/>
-      <path d="M556 460v17"/>
+      <path d="M360 448v13"/>
+      <path d="M164 461h392"/>
+      <path d="M164 461v17"/>
+      <path d="M360 461v17"/>
+      <path d="M556 461v17"/>
     </g>
     <g fill="var(--asset-secondary)" font-size="14" font-weight="500" text-anchor="middle">
-      <text x="164" y="500">Automatización</text>
-      <text x="360" y="500">Software</text>
-      <text x="556" y="500">IA</text>
+      <text x="164" y="501">Automatización</text>
+      <text x="360" y="501">Software</text>
+      <text x="556" y="501">IA</text>
     </g>
   </g>
 </svg>

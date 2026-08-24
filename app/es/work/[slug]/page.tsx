@@ -12,10 +12,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const work = esWorkCases.find((item) => item.slug === slug)
   return createPageMetadata({
-    title: work?.title ?? "Sistema no encontrado",
+    title: work?.systemsTitle ?? "Sistema no encontrado",
     description:
-      work?.summary ??
-      "El expediente solicitado de Brunova no está disponible.",
+      work?.systemsSummary ?? "El sistema solicitado no está disponible.",
     path: `/work/${slug}`,
     locale: "es",
     noIndex: !work,

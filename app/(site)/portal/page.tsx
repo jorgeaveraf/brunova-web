@@ -6,7 +6,7 @@ export function generateMetadata(): Metadata {
   return createPageMetadata({
     title: "Brunova Client Portal",
     description:
-      "A dedicated workspace for active client systems, delivery context and operational access.",
+      "A dedicated workspace for active client systems, project context and operational access.",
     path: "/portal",
     noIndex: true,
   })

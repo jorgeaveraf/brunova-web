@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { WorkPageView } from "@/components/pages/work-page"
 import { createPageMetadata } from "@/lib/metadata"
 export const metadata: Metadata = createPageMetadata({
-  title: "Selected systems",
+  title: "Selected operational systems designed and built by Brunova",
   description:
-    "An anonymized portfolio of financial integration, data infrastructure, document intelligence and automation modernization systems engineered by Brunova.",
+    "A selection of systems Brunova has designed and built to solve complex operational problems.",
   path: "/work",
 })
 export default function Page() {

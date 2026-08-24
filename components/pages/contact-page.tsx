@@ -12,19 +12,19 @@ export function ContactPageView({ locale }: { locale: Locale }) {
   const expectations = es
     ? [
         {
-          title: "Empiece con la operación.",
+          title: "Describa la operación.",
           description:
-            "Indique qué se está volviendo difícil de operar y dónde aparece la fricción.",
+            "Señale qué cuesta ejecutar hoy y dónde aparece la fricción.",
         },
         {
-          title: "Comparta lo que sabe.",
+          title: "Comparta el contexto disponible.",
           description:
-            "Los sistemas existentes, el trabajo manual recurrente y las restricciones conocidas aportan contexto útil.",
+            "Los sistemas actuales, las tareas manuales recurrentes y las restricciones conocidas son un buen punto de partida.",
         },
         {
-          title: "Déjenos definir el encuadre.",
+          title: "Nosotros definimos el siguiente paso.",
           description:
-            "Revisaremos la nota y responderemos con el siguiente paso más útil.",
+            "Revisamos el caso y respondemos con una recomendación concreta.",
         },
       ]
     : [
@@ -57,12 +57,12 @@ export function ContactPageView({ locale }: { locale: Locale }) {
         <section className="contact-studio__context">
           <div className="contact-studio__opening">
             <Heading level={1}>
-              <span>{es ? "Inicie una" : "Start a"}</span>{" "}
-              <span>{es ? "conversación." : "conversation."}</span>
+              <span>{es ? "Hablemos de su" : "Start a"}</span>{" "}
+              <span>{es ? "operación." : "conversation."}</span>
             </Heading>
             <p>
               {es
-                ? "Cuéntenos qué operación se está volviendo difícil de ejecutar, dónde aparece la fricción y qué sabe ya sobre el problema."
+                ? "Cuéntenos qué se ha vuelto difícil de ejecutar, dónde aparece la fricción y qué información tiene hasta ahora."
                 : "Tell us what operation is becoming difficult to run, where the friction shows up, and what you already know about the problem."}
             </p>
           </div>
@@ -80,7 +80,7 @@ export function ContactPageView({ locale }: { locale: Locale }) {
         <section
           aria-label={
             es
-              ? "Formulario de conversación sobre sistemas operativos"
+              ? "Formulario de consulta sobre sistemas operacionales"
               : "Operational systems conversation form"
           }
           className="contact-studio__form"

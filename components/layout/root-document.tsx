@@ -4,6 +4,7 @@ import type { PropsWithChildren } from "react"
 import { AttributionCapture } from "@/components/analytics/attribution-capture"
 import { SiteFooter } from "@/components/layout/site-footer"
 import { SiteHeader } from "@/components/layout/site-header"
+import { BackToTop } from "@/components/preferences/back-to-top"
 import { SiteUtilities } from "@/components/preferences/site-utilities"
 import { OrganizationJsonLd } from "@/components/seo/organization-json-ld"
 import { ThemeProvider } from "@/components/theme/theme-provider"
@@ -40,6 +41,7 @@ export function RootDocument({
           <div className="site-shell__content">{children}</div>
           <SiteFooter locale={locale} />
           <SiteUtilities locale={locale} />
+          <BackToTop locale={locale} />
         </ThemeProvider>
       </body>
     </html>

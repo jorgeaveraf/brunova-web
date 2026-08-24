@@ -2,13 +2,13 @@ import type { Locale } from "@/lib/i18n"
 
 const diagramCopy = {
   en: {
-    mobileLabel: "From fragmented inputs to a reliable operating system",
+    mobileLabel: "From fragmented inputs to a reliable operational system",
     mobile: [
       ["Fragmented operation", "Disconnected work · data · systems"],
       ["Defined boundary", "State · decisions · ownership"],
       ["Reliable operation", "Controlled · operable · scalable"],
     ],
-    title: "From fragmented operations to a reliable operating system",
+    title: "From fragmented operations to a reliable operational system",
     description:
       "Separate processes, data and automations cross unclear manual handoffs. Brunova defines a system boundary that connects process, trusted state, decisions and ownership into a controlled operational flow.",
     groups: ["Fragmented operation", "Defined boundary", "Reliable operation"],
@@ -20,22 +20,22 @@ const diagramCopy = {
       "Brunova makes boundaries, state, decisions and ownership explicit before implementation tools are selected.",
   },
   es: {
-    mobileLabel: "De entradas fragmentadas a un sistema operativo confiable",
+    mobileLabel: "De una operación fragmentada a una operación confiable",
     mobile: [
       ["Operación fragmentada", "Trabajo · datos · sistemas desconectados"],
-      ["Límite definido", "Estado · decisiones · responsabilidad"],
+      ["Límite definido", "Estado · decisiones · gobernanza"],
       ["Operación confiable", "Controlada · operable · escalable"],
     ],
-    title: "De operaciones fragmentadas a un sistema operativo confiable",
+    title: "De una operación fragmentada a una operación confiable",
     description:
-      "Procesos, datos y automatizaciones separados atraviesan relevos manuales poco claros. Brunova define un límite de sistema que conecta proceso, estado confiable, decisiones y responsabilidad en un flujo operativo controlado.",
+      "Procesos, datos y automatizaciones hoy separados se integran dentro de un límite claro. El sistema conecta proceso, estado, decisiones y gobernanza en un flujo operativo controlado.",
     groups: ["Operación fragmentada", "Límite definido", "Operación confiable"],
     fragments: ["Trabajo", "Datos", "Sistemas"],
-    controls: ["Estado", "Decisiones", "Responsabilidad"],
+    controls: ["Estado", "Decisiones", "Gobernanza"],
     operatingSystem: "Modelo operativo",
     output: ["Controlada", "Operable", "Escalable"],
     caption:
-      "Brunova hace explícitos los límites, el estado, las decisiones y la responsabilidad antes de seleccionar herramientas de implementación.",
+      "Brunova define límites, estado, decisiones y gobernanza antes de seleccionar las herramientas.",
   },
 } as const
 

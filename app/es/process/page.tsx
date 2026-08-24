@@ -4,7 +4,7 @@ import { createPageMetadata } from "@/lib/metadata"
 export const metadata: Metadata = createPageMetadata({
   title: "Cómo trabaja Brunova",
   description:
-    "Las cuatro etapas de colaboración de Brunova —Descubrimiento, Plano, Implementación y Evolución Gestionada— con puntos explícitos de entrada lateral.",
+    "Diagnóstico, diseño de arquitectura, implementación y evolución continua: Brunova empieza en la etapa que corresponde al estado real del sistema.",
   path: "/process",
   locale: "es",
 })

@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { ContactPageView } from "@/components/pages/contact-page"
 import { createPageMetadata } from "@/lib/metadata"
 export const metadata: Metadata = createPageMetadata({
-  title: "Iniciar una conversación",
+  title: "Hablemos de su operación",
   description:
-    "Cuéntele a Brunova qué operación se está volviendo difícil de ejecutar y dónde aparece la fricción.",
+    "Cuéntenos qué parte de su operación se ha vuelto difícil de ejecutar y dónde aparece la fricción.",
   path: "/contact",
   locale: "es",
 })

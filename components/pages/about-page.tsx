@@ -3,32 +3,33 @@ import "@/app/core-routes.css"
 import { Container } from "@/components/layout/container"
 import { RouteContext } from "@/components/layout/route-context"
 import { Heading } from "@/components/layout/section-heading"
-import { ActionLink } from "@/components/ui/action-link"
 import { localizedContent } from "@/content/locales"
-import { localizedPath, type Locale } from "@/lib/i18n"
+import type { Locale } from "@/lib/i18n"
 
 export function AboutPageView({ locale }: { locale: Locale }) {
-  const { aboutNarrative, companyModel } = localizedContent[locale]
+  const { aboutNarrative, companyModel, operationalLens } =
+    localizedContent[locale]
   const es = locale === "es"
   return (
     <main className="route-page about-page" id="main-content" tabIndex={-1}>
       <RouteContext
         ariaLabel={es ? "Contexto de página" : "Page context"}
         items={[
-          { label: es ? "Explorar" : "Explore" },
-          { label: es ? "Nosotros" : "About" },
+          { href: es ? "/es" : "/", label: es ? "Nosotros" : "Us" },
+          { label: es ? "Brunova" : "About" },
         ]}
       />
       <header className="about-thesis">
         <Container className="about-thesis__inner">
           <Heading level={1}>
             {es
-              ? "Construida en el límite operativo."
+              ? "Donde la operación exige ingeniería."
               : "Built at the operating boundary."}
           </Heading>
           <div className="about-thesis__narrative">
-            <p>{aboutNarrative.observation}</p>
-            <p>{aboutNarrative.boundary}</p>
+            <p>
+              {aboutNarrative.observation} {aboutNarrative.boundary}
+            </p>
           </div>
         </Container>
       </header>
@@ -38,42 +39,32 @@ export function AboutPageView({ locale }: { locale: Locale }) {
           <div className="company-model__statement">
             <Heading id="company-model-title" level={2}>
               {es
-                ? "La arquitectura permanece cerca de la entrega."
-                : "Architecture remains close to delivery."}
+                ? "La arquitectura no se separa de la ejecución."
+                : "Architecture remains close to execution."}
             </Heading>
             <p>
               {es
-                ? "Brunova es una empresa de ingeniería de sistemas: dirigida por el fundador en arquitectura, basada en equipos para la entrega y responsable ante la operación que el sistema debe sostener."
-                : "Brunova is a systems engineering company: founder-led in architecture, team-based in delivery and accountable to the operation the system must support."}
+                ? "Brunova es una empresa de ingeniería de sistemas."
+                : "Brunova is a systems engineering company."}
             </p>
           </div>
-          <div className="company-model__facets">
-            {companyModel.map((facet) => (
-              <article key={facet.title}>
+          <ol className="company-model__sequence">
+            {companyModel.map((facet, index) => (
+              <li key={facet.title}>
+                <span aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <Heading level={3}>{facet.title}</Heading>
                 <p>{facet.description}</p>
-              </article>
+              </li>
             ))}
+          </ol>
+          <div className="company-model__lens">
+            <Heading level={3}>{operationalLens.title}</Heading>
+            <p>{operationalLens.description}</p>
           </div>
         </Container>
       </section>
-
-      <nav
-        aria-label={es ? "Explorar Brunova" : "Explore Brunova"}
-        className="about-next"
-      >
-        <Container className="about-next__inner">
-          <ActionLink
-            href={localizedPath(locale, "/capabilities")}
-            variant="secondary"
-          >
-            {es ? "Explorar capacidades" : "Explore capabilities"}
-          </ActionLink>
-          <ActionLink href={localizedPath(locale, "/work")} variant="text">
-            {es ? "Ver proyectos seleccionados" : "View selected work"}
-          </ActionLink>
-        </Container>
-      </nav>
     </main>
   )
 }

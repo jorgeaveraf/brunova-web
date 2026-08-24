@@ -4,7 +4,7 @@ import { createPageMetadata } from "@/lib/metadata"
 export const metadata: Metadata = createPageMetadata({
   title: "How Brunova works",
   description:
-    "Brunova’s four engagement stages—Discovery, Blueprint, Implementation and Managed Evolution—with explicit lateral entry points.",
+    "Four system states with explicit lateral entry: Discovery, Architecture Blueprint, Implementation Sprint and Managed Evolution.",
   path: "/process",
 })
 export default function Page() {

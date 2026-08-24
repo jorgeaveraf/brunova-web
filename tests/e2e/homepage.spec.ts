@@ -54,7 +54,7 @@ test("homepage follows the approved narrative and record counts", async ({
   ).toHaveCount(1)
   await expect(
     page.getByRole("img", {
-      name: "From fragmented operations to a reliable operating system",
+      name: "From fragmented operations to a reliable operational system",
     }),
   ).toBeVisible()
   await expect(page.locator(".home-category")).toContainText(
@@ -215,6 +215,17 @@ test("operational intelligence reads as concept, explanation and operating model
 
     return {
       assetRadius: asset ? getComputedStyle(asset).borderRadius : "",
+      explanationOffset:
+        heading && explanation
+          ? explanation.getBoundingClientRect().top -
+            heading.getBoundingClientRect().top
+          : 0,
+      explanationSize: explanation
+        ? Number.parseFloat(getComputedStyle(explanation).fontSize)
+        : 0,
+      headingSize: heading
+        ? Number.parseFloat(getComputedStyle(heading).fontSize)
+        : 0,
       explanationBeforeModel:
         Boolean(explanation && asset) &&
         explanation!.getBoundingClientRect().bottom <
@@ -231,6 +242,8 @@ test("operational intelligence reads as concept, explanation and operating model
 
   expect(composition.headingBeforeModel).toBe(true)
   expect(composition.explanationBeforeModel).toBe(true)
+  expect(Math.abs(composition.explanationOffset)).toBeLessThanOrEqual(2)
+  expect(composition.explanationSize).toBeLessThan(composition.headingSize)
   expect(composition.statementColumns).toBe(12)
   expect(composition.assetRadius).toBe("0px")
 
@@ -253,6 +266,12 @@ test("capabilities read as disciplines supporting one operational system", async
   const model = section.locator(".capability-field-preview")
   const disciplines = model.locator(".capability-field-preview__disciplines")
 
+  await expect(section.locator(".home-capabilities__intro > p")).toHaveText(
+    "Five engineering disciplines Brunova integrates into one operational system.",
+  )
+  await expect(model.locator(".capability-field-preview__core")).toHaveText(
+    "One operational system",
+  )
   await expect(disciplines.locator("li")).toHaveCount(5)
   await expect(
     section.getByRole("link", { name: "Explore capabilities" }),
@@ -279,6 +298,7 @@ test("capabilities read as disciplines supporting one operational system", async
 
     return {
       borderWidth: Number.parseFloat(getComputedStyle(node).borderTopWidth),
+      coreHeight: coreRect?.height ?? 0,
       coreBeforeDisciplines:
         Boolean(core && disciplineList) &&
         Boolean(
@@ -295,14 +315,41 @@ test("capabilities read as disciplines supporting one operational system", async
       disciplineWidthRatio: disciplineList
         ? disciplineList.getBoundingClientRect().width / modelRect.width
         : 0,
+      modelHeight: modelRect.height,
     }
   })
 
   expect(desktop.coreBeforeDisciplines).toBe(true)
   expect(desktop.coreToItemArea).toBeGreaterThan(4)
+  expect(desktop.coreHeight).toBeLessThan(160)
   expect(desktop.disciplineColumns).toBe(5)
   expect(desktop.disciplineWidthRatio).toBeGreaterThan(0.85)
+  expect(desktop.modelHeight).toBeLessThan(340)
   expect(desktop.borderWidth).toBeGreaterThan(0)
+
+  await model.scrollIntoViewIfNeeded()
+  await expect(model).toHaveAttribute("data-revealed", "true")
+
+  const motion = await model.evaluate((node) => {
+    const disciplineList = node.querySelector<HTMLElement>(
+      ".capability-field-preview__disciplines",
+    )
+    const firstHeading = node.querySelector<HTMLElement>(
+      ".capability-field-preview__item .heading--3",
+    )
+
+    return {
+      connectionAnimation: disciplineList
+        ? getComputedStyle(disciplineList, "::after").animationName
+        : "",
+      disciplineAnimation: firstHeading
+        ? getComputedStyle(firstHeading).animationName
+        : "",
+    }
+  })
+
+  expect(motion.connectionAnimation).toBe("capability-connection-flow")
+  expect(motion.disciplineAnimation).toBe("capability-discipline-arrival")
 
   await page.setViewportSize({ width: 390, height: 844 })
 
@@ -323,6 +370,29 @@ test("capabilities read as disciplines supporting one operational system", async
   expect(mobile.columns).toBe(2)
   expect(mobile.rows).toBe(3)
   expect(mobile.overflow).toBe(0)
+
+  await page.emulateMedia({ reducedMotion: "reduce" })
+
+  const reducedMotion = await model.evaluate((node) => {
+    const disciplineList = node.querySelector<HTMLElement>(
+      ".capability-field-preview__disciplines",
+    )
+    const firstHeading = node.querySelector<HTMLElement>(
+      ".capability-field-preview__item .heading--3",
+    )
+
+    return {
+      connectionAnimation: disciplineList
+        ? getComputedStyle(disciplineList, "::after").animationName
+        : "",
+      disciplineAnimation: firstHeading
+        ? getComputedStyle(firstHeading).animationName
+        : "",
+    }
+  })
+
+  expect(reducedMotion.connectionAnimation).toBe("none")
+  expect(reducedMotion.disciplineAnimation).toBe("none")
 })
 
 test("architecture before tools reads as principle, boundary and capability", async ({
@@ -364,7 +434,10 @@ test("architecture before tools reads as principle, boundary and capability", as
   expect(assetMarkup).not.toContain("linearGradient")
   expect(assetMarkup).not.toContain("<filter")
   expect(assetMarkup).not.toContain('rx="')
-  expect(assetMarkup.indexOf("SYSTEM BOUNDARY")).toBeLessThan(
+  expect(assetMarkup.indexOf("OPERATIONAL CONTEXT")).toBeLessThan(
+    assetMarkup.indexOf("DEFINED OPERATING MODEL"),
+  )
+  expect(assetMarkup.indexOf("DEFINED OPERATING MODEL")).toBeLessThan(
     assetMarkup.indexOf("Operational capability"),
   )
   expect(assetMarkup.indexOf("Operational capability")).toBeLessThan(
@@ -374,6 +447,9 @@ test("architecture before tools reads as principle, boundary and capability", as
   await page.setViewportSize({ width: 390, height: 844 })
   await expect(section.locator(".home-visual__asset")).not.toBeVisible()
   await expect(section.locator(".home-visual__mobile > li")).toHaveCount(3)
+  await expect(section.locator(".home-visual__mobile")).toContainText(
+    "Defined operating model",
+  )
 
   const mobile = await section.evaluate((node) => {
     const heading = node.querySelector<HTMLElement>("h2")
@@ -533,4 +609,117 @@ test("Spanish homepage selects the approved Spanish visual assets", async ({
   await expect(
     page.locator(".home-visual--architecture-boundary img"),
   ).toHaveAttribute("src", "/brand/visuals/architecture-boundary-es.svg")
+
+  const spanishAssetPaths = [
+    "/brand/visuals/hero-operating-model-es.svg",
+    "/brand/visuals/operational-intelligence-loop-es.svg",
+    "/brand/visuals/architecture-boundary-es.svg",
+  ]
+  const spanishAssetMarkup = await Promise.all(
+    spanishAssetPaths.map(async (path) => {
+      const response = await page.request.get(path)
+      expect(response.ok()).toBe(true)
+      return response.text()
+    }),
+  )
+  const architectureMarkup = spanishAssetMarkup[2]
+
+  expect(architectureMarkup).toContain("MODELO OPERATIVO DEFINIDO")
+  expect(architectureMarkup).toContain("Gobernanza")
+  expect(architectureMarkup).not.toContain("LÍMITE DEL SISTEMA")
+
+  for (const markup of spanishAssetMarkup) {
+    expect(markup).toContain("Gobernanza")
+    expect(markup).not.toContain("Responsables")
+    expect(markup).not.toContain("Propiedad")
+  }
+
+  const mobileVisualCopy = await page
+    .locator(".home-visual__mobile")
+    .allTextContents()
+  expect(mobileVisualCopy.join(" ")).toContain("Gobernanza")
+  expect(mobileVisualCopy.join(" ")).not.toMatch(/Responsables|Propiedad/)
+})
+
+test("Spanish homepage uses the approved operating-model language", async ({
+  page,
+}) => {
+  await page.goto("/es")
+
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Sistemas para operaciones que han crecido más allá de sus herramientas.",
+  )
+  await expect(page.locator(".home-hero__description")).toHaveText(
+    "Brunova diseña y construye sistemas operacionales confiables que integran procesos, datos y automatizaciones hoy fragmentados, para que operaciones complejas puedan crecer con control.",
+  )
+
+  const problem = page.locator(".home-problem")
+  await expect(problem.locator(".home-problem__intro > p")).toHaveText(
+    "El crecimiento revela problemas que ninguna herramienta aislada puede resolver: la operación necesita un sistema detrás.",
+  )
+  await expect(problem.getByText("Transferencias manuales")).toBeVisible()
+  await expect(problem).toContainText(
+    "El estado, el contexto y la gobernanza se diluyen entre equipos.",
+  )
+
+  const operationalIntelligence = page.locator(".operational-intelligence")
+  await expect(
+    operationalIntelligence.getByRole("heading", { level: 2 }),
+  ).toHaveText(
+    "La inteligencia operativa conecta procesos, datos y sistemas en una sola operación.",
+  )
+  await expect(
+    operationalIntelligence.locator(".operational-intelligence__statement > p"),
+  ).toHaveText(
+    "Modelamos la operación como un sistema conectado: cómo fluye el trabajo, qué significan los datos, dónde se toman las decisiones, qué funciones corresponden al software y dónde la automatización o la IA pueden aportar valor con control.",
+  )
+
+  const statementAlignment = await operationalIntelligence
+    .locator(".operational-intelligence__statement")
+    .evaluate((node) => {
+      const heading = node.querySelector<HTMLElement>("h2")
+      const explanation = node.querySelector<HTMLElement>("p")
+
+      return heading && explanation
+        ? Math.abs(
+            heading.getBoundingClientRect().top -
+              explanation.getBoundingClientRect().top,
+          )
+        : Number.POSITIVE_INFINITY
+    })
+
+  expect(statementAlignment).toBeLessThanOrEqual(2)
+
+  const capabilities = page.locator(".home-capabilities")
+  await expect(
+    capabilities.locator(".home-capabilities__intro > p"),
+  ).toHaveText(
+    "Cinco disciplinas de ingeniería que Brunova integra en un sistema operacional.",
+  )
+  await expect(
+    capabilities.locator(".capability-field-preview__core"),
+  ).toHaveText("Un sistema operacional")
+
+  const selectedSystems = page.locator(".selected-work")
+  await expect(selectedSystems.getByRole("heading", { level: 2 })).toHaveText(
+    "Sistemas que hemos diseñado y construido",
+  )
+  await expect(
+    selectedSystems.locator(".selected-proof__reveal-inner > p").nth(1),
+  ).toHaveText(
+    "Flujos automatizados de extracción y reporte conectan sistemas contables y operativos con un almacén de datos y las hojas de cálculo que usan los equipos, para dar acceso consistente a la información financiera.",
+  )
+  await expect(
+    selectedSystems.getByRole("link", {
+      name: "Explorar sistemas diseñados y construidos",
+    }),
+  ).toBeVisible()
+
+  const process = page.locator(".home-process")
+  await expect(process.locator(".home-section-intro > p")).toHaveText(
+    "Un enfoque que parte del estado real del sistema, no de una secuencia rígida.",
+  )
+  await expect(
+    process.getByText("Sistemas, no automatizaciones aisladas."),
+  ).toBeVisible()
 })

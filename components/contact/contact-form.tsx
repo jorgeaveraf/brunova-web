@@ -66,16 +66,16 @@ const englishStatusCopy: Partial<
 const spanishStatusCopy: typeof englishStatusCopy = {
   validation: {
     title: "Revise los campos resaltados.",
-    message: "Algunos datos necesitan atención antes de enviar.",
+    message: "Falta completar o corregir algunos datos antes de enviar.",
   },
   service_error: {
-    title: "No pudimos enviar esto ahora.",
-    message: "Su información sigue aquí; inténtelo de nuevo.",
+    title: "No pudimos enviar su consulta.",
+    message: "Sus datos siguen en el formulario. Inténtelo de nuevo.",
   },
   network_error: {
     title: "La conexión se interrumpió.",
     message:
-      "Su información sigue aquí. Revise la conexión e inténtelo de nuevo.",
+      "Sus datos siguen en el formulario. Revise su conexión e inténtelo de nuevo.",
   },
   rejected: {
     title: "No se pudo aceptar esta solicitud.",
@@ -87,7 +87,7 @@ const spanishStatusCopy: typeof englishStatusCopy = {
   },
   unexpected_error: {
     title: "No pudimos completar esta solicitud.",
-    message: "Su información sigue aquí; inténtelo de nuevo.",
+    message: "Sus datos siguen en el formulario. Inténtelo de nuevo.",
   },
 }
 
@@ -98,7 +98,7 @@ const spanishCategoryLabels: Record<string, string> = {
   data_reporting_reliability: "Confiabilidad de datos y reportes",
   financial_operations: "Operaciones financieras",
   internal_platform: "Plataforma interna",
-  something_else: "Otro problema",
+  something_else: "Otra situación",
 }
 
 function formValues(form: HTMLFormElement): Record<string, FormDataEntryValue> {
@@ -385,16 +385,16 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
         </p>
         <h2>
           {es
-            ? "Gracias. Recibimos su mensaje."
+            ? "Gracias. Recibimos su consulta."
             : "Thanks. We received your note."}
         </h2>
         <p>
           {es
-            ? "Revisaremos el contexto y responderemos con el siguiente paso adecuado."
+            ? "Revisaremos el contexto y le responderemos con un siguiente paso concreto."
             : "We’ll review the context and get back to you with the right next step."}
         </p>
         <button onClick={beginAnotherSubmission} type="button">
-          {es ? "Enviar otro mensaje" : "Send another note"}
+          {es ? "Enviar otra consulta" : "Send another note"}
         </button>
       </div>
     )
@@ -420,7 +420,7 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
       >
         {status === "submitting"
           ? es
-            ? "Enviando su información."
+            ? "Enviando su consulta."
             : "Sending your information."
           : ""}
       </p>
@@ -429,7 +429,7 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
         <div>
           <h2>
             {es
-              ? "Describa el problema operativo."
+              ? "Describa la situación operativa."
               : "Describe the operating problem."}
           </h2>
           <p>
@@ -440,7 +440,7 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
         </div>
         <p>
           {es
-            ? "Una descripción concreta es útil. No necesita un brief elaborado."
+            ? "Una descripción concreta es suficiente; no hace falta preparar un documento formal."
             : "A concrete description is useful. You do not need a polished brief."}
         </p>
       </div>
@@ -480,7 +480,7 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
 
           <div className="contact-field">
             <label htmlFor="email">
-              {es ? "Correo de trabajo" : "Work email"}
+              {es ? "Correo corporativo" : "Work email"}
             </label>
             <input
               aria-describedby={fieldDescriptionId("email")}
@@ -512,7 +512,7 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
           </div>
 
           <div className="contact-field">
-            <label htmlFor="role">{es ? "Puesto" : "Role"}</label>
+            <label htmlFor="role">{es ? "Cargo" : "Role"}</label>
             <input
               aria-describedby={fieldDescriptionId("role")}
               aria-invalid={Boolean(errors.role)}
@@ -533,7 +533,7 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
         <div className="contact-form__fields">
           <div className="contact-field">
             <label htmlFor="problemCategory">
-              {es ? "Categoría del problema" : "Problem category"}
+              {es ? "Tipo de situación" : "Problem category"}
             </label>
             <select
               aria-describedby={fieldDescriptionId("problemCategory")}
@@ -545,7 +545,7 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
             >
               <option disabled value="">
                 {es
-                  ? "Elija la categoría más cercana"
+                  ? "Seleccione la opción más cercana"
                   : "Choose the closest category"}
               </option>
               {problemCategories.map((category) => (
@@ -577,7 +577,7 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
               error={errors.problemDescription}
               helper={
                 es
-                  ? "¿Qué es difícil de operar, dónde aparece la fricción y qué sabe ya?"
+                  ? "¿Qué parte de la operación cuesta ejecutar, dónde aparece la fricción y qué información tiene?"
                   : "What is difficult to operate, where does the friction show up, and what do you already know?"
               }
               name="problemDescription"
@@ -608,12 +608,12 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
               ? "Enviando…"
               : "Sending…"
             : es
-              ? "Enviar contexto"
+              ? "Enviar consulta"
               : "Send the context"}
         </button>
         <p>
           {es
-            ? "Brunova usa esta información únicamente para evaluar y responder al contexto operativo que usted comparta."
+            ? "Brunova usa esta información únicamente para evaluar su consulta y responderle."
             : "Brunova uses this information only to evaluate and respond to the operational context you share."}
         </p>
       </div>

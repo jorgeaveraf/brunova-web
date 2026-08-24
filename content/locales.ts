@@ -1,4 +1,4 @@
-import { aboutNarrative, companyModel } from "@/content/about"
+import { aboutNarrative, companyModel, operationalLens } from "@/content/about"
 import { capabilities } from "@/content/capabilities"
 import {
   architectureInputs,
@@ -26,6 +26,7 @@ import {
   esHomepage,
   esHomepageSymptoms,
   esOperationalIntelligenceElements,
+  esOperationalLens,
   esPrivacyContent,
   esProcessStages,
   esWorkCases,
@@ -72,8 +73,8 @@ export const localizedNavigation = {
     primary: [
       { label: "Capacidades", href: "/es/capabilities" },
       { label: "Proceso", href: "/es/process" },
-      { label: "Proyectos", href: "/es/work" },
-      { label: "Nosotros", href: "/es/about" },
+      { label: "Sistemas", href: "/es/work" },
+      { label: "Brunova", href: "/es/about" },
     ],
     portal: {
       label: "Portal",
@@ -81,11 +82,11 @@ export const localizedNavigation = {
       analyticsEvent: "portal_clicked",
     },
     footer: [
-      { label: "Capacidades", href: "/es/capabilities" },
-      { label: "Proceso", href: "/es/process" },
-      { label: "Proyectos", href: "/es/work" },
-      { label: "Nosotros", href: "/es/about" },
-      { label: "Contacto", href: "/es/contact" },
+      {
+        label: "Hablemos",
+        href: "/es/contact",
+        analyticsEvent: "cta_start_conversation",
+      },
       { label: "Portal", href: "/es/portal", analyticsEvent: "portal_clicked" },
       { label: "Privacidad", href: "/es/privacy" },
     ],
@@ -97,10 +98,10 @@ export const localizedSiteConfig = {
   es: {
     name: "Brunova",
     description:
-      "Brunova es una consultora de ingeniería de sistemas que diseña y construye sistemas confiables que conectan datos, automatización, software e IA para operaciones empresariales complejas.",
+      "Brunova diseña y construye sistemas operacionales confiables que integran datos, automatización, software e IA para operaciones empresariales complejas.",
     descriptor: "Ingeniería de Sistemas · Inteligencia Operativa",
     primaryAction: {
-      label: "Iniciar una conversación",
+      label: "Hablemos",
       href: "/es/contact",
       analyticsEvent: "cta_start_conversation",
     },
@@ -110,6 +111,7 @@ export const localizedSiteConfig = {
 export const englishContent = {
   aboutNarrative,
   companyModel,
+  operationalLens,
   capabilities,
   homepage,
   homepageSymptoms,
@@ -127,6 +129,7 @@ export const localizedContent = {
   es: {
     aboutNarrative: esAboutNarrative,
     companyModel: esCompanyModel,
+    operationalLens: esOperationalLens,
     capabilities: esCapabilities,
     homepage: esHomepage,
     homepageSymptoms: esHomepageSymptoms,

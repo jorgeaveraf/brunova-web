@@ -1,4 +1,5 @@
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
+import { CapabilityFieldPreview } from "@/components/home/capability-field-preview"
 import { HomeVisual } from "@/components/home/home-visual"
 import { Container } from "@/components/layout/container"
 import { Heading } from "@/components/layout/section-heading"
@@ -27,8 +28,8 @@ export function HomePageView({ locale }: { locale: Locale }) {
   const selectedWork = workCases.slice(0, 3)
   const processOutputs = es
     ? [
-        "Evidencia y límite",
-        "Diseño listo",
+        "Evidencia y límites",
+        "Diseño listo para implementar",
         "Capacidad en producción",
         "Mejora continua",
       ]
@@ -40,9 +41,9 @@ export function HomePageView({ locale }: { locale: Locale }) {
       ]
   const processInputs = es
     ? [
-        "Problema poco claro",
-        "Límite conocido",
-        "Diseño listo",
+        "Situación por diagnosticar",
+        "Problema definido",
+        "Diseño aprobado",
         "Sistema activo",
       ]
     : ["Unclear problem", "Known boundary", "Ready design", "Live system"]
@@ -145,29 +146,14 @@ export function HomePageView({ locale }: { locale: Locale }) {
             </Heading>
             <p>
               {es
-                ? "Cinco capacidades conectadas para operaciones que ya no pueden mejorarse una herramienta a la vez."
-                : "Five connected capabilities for operations that can no longer be improved one tool at a time."}
+                ? "Cinco disciplinas de ingeniería que Brunova integra en un sistema operacional."
+                : "Five engineering disciplines Brunova integrates into one operational system."}
             </p>
           </div>
-          <div
-            className="capability-field-preview"
-            role="group"
-            aria-label={es ? "Un sistema operativo" : "One operational system"}
-          >
-            <p className="capability-field-preview__core">
-              {es ? "Un sistema operativo" : "One operational system"}
-            </p>
-            <ol className="capability-field-preview__disciplines">
-              {capabilities.map((capability) => (
-                <li
-                  className="capability-field-preview__item"
-                  key={capability.slug}
-                >
-                  <Heading level={3}>{capability.name}</Heading>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <CapabilityFieldPreview
+            capabilities={capabilities}
+            coreLabel={es ? "Un sistema operacional" : "One operational system"}
+          />
           <ActionLink
             className="home-capabilities__action"
             href={localizedPath(locale, "/capabilities")}
@@ -199,7 +185,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
             </Heading>
             <p>
               {es
-                ? "Distintos problemas operativos. La misma disciplina de ingeniería de sistemas."
+                ? "Problemas operativos distintos, resueltos con la misma disciplina de ingeniería de sistemas."
                 : "Different operational problems. The same systems engineering discipline."}
             </p>
           </div>
@@ -247,7 +233,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
             variant="text"
           >
             {es
-              ? "Explorar sistemas construidos"
+              ? "Explorar sistemas diseñados y construidos"
               : "Explore engineered systems"}
           </ActionLink>
         </Container>
@@ -262,7 +248,7 @@ export function HomePageView({ locale }: { locale: Locale }) {
               </Heading>
               <p>
                 {es
-                  ? "Un enfoque operativo diseñado alrededor del estado del sistema, no como un embudo fijo."
+                  ? "Un enfoque que parte del estado real del sistema, no de una secuencia rígida."
                   : "An operating approach designed around the state of the system—not a fixed funnel."}
               </p>
             </div>

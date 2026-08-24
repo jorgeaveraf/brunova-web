@@ -12,10 +12,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const work = workCases.find((item) => item.slug === slug)
   return createPageMetadata({
-    title: work?.title ?? "System not found",
+    title: work?.systemsTitle ?? "System not found",
     description:
-      work?.summary ??
-      "The requested Brunova selected-work record is unavailable.",
+      work?.systemsSummary ??
+      "The requested Brunova system record is unavailable.",
     path: `/work/${slug}`,
     noIndex: !work,
     followWhenNoIndex: false,

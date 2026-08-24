@@ -10,8 +10,8 @@ export function PortalPageView({ locale }: { locale: Locale }) {
   const portalUrl = getPortalUrl()
   const es = locale === "es"
   const portalDescription = es
-    ? "Un espacio dedicado para sistemas de clientes activos, contexto de entrega y acceso operativo."
-    : "A dedicated workspace for active client systems, delivery context and operational access."
+    ? "Un espacio dedicado para sistemas de clientes activos, contexto de proyectos y acceso operativo."
+    : "A dedicated workspace for active client systems, project context and operational access."
 
   return (
     <main className="route-page portal-page" id="main-content" tabIndex={-1}>

@@ -218,7 +218,7 @@ describe("POST /api/contact", () => {
       code: "VALIDATION_ERROR",
       message: "Revise los campos resaltados e inténtelo de nuevo.",
       fieldErrors: {
-        name: ["Escriba su nombre con 2–100 caracteres."],
+        name: ["El nombre debe tener entre 2 y 100 caracteres."],
         idempotencyKey: ["Se requiere una clave de envío válida."],
       },
     })

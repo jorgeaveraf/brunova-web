@@ -13,18 +13,18 @@ const pageRoutes = [
   },
   {
     path: "/capabilities",
-    heading: "Capabilities that combine into systems.",
+    heading: "Engineering disciplines for operational systems.",
     indexable: true,
   },
   { path: "/process", heading: "Enter where the system is.", indexable: true },
   {
     path: "/work",
-    heading: "Selected systems we’ve engineered.",
+    heading: "Operational systems we’ve engineered.",
     indexable: true,
   },
   ...workCases.map((work) => ({
     path: `/work/${work.slug}`,
-    heading: work.title,
+    heading: work.systemsTitle,
     indexable: true,
   })),
   {
@@ -156,8 +156,8 @@ test("complete user journeys preserve navigation and browser history", async ({
   await expect(page).toHaveURL(/\/work\//)
 
   await page.goto("/")
-  await follow(page, "Work")
-  await page.getByRole("link", { name: "View system" }).first().click()
+  await follow(page, "Systems")
+  await page.locator(".work-record__link").first().click()
   await expect(page).toHaveURL(new RegExp(`/work/${workCases[0].slug}$`))
 
   await page.goto("/work")

@@ -6,23 +6,27 @@ import { esWorkCases } from "@/content/es"
 const spanishRoutes = [
   {
     path: "/es",
-    heading: "Sistemas para operaciones que ya superaron sus herramientas.",
+    heading:
+      "Sistemas para operaciones que han crecido más allá de sus herramientas.",
   },
   {
     path: "/es/capabilities",
-    heading: "Capacidades que se combinan en sistemas.",
+    heading: "Disciplinas de ingeniería para sistemas operacionales.",
   },
-  { path: "/es/process", heading: "Entre donde está el sistema." },
+  {
+    path: "/es/process",
+    heading: "Partimos del estado actual del sistema.",
+  },
   {
     path: "/es/work",
-    heading: "Sistemas seleccionados que hemos desarrollado.",
+    heading: "Sistemas que hemos diseñado y construido.",
   },
   ...esWorkCases.map((work) => ({
     path: `/es/work/${work.slug}`,
-    heading: work.title,
+    heading: work.systemsTitle,
   })),
-  { path: "/es/about", heading: "Construida en el límite operativo." },
-  { path: "/es/contact", heading: "Inicie una conversación." },
+  { path: "/es/about", heading: "Donde la operación exige ingeniería." },
+  { path: "/es/contact", heading: "Hablemos de su operación." },
   { path: "/es/portal", heading: "Portal de Clientes Brunova" },
   { path: "/es/privacy", heading: "Privacidad" },
 ] as const
@@ -55,6 +59,29 @@ test("every Spanish public route is server-localized with complete metadata", as
       /Skip to content|Primary navigation|Start a conversation|View system|Footer navigation/,
     )
   }
+})
+
+test("Spanish Systems copy leads with operational meaning", async ({
+  page,
+}) => {
+  await page.goto("/es/work")
+  await expect(
+    page.getByText(
+      "Una selección de sistemas creados por Brunova para resolver problemas operativos complejos.",
+    ),
+  ).toBeVisible()
+  await expect(page.getByText(/anonimiz/i)).toHaveCount(0)
+  await expect(page.getByText("Sistema de reportes financieros")).toBeVisible()
+
+  await page.goto("/es/work/fragile-automation-modernization")
+  await expect(
+    page.getByRole("heading", { name: "Qué estaba ocurriendo" }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole("heading", { name: "Qué construyó Brunova" }),
+  ).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Qué cambió" })).toBeVisible()
+  await expect(page.getByText(/anonimiz/i)).toHaveCount(0)
 })
 
 test("language utility preserves the equivalent path and only persists explicit choice", async ({
@@ -138,20 +165,18 @@ test("Spanish contact keeps machine enums stable and adds locale to the API enve
   })
   await page.goto("/es/contact")
   await page.getByLabel("Nombre").fill("Ada Lovelace")
-  await page.getByLabel("Correo de trabajo").fill("ada@example.com")
+  await page.getByLabel("Correo corporativo").fill("ada@example.com")
   await page.getByLabel("Empresa").fill("Analytical Engines")
-  await page.getByLabel("Puesto").fill("Directora de Operaciones")
-  await page
-    .getByLabel("Categoría del problema")
-    .selectOption("fragmented_systems")
+  await page.getByLabel("Cargo").fill("Directora de Operaciones")
+  await page.getByLabel("Tipo de situación").selectOption("fragmented_systems")
   await page
     .getByLabel("Descripción del problema")
     .fill(
       "Nuestros datos operativos están fragmentados entre sistemas y relevos manuales.",
     )
-  await page.getByRole("button", { name: "Enviar contexto" }).click()
+  await page.getByRole("button", { name: "Enviar consulta" }).click()
   await expect(
-    page.getByRole("heading", { name: "Gracias. Recibimos su mensaje." }),
+    page.getByRole("heading", { name: "Gracias. Recibimos su consulta." }),
   ).toBeVisible()
   expect(requestBody).toMatchObject({
     locale: "es",

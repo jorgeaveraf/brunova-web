@@ -2,9 +2,9 @@ import type { Metadata } from "next"
 import { CapabilitiesPageView } from "@/components/pages/capabilities-page"
 import { createPageMetadata } from "@/lib/metadata"
 export const metadata: Metadata = createPageMetadata({
-  title: "Capacidades de ingeniería de sistemas",
+  title: "Disciplinas de ingeniería para sistemas operacionales",
   description:
-    "Cinco capacidades conectadas para operaciones complejas: arquitectura, datos, automatización financiera, ingeniería de procesos y modernización.",
+    "Cinco disciplinas de ingeniería que Brunova integra en sistemas operacionales para operaciones complejas.",
   path: "/capabilities",
   locale: "es",
 })

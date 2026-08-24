@@ -4,14 +4,14 @@ export const workDetails = [
   {
     slug: "multi-tenant-financial-integration-platform",
     context:
-      "Multiple operating entities needed a shared way to reach accounting operations and recurring financial information.",
+      "Several operating entities needed one consistent way to access accounting information and recurring financial reports.",
     operationalProblem:
-      "Authentication lifecycle, financial reads and writes, reference resolution and reporting belonged to one operational boundary, but each concern needed consistent handling across entities.",
+      "Connections, financial updates and reporting were managed without one shared system across entities.",
     systemApproach:
-      "A reusable accounting integration platform centralized OAuth lifecycle, financial reads and writes, reference resolution, recurring reporting and downstream operational access.",
+      "Brunova built a reusable system that lets each entity access and update accounting information and produce recurring reports through one controlled point.",
     systemBoundary: {
       summary:
-        "Operating entities enter one controlled integration boundary before financial operations and reporting become available downstream.",
+        "One shared point controls how entities connect to accounting operations and reporting.",
       steps: [
         {
           label: "Operating entities",
@@ -19,11 +19,11 @@ export const workDetails = [
         },
         {
           label: "Connection lifecycle",
-          role: "Centralized OAuth and reference resolution",
+          role: "Centralized account connections (OAuth) and record matching",
         },
         {
           label: "Financial operations",
-          role: "Reads, writes and recurring reporting",
+          role: "Reading and updating accounting information, plus recurring reports",
         },
         {
           label: "Operational access",
@@ -32,12 +32,12 @@ export const workDetails = [
       ],
     },
     engineeringDecisions: [
-      "Centralize connection lifecycle and reference resolution in a shared layer.",
-      "Support both financial reads and writes inside the same defined boundary.",
-      "Make recurring reporting and downstream operational access consumers of the reusable platform.",
+      "Centralize account connections and record matching in one shared integration layer.",
+      "Support reading and updating accounting information inside the same controlled boundary.",
+      "Provide recurring reporting and operational access through reusable platform services.",
     ],
     outcome:
-      "A shared financial integration layer designed for reuse across multiple operating entities.",
+      "Multiple entities can work with financial information through one consistent, reusable system.",
     capabilities: [
       {
         label: "Systems Architecture",
@@ -56,14 +56,14 @@ export const workDetails = [
   {
     slug: "operational-finance-data-infrastructure",
     context:
-      "Recurring financial reporting depended on information held across accounting and operational systems, while non-technical teams needed consistent business-facing access.",
+      "Recurring financial reports relied on information spread across accounting and operational systems.",
     operationalProblem:
-      "The source systems, reporting pipeline and spreadsheet access needed to behave as shared operational infrastructure rather than separate reporting tasks.",
+      "Each reporting task assembled information separately, making consistent access difficult for business teams.",
     systemApproach:
-      "Automated extraction and reporting pipelines connected accounting and operational systems to a data warehouse and business-facing spreadsheets.",
+      "Brunova built one shared reporting system that collects and prepares source information before delivering it to the spreadsheets teams already use.",
     systemBoundary: {
       summary:
-        "Source data moves through a shared reporting boundary before it reaches the business-facing spreadsheet layer.",
+        "Accounting and operational information is prepared once in a shared data foundation before it reaches business reports.",
       steps: [
         {
           label: "Source systems",
@@ -71,7 +71,7 @@ export const workDetails = [
         },
         {
           label: "Extraction pipeline",
-          role: "Automated movement from operational sources",
+          role: "Automated collection and preparation of source information",
         },
         {
           label: "Data warehouse",
@@ -89,7 +89,7 @@ export const workDetails = [
       "Preserve business-facing spreadsheet access for non-technical teams.",
     ],
     outcome:
-      "A reporting path that gives non-technical teams consistent access to recurring financial information.",
+      "Business teams get consistent access to recurring financial information in familiar spreadsheets.",
     capabilities: [
       {
         label: "Data Engineering",
@@ -108,14 +108,14 @@ export const workDetails = [
   {
     slug: "document-intelligence-workflow",
     context:
-      "Operationally sensitive documents needed structured processing without removing the controls that human judgment requires.",
+      "Sensitive operational documents needed consistent processing without removing human oversight.",
     operationalProblem:
-      "Classification and extraction alone were not enough; the workflow also needed validation, human review and a controlled downstream handoff.",
+      "Automated classification and extraction did not by themselves ensure that information was ready for the next operational process.",
     systemApproach:
-      "A document-processing system combined classification, structured extraction, validation, human review and downstream workflow integration.",
+      "Brunova built an AI-assisted document process in which validation and human review are required before information can move forward.",
     systemBoundary: {
       summary:
-        "Automation prepares structured information, while validation and human review remain explicit gates before downstream use.",
+        "AI prepares structured information; validation and human review determine whether it proceeds.",
       steps: [
         {
           label: "Document intake",
@@ -146,7 +146,7 @@ export const workDetails = [
       "A defined handoff into the downstream workflow",
     ],
     outcome:
-      "A controlled document-intelligence workflow in which AI assists while judgment remains bounded and governed.",
+      "Documents can be processed with AI assistance while human judgment remains part of the operation.",
     capabilities: [
       {
         label: "Workflow Engineering",
@@ -161,16 +161,16 @@ export const workDetails = [
   {
     slug: "fragile-automation-modernization",
     context:
-      "An existing automation estate delivered useful behavior but had become brittle, opaque and dependent on individual knowledge.",
+      "Existing automations still supported the operation but had become fragile, difficult to understand and dependent on one person.",
     operationalProblem:
-      "The operating risk came from unclear boundaries, weak observability and recovery, and insufficient deployment and operational documentation.",
+      "Unclear responsibilities and weak operating controls made changes and recovery risky.",
     scalingConstraint:
-      "Working behavior did not justify an unnecessary rewrite, but the surrounding operating model was not strong enough for continued change.",
+      "Rewriting what still worked was not justified, but the existing operating model could not support continued change.",
     systemApproach:
-      "The modernization introduced clearer boundaries, observability, recovery, idempotency, deployment discipline and operational documentation while preserving working behavior where possible.",
+      "Brunova preserved the working behavior and added the controls needed to operate, recover and change it with less risk.",
     systemBoundary: {
       summary:
-        "The useful automation remains, while an explicit operating boundary is added around failure, recovery, deployment and ownership.",
+        "The automation remains in place, with explicit governance and controls for failure, recovery and deployment.",
       steps: [
         {
           label: "Working behavior",
@@ -182,7 +182,7 @@ export const workDetails = [
         },
         {
           label: "Operability controls",
-          role: "Observability, recovery and idempotency",
+          role: "Monitoring, recovery and duplicate-processing prevention (idempotency)",
         },
         {
           label: "Managed system",
@@ -198,11 +198,11 @@ export const workDetails = [
     safeguards: [
       "Observability",
       "Recovery",
-      "Idempotency",
+      "Duplicate-processing prevention (idempotency)",
       "Operational documentation",
     ],
     outcome:
-      "A more operable automation estate with clearer ownership and stronger maintainability.",
+      "The operation keeps the value of its existing automations with clearer governance and a system that is easier to maintain.",
     capabilities: [
       {
         label: "Modernization",

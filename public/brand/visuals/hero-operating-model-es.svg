@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="420" viewBox="0 0 1440 420" role="img" aria-labelledby="title desc">
   <!-- Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 -->
   <title id="title">De una operación fragmentada a una operación confiable</title>
-  <desc id="desc">Trabajo, datos y sistemas convergen mediante un límite arquitectónico definido donde estado, decisiones y responsabilidad forman un modelo operativo gobernado que produce resultados controlados, operables y escalables.</desc>
+  <desc id="desc">Trabajo, datos y sistemas se integran dentro de un límite claro. Estado, decisiones y gobernanza forman un modelo operativo gobernado que produce resultados controlados, operables y escalables.</desc>
   <defs>
     <style>
       :root { color-scheme: light dark; --visual-ink:#F2EFE9; --visual-muted:#A9AAA5; --visual-faint:#575B59; --visual-rule:#3D4341; --visual-boundary:#7E827E; --visual-surface:#151816; --visual-accent:#D8C5A6; --visual-highlight:#F4E8D3; }
@@ -35,7 +35,7 @@
       <g fill="none" stroke="var(--visual-boundary)" stroke-width="1" stroke-opacity=".42"><path d="M0-58l92 27L0-4l-92-27z"/><path d="M0-34l92 27L0 20-92-7z"/><path d="M0-10l92 27L0 44-92 17z"/><path d="M0 14l92 27L0 68-92 41z"/></g>
       <path d="M0-42l92 27L0 12-92-15z" fill="url(#plate)" stroke="var(--visual-accent)" stroke-opacity=".58"/><path d="M0-74V82" stroke="var(--visual-boundary)" stroke-opacity=".34" stroke-dasharray="2 5"/><circle cy="-15" r="4" fill="var(--visual-highlight)"/><circle cy="38" r="2.5" fill="var(--visual-accent)"/>
     </g>
-    <g text-anchor="middle"><g class="ink" font-size="13" font-weight="500"><text x="642" y="326">Estado</text><text x="750" y="326">Decisiones</text><text x="858" y="326">Responsabilidad</text></g></g>
+    <g text-anchor="middle"><g class="ink" font-size="13" font-weight="500"><text x="642" y="326">Estado</text><text x="750" y="326">Decisiones</text><text x="858" y="326">Gobernanza</text></g></g>
     <g aria-hidden="true"><path d="M924 223H958" stroke="var(--visual-accent)" stroke-width="1.5"/><path d="M958 223l10-10 10 10-10 10z" fill="var(--visual-highlight)"/><circle cx="968" cy="223" r="2.5" fill="var(--visual-surface)"/></g>
     <g fill="none" stroke="var(--visual-accent)" stroke-width="2.8" stroke-linecap="round"><path d="M978 223C1060 223 1084 146 1208 146"/><path d="M978 223H1208" opacity=".72"/><path d="M978 223C1060 223 1084 300 1208 300" opacity=".84"/></g>
     <g fill="var(--visual-accent)"><path d="M1216 146l-10-5v10z"/><path d="M1216 223l-10-5v10z"/><path d="M1216 300l-10-5v10z"/></g>

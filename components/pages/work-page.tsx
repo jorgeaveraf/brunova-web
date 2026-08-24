@@ -12,98 +12,84 @@ export function WorkPageView({ locale }: { locale: Locale }) {
   const getWorkDetail = (slug: string) =>
     workDetails.find((detail) => detail.slug === slug)
   const es = locale === "es"
-  const [leadCase, ...supportingCases] = workCases
 
   return (
     <main className="route-page work-page" id="main-content" tabIndex={-1}>
       <RouteContext
         ariaLabel={es ? "Contexto de página" : "Page context"}
         items={[
-          { label: es ? "Explorar" : "Explore" },
-          { label: es ? "Proyectos seleccionados" : "Selected Work" },
+          { href: es ? "/es" : "/", label: es ? "Nosotros" : "Us" },
+          { label: es ? "Sistemas" : "Systems" },
         ]}
       />
       <header className="route-intro work-intro">
         <Container className="work-intro__inner">
           <Heading level={1}>
             {es
-              ? "Sistemas seleccionados que hemos desarrollado."
-              : "Selected systems we’ve engineered."}
+              ? "Sistemas que hemos diseñado y construido."
+              : "Operational systems we’ve engineered."}
           </Heading>
           <div className="route-intro__lede">
             <p>
               {es
-                ? "Un portafolio anonimizado de clases de sistemas construidos alrededor de límites operativos reales. Los expedientes muestran el trabajo sin inventar testimonios, métricas ni interfaces de producto."
-                : "An anonymized portfolio of system classes built around real operational boundaries. The records show the work without inventing client proof, metrics or product interfaces."}
+                ? "Una selección de sistemas creados por Brunova para resolver problemas operativos complejos."
+                : "A selection of systems Brunova has designed and built to solve complex operational problems."}
             </p>
           </div>
         </Container>
       </header>
 
       <Container className="work-folio">
-        <article className="work-folio__lead">
-          <div className="work-folio__number">01</div>
-          <div className="work-folio__lead-copy">
-            <p>{leadCase.homepageTitle}</p>
-            <Heading level={2}>{leadCase.title}</Heading>
-            <p>{leadCase.summary}</p>
-          </div>
-          <ul
-            aria-label={`${es ? "Capacidades en" : "Capabilities in"} ${leadCase.homepageTitle}`}
-          >
-            {getWorkDetail(leadCase.slug)?.capabilities.map((capability) => (
-              <li key={capability.label}>
-                <a
-                  href={`${localizedPath(locale, "/capabilities")}#${capability.capabilitySlug}`}
+        <ol
+          aria-label={es ? "Sistemas seleccionados" : "Selected systems"}
+          className="work-ledger"
+        >
+          {workCases.map((work, index) => (
+            <li key={work.slug}>
+              <article className="work-record">
+                <AnalyticsLink
+                  className="work-record__link"
+                  eventName="case_study_opened"
+                  eventProperties={{ case_slug: work.slug }}
+                  href={localizedPath(locale, `/work/${work.slug}`)}
+                  variant="text"
                 >
-                  {capability.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <AnalyticsLink
-            eventName="case_study_opened"
-            eventProperties={{ case_slug: leadCase.slug }}
-            href={localizedPath(locale, `/work/${leadCase.slug}`)}
-            variant="secondary"
-          >
-            {es ? "Ver sistema" : "View system"}
-          </AnalyticsLink>
-        </article>
+                  <span className="work-record__number">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
 
-        <div className="work-folio__supporting">
-          {supportingCases.map((work, index) => (
-            <article className="work-folio__case" key={work.slug}>
-              <div className="work-folio__number">
-                {String(index + 2).padStart(2, "0")}
-              </div>
-              <p className="work-folio__label">{work.homepageTitle}</p>
-              <Heading level={2}>{work.title}</Heading>
-              <p>{work.summary}</p>
-              <ul
-                aria-label={`${es ? "Capacidades en" : "Capabilities in"} ${work.homepageTitle}`}
-              >
-                {getWorkDetail(work.slug)?.capabilities.map((capability) => (
-                  <li key={capability.label}>
-                    <a
-                      href={`${localizedPath(locale, "/capabilities")}#${capability.capabilitySlug}`}
-                    >
-                      {capability.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-              <AnalyticsLink
-                eventName="case_study_opened"
-                eventProperties={{ case_slug: work.slug }}
-                href={localizedPath(locale, `/work/${work.slug}`)}
-                variant="text"
-              >
-                {es ? "Ver sistema" : "View system"}
-              </AnalyticsLink>
-            </article>
+                  <span className="work-record__identity">
+                    <span className="work-record__class">
+                      {work.systemsClass}
+                    </span>
+                    <Heading level={2}>{work.systemsTitle}</Heading>
+                    <span className="work-record__signal">
+                      {work.systemsSummary}
+                    </span>
+                  </span>
+
+                  <span
+                    aria-label={`${es ? "Capacidades aplicadas en" : "Capabilities in"} ${work.systemsClass}`}
+                    className="work-record__capabilities"
+                    role="list"
+                  >
+                    {getWorkDetail(work.slug)?.capabilities.map(
+                      (capability) => (
+                        <span key={capability.label} role="listitem">
+                          {capability.label}
+                        </span>
+                      ),
+                    )}
+                  </span>
+
+                  <span aria-hidden="true" className="work-record__arrow">
+                    →
+                  </span>
+                </AnalyticsLink>
+              </article>
+            </li>
           ))}
-        </div>
+        </ol>
       </Container>
     </main>
   )

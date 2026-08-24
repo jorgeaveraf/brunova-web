@@ -21,29 +21,31 @@ export function SiteFooter({ locale }: { locale: Locale }) {
           <p>{site.descriptor}</p>
         </div>
 
-        <nav aria-label={shellCopy[locale].footerNavigation}>
-          <ul className="site-footer__links">
-            {navigation.footer.map((item) => (
-              <li key={item.href}>
-                {"analyticsEvent" in item && item.analyticsEvent ? (
-                  <AnalyticsLink
-                    eventName={item.analyticsEvent}
-                    href={item.href}
-                    variant="text"
-                  >
-                    {item.label}
-                  </AnalyticsLink>
-                ) : (
-                  <Link href={item.href}>{item.label}</Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="site-footer__continuation">
+          <nav aria-label={shellCopy[locale].footerNavigation}>
+            <ul className="site-footer__links">
+              {navigation.footer.map((item) => (
+                <li key={item.href}>
+                  {"analyticsEvent" in item && item.analyticsEvent ? (
+                    <AnalyticsLink
+                      eventName={item.analyticsEvent}
+                      href={item.href}
+                      variant="text"
+                    >
+                      {item.label}
+                    </AnalyticsLink>
+                  ) : (
+                    <Link href={item.href}>{item.label}</Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <p className="site-footer__copyright">
-          © {new Date().getFullYear()} Brunova
-        </p>
+          <p className="site-footer__copyright">
+            © {new Date().getFullYear()} Brunova
+          </p>
+        </div>
       </Container>
     </footer>
   )

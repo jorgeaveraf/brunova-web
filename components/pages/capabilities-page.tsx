@@ -1,4 +1,8 @@
+"use client"
+
 import "@/app/core-routes.css"
+
+import { useCallback } from "react"
 
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { Container } from "@/components/layout/container"
@@ -6,13 +10,50 @@ import { RouteContext } from "@/components/layout/route-context"
 import { Heading } from "@/components/layout/section-heading"
 import { ActionLink } from "@/components/ui/action-link"
 import { localizedContent } from "@/content/locales"
+import { useExclusiveDisclosure } from "@/hooks/use-exclusive-disclosure"
 import { localizedPath, type Locale } from "@/lib/i18n"
+
+const capabilityHashes = {
+  "01": "systems-architecture",
+  "02": "data-integration",
+  "03": "financial-automation",
+  "04": "process-engineering",
+  "05": "automation-modernization",
+} as const
 
 export function CapabilitiesPageView({ locale }: { locale: Locale }) {
   const { capabilities, workCases } = localizedContent[locale]
   const getWorkCase = (slug: string) =>
     workCases.find((work) => work.slug === slug)
   const es = locale === "es"
+  const resolveHash = useCallback(
+    (hash: string) => {
+      const value = decodeURIComponent(hash.replace(/^#/, ""))
+      return (
+        capabilities.find(
+          (capability) =>
+            capability.slug === value ||
+            capabilityHashes[capability.index] === value,
+        )?.slug ?? null
+      )
+    },
+    [capabilities],
+  )
+
+  const canonicalHash = useCallback(
+    (slug: string) => {
+      const capability = capabilities.find((item) => item.slug === slug)
+      return capability ? capabilityHashes[capability.index] : slug
+    },
+    [capabilities],
+  )
+  const {
+    activeId: activeSlug,
+    handleNavigationClick,
+    select: selectCapability,
+    setTriggerRef,
+  } = useExclusiveDisclosure({ canonicalHash, resolveHash })
+
   return (
     <main
       className="route-page capability-page"
@@ -22,7 +63,7 @@ export function CapabilitiesPageView({ locale }: { locale: Locale }) {
       <RouteContext
         ariaLabel={es ? "Contexto de página" : "Page context"}
         items={[
-          { label: es ? "Explorar" : "Explore" },
+          { href: es ? "/es" : "/", label: es ? "Nosotros" : "Us" },
           { label: es ? "Capacidades" : "Capabilities" },
         ]}
       />
@@ -30,14 +71,14 @@ export function CapabilitiesPageView({ locale }: { locale: Locale }) {
         <Container className="capability-intro__inner">
           <Heading level={1}>
             {es
-              ? "Capacidades que se combinan en sistemas."
-              : "Capabilities that combine into systems."}
+              ? "Disciplinas de ingeniería para sistemas operacionales."
+              : "Engineering disciplines for operational systems."}
           </Heading>
           <div className="route-intro__lede">
             <p>
               {es
-                ? "Brunova reúne arquitectura, datos, automatización y procesos dentro de un solo límite operativo. Las cinco capacidades son responsabilidades conectadas, no líneas de servicio aisladas."
-                : "Brunova brings architecture, data, automation and process work into one operating boundary. The five capabilities are connected responsibilities—not isolated service lines."}
+                ? "Cinco disciplinas de ingeniería que Brunova integra en un sistema operacional."
+                : "Five engineering disciplines Brunova combines into one operational system."}
             </p>
           </div>
         </Container>
@@ -50,15 +91,28 @@ export function CapabilitiesPageView({ locale }: { locale: Locale }) {
         >
           <p>
             {es
-              ? "Un sistema, cinco responsabilidades"
-              : "One system, five responsibilities"}
+              ? "Un sistema operacional, cinco disciplinas"
+              : "One operational system, five disciplines"}
           </p>
           <ol>
             {capabilities.map((capability) => (
               <li key={capability.slug}>
-                <a href={`#${capability.slug}`}>
+                <a
+                  aria-controls={`${canonicalHash(capability.slug)}-panel`}
+                  aria-current={
+                    activeSlug === capability.slug ? "location" : undefined
+                  }
+                  aria-expanded={activeSlug === capability.slug}
+                  data-active={
+                    activeSlug === capability.slug ? "true" : undefined
+                  }
+                  href={`#${canonicalHash(capability.slug)}`}
+                  onClick={(event) =>
+                    handleNavigationClick(event, capability.slug)
+                  }
+                >
                   <span>{capability.index}</span>
-                  {capability.navigationLabel}
+                  <span>{capability.navigationLabel}</span>
                 </a>
               </li>
             ))}
@@ -71,86 +125,105 @@ export function CapabilitiesPageView({ locale }: { locale: Locale }) {
               .map(getWorkCase)
               .filter((work): work is NonNullable<typeof work> => Boolean(work))
 
+            const hash = canonicalHash(capability.slug)
+            const isOpen = activeSlug === capability.slug
+
             return (
-              <details
+              <article
                 className="capability-spread capability-disclosure"
-                id={capability.slug}
+                data-open={isOpen ? "true" : undefined}
+                id={hash}
                 key={capability.slug}
               >
-                <summary className="capability-spread__title">
+                <button
+                  aria-controls={`${hash}-panel`}
+                  aria-expanded={isOpen}
+                  className="capability-spread__title"
+                  id={`${hash}-trigger`}
+                  onClick={() => selectCapability(capability.slug)}
+                  ref={(node) => {
+                    setTriggerRef(capability.slug, node)
+                  }}
+                  type="button"
+                >
                   <span>{capability.index}</span>
                   <span className="capability-spread__summary-copy">
                     <Heading level={2}>{capability.name}</Heading>
                     <span>{capability.shortDescription}</span>
                   </span>
                   <span aria-hidden="true" className="disclosure-mark" />
-                </summary>
+                </button>
 
-                <div className="capability-spread__body">
-                  <div className="capability-spread__problem">
-                    <Heading level={3}>
-                      {es ? "La clase de problema" : "The class of problem"}
-                    </Heading>
-                    <p>{capability.problemClass}</p>
-                  </div>
+                <div
+                  aria-hidden={!isOpen}
+                  aria-labelledby={`${hash}-trigger`}
+                  className="capability-spread__reveal"
+                  id={`${hash}-panel`}
+                  inert={!isOpen}
+                  role="region"
+                >
+                  <div className="capability-spread__body">
+                    <div className="capability-spread__problem">
+                      <Heading level={3}>
+                        {es ? "Problema que resuelve" : "The class of problem"}
+                      </Heading>
+                      <p>{capability.problemClass}</p>
+                    </div>
 
-                  <div className="capability-spread__approach">
-                    <Heading level={3}>
-                      {es
-                        ? "Cómo lo aborda Brunova"
-                        : "How Brunova approaches it"}
-                    </Heading>
-                    <p>{capability.approach}</p>
-                  </div>
+                    <div className="capability-spread__approach">
+                      <Heading level={3}>
+                        {es
+                          ? "Enfoque de Brunova"
+                          : "How Brunova approaches it"}
+                      </Heading>
+                      <p>{capability.approach}</p>
+                    </div>
 
-                  <div className="capability-spread__outcomes">
-                    <Heading level={3}>
-                      {es
-                        ? "Resultados típicos del sistema"
-                        : "Typical system outcomes"}
-                    </Heading>
-                    <ul>
-                      {capability.outcomes.map((outcome) => (
-                        <li key={outcome}>{outcome}</li>
-                      ))}
-                    </ul>
-                  </div>
+                    <div className="capability-spread__outcomes">
+                      <Heading level={3}>
+                        {es
+                          ? "Resultados habituales"
+                          : "Typical system outcomes"}
+                      </Heading>
+                      <ul>
+                        {capability.outcomes.map((outcome) => (
+                          <li key={outcome}>{outcome}</li>
+                        ))}
+                      </ul>
+                    </div>
 
-                  <div className="capability-spread__concerns">
-                    <Heading level={3}>
-                      {es
-                        ? "Consideraciones operativas"
-                        : "Operational concerns"}
-                    </Heading>
-                    <ul>
-                      {capability.operationalConcerns.map((concern) => (
-                        <li key={concern}>{concern}</li>
-                      ))}
-                    </ul>
-                  </div>
+                    <div className="capability-spread__concerns">
+                      <Heading level={3}>
+                        {es ? "Aspectos operativos" : "Operational concerns"}
+                      </Heading>
+                      <ul>
+                        {capability.operationalConcerns.map((concern) => (
+                          <li key={concern}>{concern}</li>
+                        ))}
+                      </ul>
+                    </div>
 
-                  <div className="capability-spread__work">
-                    <Heading level={3}>
-                      {es
-                        ? "Proyectos seleccionados relacionados"
-                        : "Related selected work"}
-                    </Heading>
-                    <ul>
-                      {relatedWork.map((work) => (
-                        <li key={work.slug}>
-                          <span>{work.homepageTitle}</span>
-                          <ActionLink
-                            href={localizedPath(locale, `/work/${work.slug}`)}
-                            variant="text"
-                          >
-                            {es ? "Ver sistema" : "View system"}
-                          </ActionLink>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="capability-spread__work">
+                      <Heading level={3}>
+                        {es ? "Sistemas relacionados" : "Related systems"}
+                      </Heading>
+                      <ul>
+                        {relatedWork.map((work) => (
+                          <li key={work.slug}>
+                            <span>{work.homepageTitle}</span>
+                            <ActionLink
+                              href={localizedPath(locale, `/work/${work.slug}`)}
+                              variant="text"
+                            >
+                              {es ? "Ver sistema" : "View system"}
+                            </ActionLink>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </details>
+              </article>
             )
           })}
         </div>
@@ -160,14 +233,12 @@ export function CapabilitiesPageView({ locale }: { locale: Locale }) {
         <Container className="route-cta__inner">
           <div>
             <Heading id="capability-next" level={2}>
-              {es
-                ? "Empiece con la operación, no con una etiqueta de servicio."
-                : "Start with the operation, not a service label."}
+              {es ? "Empiece por la operación." : "Start with the operation."}
             </Heading>
             <p>
               {es
-                ? "Brunova puede identificar la combinación de capacidades que el sistema realmente necesita."
-                : "Brunova can identify the combination of capabilities the system actually requires."}
+                ? "Brunova define qué disciplinas necesita el sistema."
+                : "Brunova defines the disciplines the system requires."}
             </p>
           </div>
           <AnalyticsLink
@@ -175,7 +246,7 @@ export function CapabilitiesPageView({ locale }: { locale: Locale }) {
             href={localizedPath(locale, "/contact")}
             variant="primary"
           >
-            {es ? "Iniciar una conversación" : "Start a conversation"}
+            {es ? "Hablemos" : "Start a conversation"}
           </AnalyticsLink>
         </Container>
       </section>
