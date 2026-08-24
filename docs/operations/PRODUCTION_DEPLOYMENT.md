@@ -119,7 +119,7 @@ Non-secret state verified on 2026-08-24:
 | Deployed revision   | `105d5f7a48e0bba824f4be0757d14d231cac0de5`                                                                         |
 | Container           | `brunova-web-web-1`, healthy                                                                                       |
 | Application binding | `127.0.0.1:3000`; externally unreachable                                                                           |
-| Reverse proxy       | Nginx 1.24.0 at `/etc/nginx/sites-available/brunova.mx`, proxying HTTPS to the loopback port                       |
+| Reverse proxy       | Nginx 1.24.0 at `/etc/nginx/sites-available/brunova.mx`; version-controlled production configuration               |
 | Canonical redirects | HTTP redirects to HTTPS; HTTP/HTTPS `www` redirects permanently to `https://brunova.mx`                            |
 | Proxy headers       | `Host`, `X-Real-IP`, `X-Forwarded-For` and `X-Forwarded-Proto` are overwritten at the trusted boundary             |
 | Certificate         | Let's Encrypt ECDSA for `brunova.mx` and `www.brunova.mx`, expiring 2026-11-22; Certbot timer and dry-run verified |
@@ -160,6 +160,8 @@ Nginx is the active production reverse proxy. It:
 - enforce a 16 KiB maximum body for `/api/contact`;
 - allow more than the application's bounded 8-second n8n timeout;
 - preserve the application's CSP and security headers.
+
+The version-controlled production configuration is [`deploy/nginx/brunova.mx.conf`](../../deploy/nginx/brunova.mx.conf). The active VPS file must remain semantically identical except during an atomic, validated update.
 
 Never append an untrusted client-supplied forwarded-address chain. The application uses the validated forwarded address only to derive an in-memory HMAC key; it neither stores nor forwards the raw address.
 
