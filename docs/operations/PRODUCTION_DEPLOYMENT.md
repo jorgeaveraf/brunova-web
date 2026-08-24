@@ -1,6 +1,6 @@
 # Brunova Production Deployment
 
-Status: application and HTTP reverse-proxy staging completed on the production VPS on 2026-08-24. Public cutover and TLS issuance remain blocked because production DNS does not yet resolve to that VPS.
+Status: production live at `https://brunova.mx` since 2026-08-24. Contact delivery remains intentionally disabled and fail-closed until the missing n8n secret and rate-limit salt are supplied.
 
 This is the authoritative operating document for the Brunova public website. The repository is the deployment package; operators must not edit application source or Compose YAML on the VPS.
 
@@ -107,37 +107,30 @@ Verified on 2026-08-24 from a clean clone of the remote deployment branch, witho
 
 This record proves the repository deployment mechanism in an isolated local Docker environment. It does not prove DNS, firewall, TLS, reverse-proxy behavior, n8n delivery, host capacity or real-user performance on the future VPS.
 
-## Production staging record
+## Production deployment record
 
 Non-secret state verified on 2026-08-24:
 
-| Area                | Staged production state                                                                                     |
-| ------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Canonical domain    | `https://brunova.mx`                                                                                        |
-| VPS                 | Ubuntu 24.04.3 LTS                                                                                          |
-| Repository          | `/root/brunova/brunova-web`                                                                                 |
-| Deployed revision   | `105d5f7a48e0bba824f4be0757d14d231cac0de5`                                                                  |
-| Container           | `brunova-web-web-1`, healthy                                                                                |
-| Application binding | `127.0.0.1:3000`; externally unreachable                                                                    |
-| Reverse proxy       | Nginx 1.24.0, dedicated HTTP site at `/etc/nginx/sites-available/brunova.mx`, proxying to the loopback port |
-| Proxy headers       | `Host`, `X-Real-IP`, `X-Forwarded-For` and `X-Forwarded-Proto` are overwritten at the trusted boundary      |
-| Certificate tooling | Certbot 2.9.0 with an active renewal timer; Brunova certificate not yet requested                           |
-| Contact delivery    | Disabled as a complete group; endpoint remains fail-closed until the missing secret and salt are supplied   |
-| Portal              | No external destination configured                                                                          |
+| Area                | Production state                                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Canonical domain    | `https://brunova.mx`                                                                                               |
+| VPS                 | Ubuntu 24.04.3 LTS                                                                                                 |
+| Repository          | `/root/brunova/brunova-web`                                                                                        |
+| Deployed revision   | `105d5f7a48e0bba824f4be0757d14d231cac0de5`                                                                         |
+| Container           | `brunova-web-web-1`, healthy                                                                                       |
+| Application binding | `127.0.0.1:3000`; externally unreachable                                                                           |
+| Reverse proxy       | Nginx 1.24.0 at `/etc/nginx/sites-available/brunova.mx`, proxying HTTPS to the loopback port                       |
+| Canonical redirects | HTTP redirects to HTTPS; HTTP/HTTPS `www` redirects permanently to `https://brunova.mx`                            |
+| Proxy headers       | `Host`, `X-Real-IP`, `X-Forwarded-For` and `X-Forwarded-Proto` are overwritten at the trusted boundary             |
+| Certificate         | Let's Encrypt ECDSA for `brunova.mx` and `www.brunova.mx`, expiring 2026-11-22; Certbot timer and dry-run verified |
+| Contact delivery    | Disabled as a complete group; endpoint remains fail-closed until the missing secret and salt are supplied          |
+| Portal              | No external destination configured                                                                                 |
 
-The container, loopback routes, canonical metadata, production robots/sitemap, Nginx host routing and security headers pass. The existing DNS A/AAAA records point to a different host and `www` has no address record. Do not request the Brunova certificate until DNS is corrected and independently verified from public resolvers.
+The container, public routes, canonical redirects, TLS chain, canonical metadata, production robots/sitemap, Nginx host routing, security headers, restart behavior and certificate-renewal dry-run pass.
 
 ## DNS
 
-No DNS change is part of this pre-deployment increment. Before launch the human/operator must decide:
-
-- the production hostname;
-- apex versus subdomain;
-- whether `www` redirects to the canonical hostname;
-- the VPS IPv4 address for the A record;
-- whether the VPS has stable IPv6 and should receive an AAAA record.
-
-`SITE_URL` must exactly match the final canonical HTTPS origin. DNS should resolve to the VPS before automatic certificate issuance is attempted.
+Production DNS uses A records for the apex and `www`, both targeting the VPS. No AAAA record is published because the VPS has no global IPv6 address. The apex is canonical and `www` redirects permanently to it. `SITE_URL` is exactly `https://brunova.mx`.
 
 ## Firewall and network exposure
 
@@ -155,11 +148,9 @@ Do not publish the application port to `0.0.0.0`. Direct exposure bypasses the t
 
 ## Reverse proxy
 
-### Implemented application decision
+### Implemented production decision
 
-The repository enforces loopback-only application exposure and documents the proxy contract. No proxy is installed or activated by this branch.
-
-The selected proxy must:
+Nginx is the active production reverse proxy. It:
 
 - terminate TLS and redirect HTTP to HTTPS;
 - accept only the approved hostnames;
@@ -172,17 +163,14 @@ The selected proxy must:
 
 Never append an untrusted client-supplied forwarded-address chain. The application uses the validated forwarded address only to derive an in-memory HMAC key; it neither stores nor forwards the raw address.
 
-### Recommendation pending human approval
-
-Caddy is the smallest sensible initial option for one VPS because it combines mature reverse proxying, automatic certificate issuance/renewal and HTTP→HTTPS redirects with little configuration. [deploy/Caddyfile.example](../../deploy/Caddyfile.example) is a reviewed starting point, not an activated infrastructure decision. Nginx remains acceptable if it is already the operator standard and implements the same overwrite semantics.
-
 Reverse-proxy/edge rate limiting is recommended hardening for `/api/contact`, not an application startup blocker. The existing application limit is five attempts per 15 minutes per derived address key and is local to one Node process.
 
 ## TLS
 
 - Certificates belong to the production hostname/operator environment, never Git.
-- With Caddy, certificate issuance and renewal are automatic after DNS and ports 80/443 are correct.
-- HTTP must redirect to HTTPS.
+- Let's Encrypt certificates are managed by Certbot's Nginx integration.
+- The enabled `certbot.timer` handles renewal; a production dry-run passed on 2026-08-24.
+- HTTP redirects to HTTPS and `www` redirects to the canonical apex.
 - The application already emits production HSTS with one-year `max-age` and `includeSubDomains`; it does not request preload.
 - Do not add HSTS preload at the proxy or browser list during initial launch.
 - Confirm the HTTPS site is healthy and rollback-ready before considering any stronger domain-wide policy.
@@ -378,11 +366,10 @@ Do not place actual values in Git.
 
 - Application rate limiting and idempotency-intent memory are per process and reset on restart.
 - The initial deployment replaces one container and may have a short restart window.
-- Reverse proxy software/configuration remains a human approval gate; the Caddy file is only a recommendation.
 - n8n end-to-end delivery cannot be proven until the real workflow and secrets are supplied.
 - Production privacy/legal approval remains outside engineering.
 - Final favicon and social artwork remain a brand decision; the site intentionally does not fabricate them.
-- Real-domain LCP is still unmeasured. Local Docker measurements do not close this item.
+- Initial JavaScript transfer remains above the warning-only 133 KiB budget at approximately 195–200 KiB, depending on route.
 
 ## Post-launch improvements
 
@@ -402,10 +389,14 @@ Optional hardening:
 
 ## Post-deployment performance validation
 
-After the real VPS/domain is live, measure mobile LCP for:
+Production Lighthouse measurements were collected on 2026-08-24 against `https://brunova.mx` at revision `105d5f7a48e0bba824f4be0757d14d231cac0de5`. Values are medians from three mobile Lighthouse runs per route:
 
-- homepage;
-- Contact;
-- one representative system dossier.
+| Route                                  | Performance | LCP      | TBT  | CLS |
+| -------------------------------------- | ----------- | -------- | ---- | --- |
+| `/`                                    | 100         | 1,682 ms | 1 ms | 0   |
+| `/contact`                             | 99          | 1,865 ms | 1 ms | 0   |
+| `/work/document-intelligence-workflow` | 100         | 1,789 ms | 0 ms | 0   |
+| `/es`                                  | 100         | 1,262 ms | 3 ms | 0   |
+| `/es/contact`                          | 99          | 1,867 ms | 7 ms | 0   |
 
-Record the production hostname, timestamp, Git SHA, device/network profile, LCP, CLS and TBT/INP evidence. Do not close the historical local LCP warning using local Docker results.
+Accessibility and SEO scored 100 on all five routes; Best Practices scored 96. The historical real-domain LCP acceptance item is closed. Continue measuring after material application, proxy or hosting changes.
