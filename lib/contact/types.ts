@@ -33,12 +33,13 @@ export type ContactEnvelope = {
   source: "brunova_website"
   form: "contact_v1"
   submitted_at: string
+  locale?: "en" | "es"
   name: string
   email: string
   company: string
   role: string
   problem_category: string
   problem_description: string
-  page_path: "/contact"
+  page_path: "/contact" | "/es/contact"
   utm: ContactUtm
 }

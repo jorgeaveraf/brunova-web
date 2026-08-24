@@ -210,7 +210,7 @@ feature/* → develop → main
 - arbitrary feature branches do not deploy to production.
 - merges into `develop` and `main` require review.
 
-BR-017 Phase 0–6 are approved and integrated into `develop`. Phase 7 whole-system QA is performed on `feature/br-017-system-qa` and remains unmerged until approved.
+BR-017 Phase 0–7 are approved and integrated into `develop`. Phase 8 final visual acceptance is complete on `feature/br-017-final-visual` and remains unmerged pending human review.
 
 ## Current limitations
 
@@ -218,5 +218,5 @@ BR-017 Phase 0–6 are approved and integrated into `develop`. Phase 7 whole-sys
 - Contact delivery requires production n8n values and downstream deduplication keyed by the forwarded browser `idempotency_key`.
 - The in-memory rate limiter is instance-local defense-in-depth. A reverse-proxy or provider-level limit remains recommended for production, but is not required for application startup.
 - Favicon and production Open Graph artwork are not yet supplied.
-- The approved logo is a dark-backed raster source; a future vector/transparent source is recommended.
+- The approved dark-backed raster logo is production-acceptable; a future vector/transparent source is strongly preferred.
 - Privacy copy remains subject to human/legal review before production publication.

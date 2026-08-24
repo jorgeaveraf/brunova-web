@@ -45,6 +45,11 @@ export type WorkCase = {
   homepageTitle: string
   title: string
   summary: string
+  systemsClass: string
+  systemsTitle: string
+  systemsSummary: string
+  systemType: string
+  focus: readonly string[]
   capabilitySignals: readonly string[]
   publicationStatus: "approved-summary"
   detailStatus: "publication-review-required"

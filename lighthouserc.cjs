@@ -17,6 +17,8 @@ module.exports = {
         `${baseUrl}/`,
         `${baseUrl}/contact`,
         `${baseUrl}/work/document-intelligence-workflow`,
+        `${baseUrl}/es`,
+        `${baseUrl}/es/contact`,
       ],
     },
     assert: {

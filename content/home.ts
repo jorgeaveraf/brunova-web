@@ -12,10 +12,13 @@ export const homepage = {
     primaryAction: "Start a conversation",
     secondaryAction: "Explore our work",
   },
+  category:
+    "Systems engineering for operations too complex to manage through tools alone.",
   problem: {
     title: "When operations become systems problems.",
     description:
       "Growth often exposes a problem that individual tools cannot solve: the operation itself no longer behaves like a system.",
+    transition: "The solution is not another tool. It is a better system.",
   },
   operationalIntelligence: {
     title:
@@ -32,14 +35,9 @@ export const homepage = {
     title: "How Brunova works",
     entryTitle: "Enter where the system needs work.",
     entryDescription:
-      "Discovery is available when the problem is unclear—not a mandatory first step. We can begin with architecture, a defined build or an existing production system.",
+      "Discovery is available when the problem is unclear—not a mandatory first step.",
   },
   differentiatorsTitle: "Principles we operate by",
-  finalCta: {
-    title: "Have an operation that has outgrown the way it was built?",
-    description: "Let’s map the system behind it.",
-    action: "Start a conversation",
-  },
 } as const
 
 export const homepageSymptoms = [

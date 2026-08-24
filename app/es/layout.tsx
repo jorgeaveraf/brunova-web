@@ -1,0 +1,42 @@
+import type { Metadata } from "next"
+import type { PropsWithChildren } from "react"
+
+import { RootDocument } from "@/components/layout/root-document"
+import { localizedSiteConfig } from "@/content/locales"
+import { getSiteUrl, isSeoIndexingEnabled } from "@/lib/env"
+import { languageAlternates } from "@/lib/i18n"
+
+import "../globals.css"
+import "../site-shell.css"
+
+const site = localizedSiteConfig.es
+
+export const metadata: Metadata = {
+  metadataBase: getSiteUrl(),
+  title: {
+    default: "Brunova — Ingeniería de Sistemas e Inteligencia Operativa",
+    template: "%s — Brunova",
+  },
+  description: site.description,
+  alternates: { canonical: "/es", languages: languageAlternates("/") },
+  openGraph: {
+    type: "website",
+    locale: "es_MX",
+    siteName: "Brunova",
+    title: "Brunova — Ingeniería de Sistemas e Inteligencia Operativa",
+    description: site.description,
+    url: "/es",
+  },
+  twitter: {
+    card: "summary",
+    title: "Brunova — Ingeniería de Sistemas e Inteligencia Operativa",
+    description: site.description,
+  },
+  robots: isSeoIndexingEnabled()
+    ? { index: true, follow: true }
+    : { index: false, follow: false, noarchive: true },
+}
+
+export default function SpanishLayout({ children }: PropsWithChildren) {
+  return <RootDocument locale="es">{children}</RootDocument>
+}

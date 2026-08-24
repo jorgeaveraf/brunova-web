@@ -107,6 +107,7 @@ describe("POST /api/contact", () => {
       source: "brunova_website",
       form: "contact_v1",
       submitted_at: "2026-08-16T18:00:00.000Z",
+      locale: "en",
       name: "Ada Lovelace",
       email: "ada@example.com",
       company: "Analytical Engines",
@@ -193,6 +194,32 @@ describe("POST /api/contact", () => {
       fieldErrors: {
         name: expect.any(Array),
         idempotencyKey: expect.any(Array),
+      },
+    })
+  })
+
+  it("localizes validation errors while preserving normalized fields", async () => {
+    const { handler } = testHandler()
+    const response = await handler(
+      contactRequest(
+        {
+          ...validRequest,
+          locale: "es",
+          pagePath: "/es/contact",
+          name: "A",
+        },
+        { "Idempotency-Key": "not-a-uuid" },
+      ),
+    )
+    const body = await response.json()
+
+    expect(body).toMatchObject({
+      ok: false,
+      code: "VALIDATION_ERROR",
+      message: "Revise los campos resaltados e inténtelo de nuevo.",
+      fieldErrors: {
+        name: ["El nombre debe tener entre 2 y 100 caracteres."],
+        idempotencyKey: ["Se requiere una clave de envío válida."],
       },
     })
   })

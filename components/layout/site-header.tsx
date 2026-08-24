@@ -1,33 +1,33 @@
-import Link from "next/link"
-
 import { AnalyticsLink } from "@/components/analytics/analytics-link"
 import { BrunovaLogo } from "@/components/brand/brunova-logo"
+import { ActiveNavigationLink } from "@/components/layout/active-navigation-link"
 import { Container } from "@/components/layout/container"
 import { MobileNavigation } from "@/components/layout/mobile-navigation"
-import { ThemeControl } from "@/components/theme/theme-control"
-import { primaryNavigation, portalNavigation } from "@/content/navigation"
-import { siteConfig } from "@/content/site"
+import {
+  localizedNavigation,
+  localizedSiteConfig,
+  shellCopy,
+} from "@/content/locales"
+import type { Locale } from "@/lib/i18n"
 
-export function SiteHeader() {
+export function SiteHeader({ locale }: { locale: Locale }) {
+  const navigation = localizedNavigation[locale]
+  const site = localizedSiteConfig[locale]
+  const copy = shellCopy[locale]
   return (
     <header className="site-header">
       <a className="skip-link" href="#main-content">
-        Skip to content
+        {copy.skip}
       </a>
-      <Container className="site-header__identity">
-        <BrunovaLogo location="header" />
-        <p>{siteConfig.descriptor}</p>
-      </Container>
-
       <Container className="site-header__bar">
-        <div className="site-header__mobile-brand">
+        <div className="site-header__brand">
           <BrunovaLogo location="header" />
         </div>
-        <nav aria-label="Primary navigation" className="desktop-navigation">
+        <nav aria-label={copy.primaryNavigation} className="desktop-navigation">
           <ul className="desktop-navigation__links">
-            {primaryNavigation.map((item) => (
+            {navigation.primary.map((item) => (
               <li key={item.href}>
-                <Link href={item.href}>{item.label}</Link>
+                <ActiveNavigationLink item={item} />
               </li>
             ))}
           </ul>
@@ -35,26 +35,26 @@ export function SiteHeader() {
 
         <div className="site-header__utilities">
           <AnalyticsLink
-            eventName={portalNavigation.analyticsEvent}
-            href={portalNavigation.href}
+            eventName={navigation.portal.analyticsEvent}
+            href={navigation.portal.href}
             variant="utility"
           >
-            {portalNavigation.label}
+            {navigation.portal.label}
           </AnalyticsLink>
-          <ThemeControl compact />
           <AnalyticsLink
-            eventName={siteConfig.primaryAction.analyticsEvent}
-            href={siteConfig.primaryAction.href}
+            eventName={site.primaryAction.analyticsEvent}
+            href={site.primaryAction.href}
             variant="primary"
           >
-            {siteConfig.primaryAction.label}
+            {site.primaryAction.label}
           </AnalyticsLink>
         </div>
 
         <MobileNavigation
-          portalItem={portalNavigation}
-          primaryAction={siteConfig.primaryAction}
-          primaryItems={primaryNavigation}
+          copy={copy}
+          portalItem={navigation.portal}
+          primaryAction={site.primaryAction}
+          primaryItems={navigation.primary}
         />
       </Container>
     </header>

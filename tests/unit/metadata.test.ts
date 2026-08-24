@@ -10,7 +10,10 @@ describe("page metadata", () => {
       path: "/work",
     })
 
-    expect(metadata.alternates).toEqual({ canonical: "/work" })
+    expect(metadata.alternates).toEqual({
+      canonical: "/work",
+      languages: { "x-default": "/work", en: "/work", es: "/es/work" },
+    })
     expect(metadata.openGraph).toMatchObject({
       type: "website",
       title: "Selected systems",
@@ -20,6 +23,18 @@ describe("page metadata", () => {
       card: "summary",
       title: "Selected systems",
     })
+  })
+
+  it("localizes canonical and social URLs without changing route semantics", () => {
+    const metadata = createPageMetadata({
+      title: "Sistemas seleccionados",
+      description: "Un portafolio anonimizado.",
+      path: "/work",
+      locale: "es",
+    })
+
+    expect(metadata.alternates).toMatchObject({ canonical: "/es/work" })
+    expect(metadata.openGraph).toMatchObject({ url: "/es/work" })
   })
 
   it("supports intentional noindex route boundaries", () => {

@@ -1,9 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { useEffect, useId, useRef, useState } from "react"
 
-import { ThemeControl } from "@/components/theme/theme-control"
 import type { NavigationItem } from "@/content/types"
 import { trackEvent } from "@/lib/analytics"
 
@@ -11,11 +11,24 @@ export function MobileNavigation({
   primaryItems,
   primaryAction,
   portalItem,
+  copy = {
+    menu: "Menu",
+    navigation: "Navigation",
+    close: "Close",
+    mobileNavigation: "Mobile navigation",
+  },
 }: {
   primaryItems: readonly NavigationItem[]
   primaryAction: NavigationItem
   portalItem: NavigationItem
+  copy?: {
+    menu: string
+    navigation: string
+    close: string
+    mobileNavigation: string
+  }
 }) {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const dialogId = useId()
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -58,7 +71,7 @@ export function MobileNavigation({
         ref={triggerRef}
         type="button"
       >
-        Menu
+        {copy.menu}
       </button>
 
       <dialog
@@ -77,21 +90,27 @@ export function MobileNavigation({
       >
         <div className="mobile-navigation__panel">
           <div className="mobile-navigation__heading">
-            <h2 id={`${dialogId}-title`}>Navigation</h2>
+            <h2 id={`${dialogId}-title`}>{copy.navigation}</h2>
             <button
               className="mobile-navigation__close"
               onClick={closeNavigation}
               type="button"
             >
-              Close
+              {copy.close}
             </button>
           </div>
 
-          <nav aria-label="Mobile navigation">
+          <nav aria-label={copy.mobileNavigation}>
             <ul className="mobile-navigation__links">
               {primaryItems.map((item, index) => (
                 <li key={item.href}>
                   <Link
+                    aria-current={
+                      pathname === item.href ||
+                      pathname?.startsWith(`${item.href}/`)
+                        ? "page"
+                        : undefined
+                    }
                     href={item.href}
                     onClick={() => handleTrackedNavigation(item)}
                     ref={index === 0 ? firstLinkRef : undefined}
@@ -121,7 +140,6 @@ export function MobileNavigation({
             >
               {primaryAction.label}
             </Link>
-            <ThemeControl compact />
           </div>
         </div>
       </dialog>

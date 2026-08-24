@@ -12,6 +12,7 @@ const securityHeaders = createSecurityHeaders({
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
+  devIndicators: { position: "bottom-right" },
   output: "standalone",
   poweredByHeader: false,
   reactStrictMode: true,
@@ -27,6 +28,10 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/portal",
+        headers: portalBoundaryHeaders,
+      },
+      {
+        source: "/es/portal",
         headers: portalBoundaryHeaders,
       },
     ]
