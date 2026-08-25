@@ -62,11 +62,17 @@ if (!sitemapBody.includes(process.env.SITE_URL)) {
   throw new Error("Sitemap does not use SITE_URL")
 }
 
-const contactConfigured = [
-  process.env.N8N_CONTACT_WEBHOOK_URL,
-  process.env.N8N_CONTACT_WEBHOOK_SECRET,
-  process.env.CONTACT_RATE_LIMIT_SALT,
-].every((value) => typeof value === "string" && value.trim().length > 0)
+const configured = (value) =>
+  typeof value === "string" && value.trim().length > 0
+const bearerConfigured = configured(process.env.N8N_CONTACT_WEBHOOK_SECRET)
+const basicConfigured =
+  configured(process.env.N8N_CONTACT_BASIC_AUTH_USER) &&
+  configured(process.env.N8N_CONTACT_BASIC_AUTH_PASSWORD)
+const contactConfigured =
+  configured(process.env.N8N_CONTACT_WEBHOOK_URL) &&
+  configured(process.env.CONTACT_RATE_LIMIT_SALT) &&
+  (bearerConfigured || basicConfigured) &&
+  !(bearerConfigured && basicConfigured)
 
 if (!contactConfigured) {
   const contact = await fetch(new URL("/api/contact", applicationOrigin), {

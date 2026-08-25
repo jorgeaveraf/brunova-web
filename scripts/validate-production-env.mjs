@@ -55,17 +55,34 @@ export function validateProductionEnvironment(environment) {
   const contactValues = [
     environment.N8N_CONTACT_WEBHOOK_URL,
     environment.N8N_CONTACT_WEBHOOK_SECRET,
+    environment.N8N_CONTACT_BASIC_AUTH_USER,
+    environment.N8N_CONTACT_BASIC_AUTH_PASSWORD,
     environment.CONTACT_RATE_LIMIT_SALT,
   ]
-  const configuredContactValues = contactValues.filter(defined).length
+  const hasContactConfiguration = contactValues.some(defined)
+  const hasBearerAuth = defined(environment.N8N_CONTACT_WEBHOOK_SECRET)
+  const hasBasicUsername = defined(environment.N8N_CONTACT_BASIC_AUTH_USER)
+  const hasBasicPassword = defined(environment.N8N_CONTACT_BASIC_AUTH_PASSWORD)
+  const hasBasicAuth = hasBasicUsername && hasBasicPassword
 
-  if (
-    configuredContactValues > 0 &&
-    configuredContactValues < contactValues.length
-  ) {
-    errors.push(
-      "contact integration must configure all three N8N/rate-limit values or none",
-    )
+  if (hasContactConfiguration) {
+    if (
+      !defined(environment.N8N_CONTACT_WEBHOOK_URL) ||
+      !defined(environment.CONTACT_RATE_LIMIT_SALT)
+    ) {
+      errors.push(
+        "contact integration requires the webhook URL and rate-limit salt",
+      )
+    }
+    if (hasBasicUsername !== hasBasicPassword) {
+      errors.push("contact Basic Auth requires both username and password")
+    }
+    if (!hasBearerAuth && !hasBasicAuth) {
+      errors.push("contact integration requires one authentication mode")
+    }
+    if (hasBearerAuth && hasBasicAuth) {
+      errors.push("contact authentication modes are mutually exclusive")
+    }
   }
 
   if (defined(environment.N8N_CONTACT_WEBHOOK_URL)) {
@@ -102,7 +119,12 @@ export function validateProductionEnvironment(environment) {
   }
 
   return {
-    contactEnabled: configuredContactValues === contactValues.length,
+    contactEnabled:
+      hasContactConfiguration &&
+      defined(environment.N8N_CONTACT_WEBHOOK_URL) &&
+      defined(environment.CONTACT_RATE_LIMIT_SALT) &&
+      (hasBearerAuth || hasBasicAuth) &&
+      !(hasBearerAuth && hasBasicAuth),
     portalEnabled: defined(environment.PORTAL_URL),
     siteOrigin: siteUrl.origin,
   }

@@ -28,6 +28,8 @@ export default defineConfig({
       SEO_INDEXING_ENABLED: "false",
       N8N_CONTACT_WEBHOOK_URL: "",
       N8N_CONTACT_WEBHOOK_SECRET: "",
+      N8N_CONTACT_BASIC_AUTH_USER: "",
+      N8N_CONTACT_BASIC_AUTH_PASSWORD: "",
       CONTACT_RATE_LIMIT_SALT: "",
       PORTAL_URL: "https://portal.example.test",
     },

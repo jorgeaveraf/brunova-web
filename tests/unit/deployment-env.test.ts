@@ -23,7 +23,8 @@ describe("production deployment environment", () => {
       validateProductionEnvironment({
         ...validEnvironment,
         CONTACT_RATE_LIMIT_SALT: "safe-example-salt-value",
-        N8N_CONTACT_WEBHOOK_SECRET: "safe-example-secret",
+        N8N_CONTACT_BASIC_AUTH_PASSWORD: "safe-example-password",
+        N8N_CONTACT_BASIC_AUTH_USER: "safe-example-user",
         N8N_CONTACT_WEBHOOK_URL: "https://automation.example/webhook/contact",
         PORTAL_URL: "https://portal.example/client",
       }),
@@ -45,7 +46,40 @@ describe("production deployment environment", () => {
         ...validEnvironment,
         N8N_CONTACT_WEBHOOK_URL: "https://automation.example/webhook/contact",
       }),
-    ).toThrow("all three")
+    ).toThrow("rate-limit salt")
+  })
+
+  it("rejects partial or ambiguous Basic Auth configuration", () => {
+    expect(() =>
+      validateProductionEnvironment({
+        ...validEnvironment,
+        CONTACT_RATE_LIMIT_SALT: "safe-example-salt-value",
+        N8N_CONTACT_BASIC_AUTH_USER: "safe-example-user",
+        N8N_CONTACT_WEBHOOK_URL: "https://automation.example/webhook/contact",
+      }),
+    ).toThrow("both username and password")
+
+    expect(() =>
+      validateProductionEnvironment({
+        ...validEnvironment,
+        CONTACT_RATE_LIMIT_SALT: "safe-example-salt-value",
+        N8N_CONTACT_BASIC_AUTH_PASSWORD: "safe-example-password",
+        N8N_CONTACT_BASIC_AUTH_USER: "safe-example-user",
+        N8N_CONTACT_WEBHOOK_SECRET: "safe-example-secret",
+        N8N_CONTACT_WEBHOOK_URL: "https://automation.example/webhook/contact",
+      }),
+    ).toThrow("mutually exclusive")
+  })
+
+  it("retains complete legacy Bearer configuration", () => {
+    expect(
+      validateProductionEnvironment({
+        ...validEnvironment,
+        CONTACT_RATE_LIMIT_SALT: "safe-example-salt-value",
+        N8N_CONTACT_WEBHOOK_SECRET: "safe-example-secret",
+        N8N_CONTACT_WEBHOOK_URL: "https://automation.example/webhook/contact",
+      }),
+    ).toMatchObject({ contactEnabled: true })
   })
 
   it("rejects public exposure of the application port", () => {
