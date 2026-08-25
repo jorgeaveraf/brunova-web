@@ -445,15 +445,17 @@ test("architecture before tools reads as principle, boundary and capability", as
   )
 
   await page.setViewportSize({ width: 390, height: 844 })
-  await expect(section.locator(".home-visual__asset")).not.toBeVisible()
-  await expect(section.locator(".home-visual__mobile > li")).toHaveCount(3)
-  await expect(section.locator(".home-visual__mobile")).toContainText(
-    "Defined operating model",
+  const mobileAsset = section.locator(".home-visual__asset")
+  await expect(mobileAsset).toBeVisible()
+  await expect(section.locator(".home-visual__mobile")).toHaveCount(0)
+  await expect(section.locator(".home-visual__media source")).toHaveAttribute(
+    "srcset",
+    "/brand/visuals/architecture-boundary-mobile.svg",
   )
 
   const mobile = await section.evaluate((node) => {
     const heading = node.querySelector<HTMLElement>("h2")
-    const model = node.querySelector<HTMLElement>(".home-visual__mobile")
+    const model = node.querySelector<HTMLElement>(".home-visual__media")
 
     return {
       headingBeforeModel:
@@ -537,21 +539,19 @@ for (const state of [
   })
 }
 
-test("mobile uses the readable system sequence and honors reduced motion", async ({
+test("mobile uses the approved responsive hero asset and honors reduced motion", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" })
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto("/")
 
-  await expect(
-    page.getByRole("list", {
-      name: "From fragmented operation to reliable operation",
-    }),
-  ).toBeVisible()
-  await expect(
-    page.locator(".home-visual--hero .home-visual__asset"),
-  ).not.toBeVisible()
+  const heroAsset = page.locator(".home-visual--hero .home-visual__asset")
+  await expect(heroAsset).toBeVisible()
+  expect(
+    await heroAsset.evaluate((image: HTMLImageElement) => image.currentSrc),
+  ).toContain("/brand/visuals/hero-operating-model-mobile.svg")
+  await expect(page.locator(".home-visual__mobile")).toHaveCount(0)
 
   const primaryAction = page
     .getByRole("main")
@@ -585,7 +585,27 @@ for (const width of [320, 375, 390, 414, 768]) {
       () => document.documentElement.scrollWidth - window.innerWidth,
     )
     expect(overflow).toBeLessThanOrEqual(0)
-    await expect(page.locator(".home-visual__mobile > li")).toHaveCount(9)
+    await expect(page.locator(".home-visual__asset")).toHaveCount(3)
+    expect(
+      await page
+        .locator(".home-visual__asset")
+        .evaluateAll((images) =>
+          images.every(
+            (image) =>
+              getComputedStyle(image).display !== "none" &&
+              image.getBoundingClientRect().width > 0,
+          ),
+        ),
+    ).toBe(true)
+    await expect(page.locator(".home-visual__mobile")).toHaveCount(0)
+    const sources = await page
+      .locator(".home-visual__media source")
+      .evaluateAll((elements) =>
+        elements.map((source) => source.getAttribute("srcset") ?? ""),
+      )
+    for (const source of sources) {
+      expect(source).toContain("-mobile")
+    }
     await expect(page.locator(".process-sequence > li")).toHaveCount(4)
   })
 }
@@ -614,6 +634,9 @@ test("Spanish homepage selects the approved Spanish visual assets", async ({
     "/brand/visuals/hero-operating-model-es.svg",
     "/brand/visuals/operational-intelligence-loop-es.svg",
     "/brand/visuals/architecture-boundary-es.svg",
+    "/brand/visuals/hero-operating-model-mobile-es.svg",
+    "/brand/visuals/operational-intelligence-loop-mobile-es.svg",
+    "/brand/visuals/architecture-boundary-mobile-es.svg",
   ]
   const spanishAssetMarkup = await Promise.all(
     spanishAssetPaths.map(async (path) => {
@@ -634,11 +657,42 @@ test("Spanish homepage selects the approved Spanish visual assets", async ({
     expect(markup).not.toContain("Propiedad")
   }
 
-  const mobileVisualCopy = await page
-    .locator(".home-visual__mobile")
-    .allTextContents()
-  expect(mobileVisualCopy.join(" ")).toContain("Gobernanza")
-  expect(mobileVisualCopy.join(" ")).not.toMatch(/Responsables|Propiedad/)
+  await page.setViewportSize({ width: 390, height: 844 })
+  const mobileSources = await page
+    .locator(".home-visual__media source")
+    .evaluateAll((elements) =>
+      elements.map((source) => source.getAttribute("srcset") ?? ""),
+    )
+  expect(mobileSources).toEqual(
+    expect.arrayContaining([
+      expect.stringContaining("hero-operating-model-mobile-es.svg"),
+      expect.stringContaining("operational-intelligence-loop-mobile-es.svg"),
+      expect.stringContaining("architecture-boundary-mobile-es.svg"),
+    ]),
+  )
+})
+
+test("forbidden feedback-loop copy is absent from public homepage sources", async ({
+  page,
+}) => {
+  const forbidden = [
+    ["The operational state", "returns to the model."].join(" "),
+    ["El estado operativo", "vuelve al modelo."].join(" "),
+  ]
+  const paths = [
+    "/",
+    "/es",
+    "/brand/visuals/operational-intelligence-loop.svg",
+    "/brand/visuals/operational-intelligence-loop-es.svg",
+    "/brand/visuals/operational-intelligence-loop-mobile.svg",
+    "/brand/visuals/operational-intelligence-loop-mobile-es.svg",
+  ]
+
+  for (const path of paths) {
+    const response = await page.request.get(path)
+    const body = await response.text()
+    for (const sentence of forbidden) expect(body).not.toContain(sentence)
+  }
 })
 
 test("Spanish homepage uses the approved operating-model language", async ({

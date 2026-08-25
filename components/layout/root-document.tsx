@@ -40,7 +40,7 @@ export function RootDocument({
           <SiteHeader locale={locale} />
           <div className="site-shell__content">{children}</div>
           <SiteFooter locale={locale} />
-          <SiteUtilities locale={locale} />
+          <SiteUtilities locale={locale} placement="shell" />
           <BackToTop locale={locale} />
         </ThemeProvider>
       </body>

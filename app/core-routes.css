@@ -3137,7 +3137,26 @@ details[open] > summary .disclosure-mark::after {
   }
 
   .case-dossier__index {
+    gap: var(--space-md);
     padding-block: var(--space-md);
+  }
+
+  .case-dossier__identity {
+    gap: var(--space-md);
+  }
+
+  .case-dossier__brief {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+
+  .case-dossier__brief > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .case-dossier__navigation {
+    gap: var(--space-xs);
+    padding-block-start: var(--space-md);
   }
 
   .case-dossier__name {
@@ -3145,7 +3164,7 @@ details[open] > summary .disclosure-mark::after {
   }
 
   .case-dossier__index nav a {
-    min-height: calc(var(--control-height) + var(--space-xs));
+    min-height: var(--control-height);
     padding-inline-end: var(--space-sm);
   }
 }

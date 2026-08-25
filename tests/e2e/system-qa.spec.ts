@@ -257,6 +257,7 @@ test("theme choice persists across routes and system mode follows the browser", 
   await page.setViewportSize({ width: 390, height: 844 })
   await page.emulateMedia({ colorScheme: "dark" })
   await page.goto("/")
+  await page.getByRole("button", { name: "Menu" }).click()
   await page.getByRole("button", { name: "Appearance" }).click()
   const themes = page.getByRole("group", { name: "Appearance" })
   await themes.getByText("System", { exact: true }).click()
@@ -264,7 +265,6 @@ test("theme choice persists across routes and system mode follows the browser", 
   await themes.getByText("Light", { exact: true }).click()
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light")
   await page.getByRole("button", { name: "Appearance" }).click()
-  await page.getByRole("button", { name: "Menu" }).click()
   await page
     .getByRole("dialog", { name: "Navigation" })
     .getByRole("link", { name: "Process" })

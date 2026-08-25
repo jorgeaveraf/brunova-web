@@ -111,6 +111,7 @@ test("appearance and language utilities are independent, dismissible and accessi
 }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto("/")
+  await page.getByRole("button", { name: "Menu" }).click()
 
   const appearance = page.getByRole("button", { name: "Appearance" })
   await appearance.click()
