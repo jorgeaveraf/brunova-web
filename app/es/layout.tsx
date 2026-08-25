@@ -18,6 +18,9 @@ export const metadata: Metadata = {
     template: "%s — Brunova",
   },
   description: site.description,
+  icons: {
+    icon: [{ url: "/brand/brunova-mark.svg", type: "image/svg+xml" }],
+  },
   alternates: { canonical: "/es", languages: languageAlternates("/") },
   openGraph: {
     type: "website",

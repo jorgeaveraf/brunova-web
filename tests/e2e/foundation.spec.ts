@@ -33,6 +33,23 @@ test("site shell and health endpoint are operational", async ({ page }) => {
   expect(accessibility.violations).toEqual([])
 })
 
+test("the approved Brunova mark is published as the browser icon", async ({
+  page,
+}) => {
+  await page.goto("/")
+
+  const icon = page.locator('link[rel="icon"]')
+  await expect(icon).toHaveAttribute("type", "image/svg+xml")
+  await expect(icon).toHaveAttribute("href", "/brand/brunova-mark.svg")
+
+  const response = await page.request.get("/brand/brunova-mark.svg")
+  expect(response.status()).toBe(200)
+  expect(response.headers()["content-type"]).toContain("image/svg+xml")
+  expect(await response.text()).toContain(
+    'transform="translate(-72.996242 237.872848) scale(0.1 -0.1)"',
+  )
+})
+
 test("explicit theme preference persists", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto("/")
