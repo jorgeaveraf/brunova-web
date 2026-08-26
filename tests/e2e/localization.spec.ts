@@ -19,7 +19,7 @@ const spanishRoutes = [
   },
   {
     path: "/es/work",
-    heading: "Sistemas que hemos diseñado y construido.",
+    heading: "Experiencia de ingeniería seleccionada.",
   },
   ...esWorkCases.map((work) => ({
     path: `/es/work/${work.slug}`,
@@ -67,7 +67,7 @@ test("Spanish Systems copy leads with operational meaning", async ({
   await page.goto("/es/work")
   await expect(
     page.getByText(
-      "Una selección de sistemas creados por Brunova para resolver problemas operativos complejos.",
+      "Una selección de sistemas diseñados y construidos durante la experiencia profesional previa de nuestro fundador frente a problemas operativos complejos.",
     ),
   ).toBeVisible()
   await expect(page.getByText(/anonimiz/i)).toHaveCount(0)
@@ -78,7 +78,7 @@ test("Spanish Systems copy leads with operational meaning", async ({
     page.getByRole("heading", { name: "Qué estaba ocurriendo" }),
   ).toBeVisible()
   await expect(
-    page.getByRole("heading", { name: "Qué construyó Brunova" }),
+    page.getByRole("heading", { name: "Enfoque del sistema" }),
   ).toBeVisible()
   await expect(page.getByRole("heading", { name: "Qué cambió" })).toBeVisible()
   await expect(page.getByText(/anonimiz/i)).toHaveCount(0)

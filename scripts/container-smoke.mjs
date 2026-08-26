@@ -93,13 +93,6 @@ if (!contactConfigured) {
         "Controlled deployment verification with no downstream delivery configured.",
       pagePath: "/contact",
       locale: "en",
-      firstTouch: {
-        referrerHost: null,
-        landingPath: "/contact",
-        landingLocale: "en",
-        sourceCategory: "direct",
-        sourceName: null,
-      },
       utm: {
         source: null,
         medium: null,

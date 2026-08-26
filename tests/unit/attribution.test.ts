@@ -1,29 +1,20 @@
-import { describe, expect, it } from "vitest"
+import { beforeEach, describe, expect, it } from "vitest"
 
 import {
-  attributionStorageKey,
   captureFirstTouchAttribution,
-  contactAttributionFromStorage,
+  contactAttribution,
+  resetFirstTouchAttribution,
 } from "@/lib/attribution"
 
-function createMemoryStorage() {
-  const values = new Map<string, string>()
-
-  return {
-    getItem: (key: string) => values.get(key) ?? null,
-    setItem: (key: string, value: string) => values.set(key, value),
-  }
-}
-
 describe("first-touch attribution", () => {
+  beforeEach(() => resetFirstTouchAttribution())
+
   it("captures UTM values once and preserves the original touch", () => {
-    const storage = createMemoryStorage()
     const firstTouch = captureFirstTouchAttribution({
       search: "?utm_source=brief&utm_medium=referral&utm_campaign=br-017",
       landingPath: "/?utm_source=brief",
       referrer: "https://example.com/source",
       currentHost: "brunova.mx",
-      storage,
       now: () => new Date("2026-08-16T12:00:00.000Z"),
     })
     const repeatedTouch = captureFirstTouchAttribution({
@@ -31,7 +22,6 @@ describe("first-touch attribution", () => {
       landingPath: "/work",
       referrer: "",
       currentHost: "brunova.mx",
-      storage,
     })
 
     expect(firstTouch).toMatchObject({
@@ -45,37 +35,29 @@ describe("first-touch attribution", () => {
       sourceCategory: "campaign",
     })
     expect(repeatedTouch).toEqual(firstTouch)
-    expect(storage.getItem(attributionStorageKey)).not.toBeNull()
   })
 
   it("captures ordinary search and AI referrals without their full URLs", () => {
-    const storage = createMemoryStorage()
+    const attribution = captureFirstTouchAttribution({
+      search: "",
+      landingPath: "/es/process",
+      referrer: "https://www.google.com.mx/search?q=sensitive-query",
+      currentHost: "brunova.mx",
+    })
 
-    expect(
-      captureFirstTouchAttribution({
-        search: "",
-        landingPath: "/es/process",
-        referrer: "https://www.google.com.mx/search?q=sensitive-query",
-        currentHost: "brunova.mx",
-        storage,
-      }),
-    ).toMatchObject({
+    expect(attribution).toMatchObject({
       firstLandingPath: "/es/process",
       firstLandingLocale: "es",
       firstReferrerHost: "www.google.com.mx",
       sourceCategory: "organic_search",
       sourceName: "google",
     })
-    expect(storage.getItem(attributionStorageKey)).not.toContain(
-      "sensitive-query",
-    )
+    expect(JSON.stringify(attribution)).not.toContain("sensitive-query")
   })
 
   it("provides a bounded direct fallback for contact submission", () => {
-    const storage = createMemoryStorage()
-
     expect(
-      contactAttributionFromStorage(storage, {
+      contactAttribution({
         landingPath: "/contact",
         locale: "en",
       }),

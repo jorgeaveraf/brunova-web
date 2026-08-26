@@ -26,13 +26,6 @@ const validRequest = {
   problemDescription:
     "Our operating data is fragmented across systems and manual handoffs.",
   pagePath: "/contact",
-  firstTouch: {
-    referrerHost: "www.google.com",
-    landingPath: "/work/operational-finance-data-infrastructure",
-    landingLocale: "en",
-    sourceCategory: "organic_search",
-    sourceName: "google",
-  },
   utm: {
     source: "referral",
     medium: null,
@@ -116,7 +109,7 @@ describe("POST /api/contact", () => {
       request_id: "22222222-2222-4222-8222-222222222222",
       idempotency_key: key,
       source: "brunova_website",
-      form: "contact_v2",
+      form: "contact_v1",
       submitted_at: "2026-08-16T18:00:00.000Z",
       locale: "en",
       name: "Ada Lovelace",
@@ -127,13 +120,6 @@ describe("POST /api/contact", () => {
       problem_description:
         "Our operating data is fragmented across systems and manual handoffs.",
       page_path: "/contact",
-      first_touch: {
-        referrer_host: "www.google.com",
-        landing_path: "/work/operational-finance-data-infrastructure",
-        landing_locale: "en",
-        source_category: "organic_search",
-        source_name: "google",
-      },
       utm: validRequest.utm,
     })
     expect(JSON.stringify(envelope)).not.toContain("formStartedAt")

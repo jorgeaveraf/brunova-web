@@ -11,7 +11,6 @@ export function AttributionCapture() {
       landingPath: window.location.pathname,
       referrer: document.referrer,
       currentHost: window.location.hostname,
-      storage: window.sessionStorage,
     })
   }, [])
 

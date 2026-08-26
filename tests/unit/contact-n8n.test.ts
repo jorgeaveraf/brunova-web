@@ -7,7 +7,7 @@ const envelope: ContactEnvelope = {
   request_id: "22222222-2222-4222-8222-222222222222",
   idempotency_key: "11111111-1111-4111-8111-111111111111",
   source: "brunova_website",
-  form: "contact_v2",
+  form: "contact_v1",
   submitted_at: "2026-08-16T18:00:00.000Z",
   name: "Ada Lovelace",
   email: "ada@example.com",
@@ -17,13 +17,6 @@ const envelope: ContactEnvelope = {
   problem_description:
     "Our operating data is fragmented across systems and manual handoffs.",
   page_path: "/contact",
-  first_touch: {
-    referrer_host: null,
-    landing_path: "/contact",
-    landing_locale: "en",
-    source_category: "direct",
-    source_name: null,
-  },
   utm: {
     source: null,
     medium: null,

@@ -80,22 +80,6 @@ test("successful submission includes first-touch UTM and browser idempotency", a
   let requestBody: Record<string, unknown> | undefined
   let idempotencyKey = ""
 
-  await page.addInitScript(() => {
-    window.sessionStorage.setItem(
-      "brunova:first-touch-attribution:v2",
-      JSON.stringify({
-        utm_source: "architecture-review",
-        utm_medium: "referral",
-        utm_campaign: "br-017",
-        capturedAt: "2026-08-16T18:00:00.000Z",
-        firstLandingPath: "/process",
-        firstLandingLocale: "en",
-        firstReferrerHost: "chatgpt.com",
-        sourceCategory: "ai_referral",
-        sourceName: "chatgpt",
-      }),
-    )
-  })
   await page.route("**/api/contact", async (route) => {
     requestBody = route.request().postDataJSON() as Record<string, unknown>
     idempotencyKey = route.request().headers()["idempotency-key"] ?? ""
@@ -106,7 +90,11 @@ test("successful submission includes first-touch UTM and browser idempotency", a
     })
   })
 
-  await page.goto("/contact")
+  await page.goto(
+    "/process?utm_source=architecture-review&utm_medium=referral&utm_campaign=br-017",
+    { referer: "https://chatgpt.com/" },
+  )
+  await page.locator('a[href="/contact"]').first().click()
   await fillContactForm(page)
   await page.getByRole("button", { name: "Send the context" }).click()
 
@@ -124,13 +112,7 @@ test("successful submission includes first-touch UTM and browser idempotency", a
     term: null,
     content: null,
   })
-  expect(requestBody?.firstTouch).toEqual({
-    referrerHost: "chatgpt.com",
-    landingPath: "/process",
-    landingLocale: "en",
-    sourceCategory: "ai_referral",
-    sourceName: "chatgpt",
-  })
+  expect(requestBody).not.toHaveProperty("firstTouch")
 })
 
 test("recoverable retry preserves content and key until a material edit", async ({

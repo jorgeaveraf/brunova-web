@@ -23,7 +23,7 @@ const pageRoutes = [
   },
   {
     path: "/work",
-    heading: "Operational systems we’ve engineered.",
+    heading: "Selected engineering experience.",
     indexable: true,
   },
   ...workCases.map((work) => ({

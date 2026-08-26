@@ -1,7 +1,5 @@
 import type { Locale } from "@/lib/i18n"
 
-const attributionStorageKey = "brunova:first-touch-attribution:v2"
-
 const utmKeys = [
   "utm_source",
   "utm_medium",
@@ -60,18 +58,18 @@ export const attributionSourceNames = [
 export type AttributionSourceName =
   (typeof attributionSourceNames)[number] | null
 
-type StorageReader = Pick<Storage, "getItem" | "setItem">
+let firstTouchAttribution: FirstTouchAttribution | null = null
 
 function normalizeAttributionValue(value: unknown): string | undefined {
   const normalized = typeof value === "string" ? value.trim().slice(0, 200) : ""
   return normalized || undefined
 }
 
-export function contactAttributionFromStorage(
-  storage: Pick<Storage, "getItem">,
-  fallback: { landingPath: string; locale: Locale },
-): ContactAttribution {
-  const attribution = readFirstTouchAttribution(storage)
+export function contactAttribution(fallback: {
+  landingPath: string
+  locale: Locale
+}): ContactAttribution {
+  const attribution = readFirstTouchAttribution()
 
   const readValue = (key: UtmKey) =>
     normalizeAttributionValue(attribution?.[key] ?? null) ?? null
@@ -96,15 +94,8 @@ export function contactAttributionFromStorage(
   }
 }
 
-export function readFirstTouchAttribution(
-  storage: Pick<Storage, "getItem">,
-): FirstTouchAttribution | null {
-  try {
-    const stored = storage.getItem(attributionStorageKey)
-    return stored ? (JSON.parse(stored) as FirstTouchAttribution) : null
-  } catch {
-    return null
-  }
+export function readFirstTouchAttribution(): FirstTouchAttribution | null {
+  return firstTouchAttribution
 }
 
 export function captureFirstTouchAttribution({
@@ -112,17 +103,15 @@ export function captureFirstTouchAttribution({
   landingPath,
   referrer,
   currentHost,
-  storage,
   now = () => new Date(),
 }: {
   search: string
   landingPath: string
   referrer: string
   currentHost: string
-  storage: StorageReader
   now?: () => Date
 }): FirstTouchAttribution | null {
-  const existing = readFirstTouchAttribution(storage)
+  const existing = readFirstTouchAttribution()
   if (existing) return existing
 
   const parameters = new URLSearchParams(search)
@@ -142,7 +131,7 @@ export function captureFirstTouchAttribution({
   })
   const firstLandingPath = normalizeLandingPath(landingPath) ?? "/"
 
-  const attribution: FirstTouchAttribution = {
+  firstTouchAttribution = {
     ...utmValues,
     capturedAt: now().toISOString(),
     firstLandingPath,
@@ -155,13 +144,11 @@ export function captureFirstTouchAttribution({
     sourceName: source.name,
   }
 
-  try {
-    storage.setItem(attributionStorageKey, JSON.stringify(attribution))
-  } catch {
-    return attribution
-  }
+  return firstTouchAttribution
+}
 
-  return attribution
+export function resetFirstTouchAttribution() {
+  firstTouchAttribution = null
 }
 
 function normalizeLandingPath(value: unknown): string | undefined {
@@ -217,5 +204,3 @@ function classifyAttributionSource({
 
   return { category: "referral", name: "other" }
 }
-
-export { attributionStorageKey }

@@ -6,7 +6,7 @@ const narrativeHeadings = [
   "Operational intelligence creates visibility and control across process, data and systems.",
   "What Brunova builds",
   "We don’t start with “What should we automate?” We start with “How should this operation work?”",
-  "Selected systems we’ve engineered",
+  "Selected engineering experience",
   "How Brunova works",
 ]
 
@@ -756,7 +756,7 @@ test("Spanish homepage uses the approved operating-model language", async ({
 
   const selectedSystems = page.locator(".selected-work")
   await expect(selectedSystems.getByRole("heading", { level: 2 })).toHaveText(
-    "Sistemas que hemos diseñado y construido",
+    "Experiencia de ingeniería seleccionada",
   )
   await expect(
     selectedSystems.locator(".selected-proof__reveal-inner > p").nth(1),

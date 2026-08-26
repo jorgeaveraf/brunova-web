@@ -11,7 +11,12 @@ import {
 import { primaryNavigation } from "@/content/navigation"
 import { processStages } from "@/content/process"
 import { privacyContent } from "@/content/privacy"
-import { esProcessStages, esWorkCases, esWorkDetails } from "@/content/es"
+import {
+  esPrivacyContent,
+  esProcessStages,
+  esWorkCases,
+  esWorkDetails,
+} from "@/content/es"
 import { workCases } from "@/content/work"
 import { workDetails } from "@/content/work-details"
 
@@ -69,7 +74,24 @@ describe("typed public content", () => {
       "connects process, data, systems and automation",
     )
     expect(privacyContent.reviewStatus).toBe(
-      "legal-human-review-required-before-production",
+      "approved-controller-information-2026-08-25",
+    )
+
+    const englishPrivacy = JSON.stringify(privacyContent)
+    const spanishPrivacy = JSON.stringify(esPrivacyContent)
+
+    for (const notice of [englishPrivacy, spanishPrivacy]) {
+      expect(notice).toContain("Jorge Alfredo Vera Fuentes")
+      expect(notice).toContain("brunova@brunova.mx")
+      expect(notice).toContain("24")
+      expect(notice).toContain("20")
+      expect(notice).toContain("15")
+    }
+    expect(englishPrivacy).toContain("Río Blanco, Veracruz, Mexico")
+    expect(englishPrivacy).toContain("not a statutory Mexican retention period")
+    expect(spanishPrivacy).toContain("Río Blanco, Veracruz, México")
+    expect(spanishPrivacy).toContain(
+      "no es un plazo de conservación establecido por la legislación mexicana",
     )
   })
 

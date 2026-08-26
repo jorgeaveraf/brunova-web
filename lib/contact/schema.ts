@@ -5,10 +5,6 @@ import {
   problemCategoryValues,
   type ProblemCategory,
 } from "@/lib/contact/categories"
-import {
-  attributionSourceCategories,
-  attributionSourceNames,
-} from "@/lib/attribution"
 import type { ContactFieldErrors } from "@/lib/contact/types"
 import type { Locale } from "@/lib/i18n"
 
@@ -35,15 +31,6 @@ export const contactRequestSchema = z
     problemDescription: normalizedText(30, 4000),
     pagePath: z.enum(["/contact", "/es/contact"]),
     locale: z.enum(["en", "es"]).default("en"),
-    firstTouch: z
-      .object({
-        referrerHost: z.string().trim().max(253).nullable(),
-        landingPath: z.string().trim().startsWith("/").max(200),
-        landingLocale: z.enum(["en", "es"]),
-        sourceCategory: z.enum(attributionSourceCategories),
-        sourceName: z.enum(attributionSourceNames).nullable(),
-      })
-      .strict(),
     utm: z
       .object({
         source: utmValueSchema,

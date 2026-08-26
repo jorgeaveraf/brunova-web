@@ -9,7 +9,7 @@ import {
 } from "react"
 
 import { trackEvent } from "@/lib/analytics"
-import { contactAttributionFromStorage } from "@/lib/attribution"
+import { contactAttribution } from "@/lib/attribution"
 import { problemCategories } from "@/lib/contact/categories"
 import { browserContactFieldErrors } from "@/lib/contact/client-validation"
 import {
@@ -112,7 +112,7 @@ function createContactRequest(
 ) {
   const values = formValues(form)
   const value = (name: string) => String(values[name] ?? "")
-  const attribution = contactAttributionFromStorage(window.sessionStorage, {
+  const attribution = contactAttribution({
     landingPath: locale === "es" ? "/es/contact" : "/contact",
     locale,
   })
@@ -127,7 +127,6 @@ function createContactRequest(
     pagePath:
       locale === "es" ? ("/es/contact" as const) : ("/contact" as const),
     locale,
-    firstTouch: attribution.firstTouch,
     utm: attribution.utm,
     website: value("website"),
     formStartedAt,
@@ -582,8 +581,8 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
               error={errors.problemDescription}
               helper={
                 es
-                  ? "¿Qué parte de la operación cuesta ejecutar, dónde aparece la fricción y qué información tiene?"
-                  : "What is difficult to operate, where does the friction show up, and what do you already know?"
+                  ? "¿Qué parte de la operación cuesta ejecutar, dónde aparece la fricción y qué información tiene? No incluya datos personales sensibles."
+                  : "What is difficult to operate, where does the friction show up, and what do you already know? Do not include sensitive personal data."
               }
               name="problemDescription"
             />
@@ -618,8 +617,12 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
         </button>
         <p>
           {es
-            ? "Brunova usa esta información únicamente para evaluar su consulta y responderle."
-            : "Brunova uses this information only to evaluate and respond to the operational context you share."}
+            ? "Jorge Alfredo Vera Fuentes, persona física con domicilio en Río Blanco, Veracruz, México, que opera bajo el nombre comercial Brunova, es responsable del tratamiento. Su nombre, correo de trabajo, empresa, cargo, categoría y descripción se usan para evaluar y responder su consulta y dar seguimiento necesario; no se usan para fines secundarios de marketing. Puede limitar su uso o ejercer sus derechos en brunova@brunova.mx."
+            : "Jorge Alfredo Vera Fuentes, an individual domiciled in Río Blanco, Veracruz, Mexico and trading as Brunova, is responsible for processing. Your name, work email, company, role, category and description are used to evaluate and respond to your inquiry and provide necessary follow-up; they are not used for secondary marketing. You may limit their use or exercise your rights at brunova@brunova.mx."}{" "}
+          <a href={es ? "/es/privacy" : "/privacy"}>
+            {es ? "Aviso de Privacidad integral" : "Full Privacy Notice"}
+          </a>
+          {"."}
         </p>
       </div>
     </form>

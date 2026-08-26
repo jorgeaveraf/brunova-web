@@ -213,25 +213,15 @@ for (const width of [320, 375, 390, 414, 768, 960, 1024, 1280, 1440, 1920]) {
   })
 }
 
-test("first-touch attribution persists for the session", async ({ page }) => {
+test("first-touch attribution avoids browser storage", async ({ page }) => {
   await page.goto("/?utm_source=architecture-review&utm_medium=referral")
 
-  await expect
-    .poll(() =>
-      page.evaluate(() =>
-        window.sessionStorage.getItem("brunova:first-touch-attribution:v2"),
-      ),
-    )
-    .toContain('"utm_source":"architecture-review"')
-
-  const firstTouch = await page.evaluate(() =>
-    window.sessionStorage.getItem("brunova:first-touch-attribution:v2"),
-  )
-  expect(firstTouch).toContain('"utm_source":"architecture-review"')
-
-  await page.goto("/?utm_source=replacement")
-  const preservedTouch = await page.evaluate(() =>
-    window.sessionStorage.getItem("brunova:first-touch-attribution:v2"),
-  )
-  expect(preservedTouch).toBe(firstTouch)
+  expect(
+    await page.evaluate(() =>
+      [
+        ...Object.keys(window.localStorage),
+        ...Object.keys(window.sessionStorage),
+      ].filter((key) => key.startsWith("brunova:first-touch-attribution")),
+    ),
+  ).toEqual([])
 })

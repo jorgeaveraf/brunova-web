@@ -7,7 +7,7 @@ const indexRoutes = [
     heading: "Engineering disciplines for operational systems.",
   },
   { path: "/process", heading: "Start with what you already know." },
-  { path: "/work", heading: "Operational systems we’ve engineered." },
+  { path: "/work", heading: "Selected engineering experience." },
   { path: "/about", heading: "Where operations require engineering." },
   { path: "/portal", heading: "Brunova Client Portal" },
   { path: "/privacy", heading: "Privacy" },
@@ -84,7 +84,7 @@ test("core routes expose their approved content contracts", async ({
   await expect(page.getByText("View system", { exact: true })).toHaveCount(0)
   await expect(
     page.getByText(
-      "A selection of systems Brunova has designed and built to solve complex operational problems.",
+      "A selection of systems designed and built through our founder’s prior engineering work on complex operational problems.",
     ),
   ).toBeVisible()
   await expect(page.getByText(/anonymized/i)).toHaveCount(0)
@@ -93,7 +93,7 @@ test("core routes expose their approved content contracts", async ({
   ).toBeVisible()
   await expect(page.locator('meta[name="description"]')).toHaveAttribute(
     "content",
-    "A selection of systems Brunova has designed and built to solve complex operational problems.",
+    "A selection of systems from our founder's prior engineering work on complex operational problems.",
   )
 
   await page.goto("/portal")
@@ -143,7 +143,7 @@ test("all four typed work routes progressively disclose technical depth", async 
       page.getByRole("heading", { name: "What was happening" }),
     ).toBeVisible()
     await expect(
-      page.getByRole("heading", { name: "What Brunova built" }),
+      page.getByRole("heading", { name: "System approach" }),
     ).toBeVisible()
     await expect(
       page.getByRole("heading", { name: "What changed" }),

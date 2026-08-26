@@ -30,7 +30,7 @@ export const homepage = {
     question: "We don’t start with “What should we automate?”",
     answer: "We start with “How should this operation work?”",
   },
-  workTitle: "Selected systems we’ve engineered",
+  workTitle: "Selected engineering experience",
   process: {
     title: "How Brunova works",
     entryTitle: "Brunova starts where the system needs work.",

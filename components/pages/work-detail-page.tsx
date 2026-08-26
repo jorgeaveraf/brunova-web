@@ -135,7 +135,7 @@ export function WorkDetailPageView({
 
               <div className="case-evidence__territory case-evidence__system">
                 <Heading level={2}>
-                  {es ? "Qué construyó Brunova" : "What Brunova built"}
+                  {es ? "Enfoque del sistema" : "System approach"}
                 </Heading>
                 <p>{detail.systemApproach}</p>
                 <div className="case-evidence__boundary">

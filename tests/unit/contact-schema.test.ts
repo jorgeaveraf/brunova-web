@@ -11,13 +11,6 @@ const validRequest = {
   problemDescription:
     "Our operating data is fragmented across systems and manual handoffs.",
   pagePath: "/contact",
-  firstTouch: {
-    referrerHost: "chatgpt.com",
-    landingPath: "/process",
-    landingLocale: "en",
-    sourceCategory: "ai_referral",
-    sourceName: "chatgpt",
-  },
   utm: {
     source: "referral",
     medium: null,
