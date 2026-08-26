@@ -38,7 +38,7 @@ test("the approved Brunova mark is published as the browser icon", async ({
 }) => {
   await page.goto("/")
 
-  const icon = page.locator('link[rel="icon"]')
+  const icon = page.locator('link[rel="icon"][type="image/svg+xml"]')
   await expect(icon).toHaveAttribute("type", "image/svg+xml")
   await expect(icon).toHaveAttribute("href", "/brand/brunova-mark.svg")
 
@@ -48,6 +48,10 @@ test("the approved Brunova mark is published as the browser icon", async ({
   expect(await response.text()).toContain(
     'transform="translate(-72.996242 237.872848) scale(0.1 -0.1)"',
   )
+
+  const fallback = await page.request.get("/favicon.ico")
+  expect(fallback.status()).toBe(200)
+  expect(fallback.headers()["content-type"]).toContain("image/x-icon")
 })
 
 test("explicit theme preference persists", async ({ page }) => {
@@ -209,27 +213,25 @@ for (const width of [320, 375, 390, 414, 768, 960, 1024, 1280, 1440, 1920]) {
   })
 }
 
-test("first-touch UTM attribution persists for the session", async ({
-  page,
-}) => {
+test("first-touch attribution persists for the session", async ({ page }) => {
   await page.goto("/?utm_source=architecture-review&utm_medium=referral")
 
   await expect
     .poll(() =>
       page.evaluate(() =>
-        window.sessionStorage.getItem("brunova:first-touch-attribution:v1"),
+        window.sessionStorage.getItem("brunova:first-touch-attribution:v2"),
       ),
     )
     .toContain('"utm_source":"architecture-review"')
 
   const firstTouch = await page.evaluate(() =>
-    window.sessionStorage.getItem("brunova:first-touch-attribution:v1"),
+    window.sessionStorage.getItem("brunova:first-touch-attribution:v2"),
   )
   expect(firstTouch).toContain('"utm_source":"architecture-review"')
 
   await page.goto("/?utm_source=replacement")
   const preservedTouch = await page.evaluate(() =>
-    window.sessionStorage.getItem("brunova:first-touch-attribution:v1"),
+    window.sessionStorage.getItem("brunova:first-touch-attribution:v2"),
   )
   expect(preservedTouch).toBe(firstTouch)
 })

@@ -16,15 +16,15 @@ export const privacyContent = {
       id: "attribution",
       title: "First-touch attribution",
       paragraphs: [
-        "If a landing URL contains UTM parameters, the website stores the first source, medium, campaign, term and content values in browser sessionStorage together with the landing path, capture time and available referrer.",
-        "That first-touch record remains in the current browser session. The UTM source, medium, campaign, term and content values are included with a contact submission when available.",
+        "The website stores a first-touch record in browser sessionStorage for the current session. It contains the landing path and language, capture time, a referring hostname when available, a limited source classification and any source, medium, campaign, term and content UTM values supplied in the landing URL.",
+        "The site does not retain the full referring URL or its query string. The first-touch fields and available UTM values are included with a contact submission so Brunova can understand which discovery sources produce conversations.",
       ],
     },
     {
       id: "processing",
       title: "Contact processing boundary",
       paragraphs: [
-        "The browser sends the contact form to Brunova’s server. The server validates and limits the submission before forwarding only the accepted contact fields and first-touch UTM values to Brunova’s private server-side operational workflow.",
+        "The browser sends the contact form to Brunova’s server. The server validates and limits the submission before forwarding only the accepted contact fields, limited first-touch fields and available UTM values to Brunova’s private server-side operational workflow.",
         "That workflow supports internal review and operational follow-up. The website does not send the honeypot field, form timing information, raw network address or browser fingerprint into that workflow.",
       ],
     },

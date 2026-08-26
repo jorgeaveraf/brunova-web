@@ -24,8 +24,8 @@ export default defineConfig({
     command: `corepack pnpm dev --hostname 127.0.0.1 --port ${e2ePort}`,
     env: {
       ...process.env,
-      SITE_URL: baseURL,
-      SEO_INDEXING_ENABLED: "false",
+      SITE_URL: "https://brunova.mx",
+      SEO_INDEXING_ENABLED: "true",
       N8N_CONTACT_WEBHOOK_URL: "",
       N8N_CONTACT_WEBHOOK_SECRET: "",
       N8N_CONTACT_BASIC_AUTH_USER: "",

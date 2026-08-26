@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test"
 
 const narrativeHeadings = [
   "When operations become systems problems.",
-  "Operational intelligence is what happens when process, data and systems stop living separately.",
+  "Operational intelligence creates visibility and control across process, data and systems.",
   "What Brunova builds",
   "We don’t start with “What should we automate?” We start with “How should this operation work?”",
   "Selected systems we’ve engineered",
@@ -713,19 +713,19 @@ test("Spanish homepage uses the approved operating-model language", async ({
   )
   await expect(problem.getByText("Transferencias manuales")).toBeVisible()
   await expect(problem).toContainText(
-    "El estado, el contexto y la gobernanza se diluyen entre equipos.",
+    "El estado y la responsabilidad se diluyen entre equipos, dificultando el control de entregas y excepciones.",
   )
 
   const operationalIntelligence = page.locator(".operational-intelligence")
   await expect(
     operationalIntelligence.getByRole("heading", { level: 2 }),
   ).toHaveText(
-    "La inteligencia operativa conecta procesos, datos y sistemas en una sola operación.",
+    "La inteligencia operativa aporta visibilidad y control sobre procesos, datos y sistemas.",
   )
   await expect(
     operationalIntelligence.locator(".operational-intelligence__statement > p"),
   ).toHaveText(
-    "Modelamos la operación como un sistema conectado: cómo fluye el trabajo, qué significan los datos, dónde se toman las decisiones, qué funciones corresponden al software y dónde la automatización o la IA pueden aportar valor con control.",
+    "Conectamos cómo fluye el trabajo, qué significan los datos y dónde se toman las decisiones, para que los equipos entiendan mejor la operación y actúen con mayor control. El software, la automatización y la IA apoyan ese modelo donde pueden hacerlo de forma segura.",
   )
 
   const statementAlignment = await operationalIntelligence

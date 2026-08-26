@@ -112,6 +112,10 @@ function createContactRequest(
 ) {
   const values = formValues(form)
   const value = (name: string) => String(values[name] ?? "")
+  const attribution = contactAttributionFromStorage(window.sessionStorage, {
+    landingPath: locale === "es" ? "/es/contact" : "/contact",
+    locale,
+  })
 
   return {
     name: value("name"),
@@ -123,7 +127,8 @@ function createContactRequest(
     pagePath:
       locale === "es" ? ("/es/contact" as const) : ("/contact" as const),
     locale,
-    utm: contactAttributionFromStorage(window.sessionStorage),
+    firstTouch: attribution.firstTouch,
+    utm: attribution.utm,
     website: value("website"),
     formStartedAt,
   }

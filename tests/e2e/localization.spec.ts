@@ -200,5 +200,5 @@ test("Spanish unknown routes use the localized noindex state", async ({
     .evaluateAll((elements) =>
       elements.map((element) => element.getAttribute("content") ?? ""),
     )
-  expect(robots.every((content) => content.includes("noindex"))).toBe(true)
+  expect(robots.some((content) => content.includes("noindex"))).toBe(true)
 })

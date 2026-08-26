@@ -130,7 +130,7 @@ function createEnvelope({
     request_id: requestId,
     idempotency_key: idempotencyKey,
     source: "brunova_website",
-    form: "contact_v1",
+    form: "contact_v2",
     submitted_at: submittedAt,
     locale: request.locale,
     name: request.name,
@@ -140,6 +140,13 @@ function createEnvelope({
     problem_category: request.problemCategory,
     problem_description: request.problemDescription,
     page_path: request.pagePath,
+    first_touch: {
+      referrer_host: request.firstTouch.referrerHost,
+      landing_path: request.firstTouch.landingPath,
+      landing_locale: request.firstTouch.landingLocale,
+      source_category: request.firstTouch.sourceCategory,
+      source_name: request.firstTouch.sourceName,
+    },
     utm: request.utm,
   }
 }

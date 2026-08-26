@@ -31,6 +31,13 @@ const browserPayload = {
   problemDescription:
     "Our operating data is fragmented across systems and manual handoffs.",
   pagePath: "/contact",
+  firstTouch: {
+    referrerHost: "chatgpt.com",
+    landingPath: "/process",
+    landingLocale: "en",
+    sourceCategory: "ai_referral",
+    sourceName: "chatgpt",
+  },
   utm: {
     source: "architecture-review",
     medium: "referral",
@@ -164,7 +171,7 @@ describe("contact logical identity integration", () => {
           request_id: requestIds[0] ?? "",
           idempotency_key: logicalSubmissionId,
           source: "brunova_website",
-          form: "contact_v1",
+          form: "contact_v2",
           submitted_at: "2026-08-17T12:00:01.000Z",
           name: browserPayload.name,
           email: browserPayload.email,
@@ -173,6 +180,13 @@ describe("contact logical identity integration", () => {
           problem_category: browserPayload.problemCategory,
           problem_description: browserPayload.problemDescription,
           page_path: "/contact",
+          first_touch: {
+            referrer_host: "chatgpt.com",
+            landing_path: "/process",
+            landing_locale: "en",
+            source_category: "ai_referral",
+            source_name: "chatgpt",
+          },
           utm: browserPayload.utm,
         },
         fetchImplementation,

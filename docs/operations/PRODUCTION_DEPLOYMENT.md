@@ -257,6 +257,8 @@ The browser never receives the n8n bearer secret and never calls n8n. Brunova's 
 
 ### Required n8n workflow contract
 
+The search/AI attribution extension is defined in [`SEARCH_ATTRIBUTION_CONTRACT.md`](./SEARCH_ATTRIBUTION_CONTRACT.md). A release containing `contact_v2` must not be deployed until its external workflow and CRM approval gate is satisfied.
+
 Before activation, the external workflow owner must confirm that n8n:
 
 - authenticates the bearer secret;

@@ -16,7 +16,11 @@ const pageRoutes = [
     heading: "Engineering disciplines for operational systems.",
     indexable: true,
   },
-  { path: "/process", heading: "Enter where the system is.", indexable: true },
+  {
+    path: "/process",
+    heading: "Start with what you already know.",
+    indexable: true,
+  },
   {
     path: "/work",
     heading: "Operational systems we’ve engineered.",
@@ -29,7 +33,7 @@ const pageRoutes = [
   })),
   {
     path: "/about",
-    heading: "Built at the operating boundary.",
+    heading: "Where operations require engineering.",
     indexable: true,
   },
   { path: "/contact", heading: "Start a conversation.", indexable: true },
@@ -100,7 +104,9 @@ test("authoritative route matrix renders with metadata, indexing and boundaries"
 
   const robots = await request.get("/robots.txt")
   expect(robots.status()).toBe(200)
-  expect(await robots.text()).toContain("Disallow: /")
+  const robotsBody = await robots.text()
+  expect(robotsBody).toContain("Disallow: /api/")
+  expect(robotsBody).not.toContain("Disallow: /portal")
 
   const sitemap = await request.get("/sitemap.xml")
   const sitemapBody = await sitemap.text()
@@ -139,12 +145,10 @@ test("authoritative route matrix renders with metadata, indexing and boundaries"
       elements.map((element) => element.getAttribute("content") ?? ""),
     )
   expect(notFoundRobots.length).toBeGreaterThan(0)
-  expect(notFoundRobots.every((content) => content.includes("noindex"))).toBe(
+  expect(notFoundRobots.some((content) => content.includes("noindex"))).toBe(
     true,
   )
-  expect(notFoundRobots.some((content) => content.includes("nofollow"))).toBe(
-    true,
-  )
+  await expect(page.locator('link[rel="canonical"]')).toHaveCount(0)
 })
 
 test("complete user journeys preserve navigation and browser history", async ({

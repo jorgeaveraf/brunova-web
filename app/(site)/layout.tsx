@@ -4,7 +4,6 @@ import type { PropsWithChildren } from "react"
 import { RootDocument } from "@/components/layout/root-document"
 import { localizedSiteConfig } from "@/content/locales"
 import { getSiteUrl, isSeoIndexingEnabled } from "@/lib/env"
-import { languageAlternates } from "@/lib/i18n"
 
 import "../globals.css"
 import "../site-shell.css"
@@ -21,7 +20,6 @@ export const metadata: Metadata = {
   icons: {
     icon: [{ url: "/brand/brunova-mark.svg", type: "image/svg+xml" }],
   },
-  alternates: { canonical: "/", languages: languageAlternates("/") },
   openGraph: {
     type: "website",
     siteName: "Brunova",

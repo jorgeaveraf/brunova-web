@@ -29,7 +29,7 @@ test("contact route renders the production conversion contract", async ({
   ).toBeVisible()
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
     "content",
-    /noindex/,
+    /index, follow/,
   )
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
@@ -82,13 +82,17 @@ test("successful submission includes first-touch UTM and browser idempotency", a
 
   await page.addInitScript(() => {
     window.sessionStorage.setItem(
-      "brunova:first-touch-attribution:v1",
+      "brunova:first-touch-attribution:v2",
       JSON.stringify({
         utm_source: "architecture-review",
         utm_medium: "referral",
         utm_campaign: "br-017",
         capturedAt: "2026-08-16T18:00:00.000Z",
-        landingPath: "/contact",
+        firstLandingPath: "/process",
+        firstLandingLocale: "en",
+        firstReferrerHost: "chatgpt.com",
+        sourceCategory: "ai_referral",
+        sourceName: "chatgpt",
       }),
     )
   })
@@ -119,6 +123,13 @@ test("successful submission includes first-touch UTM and browser idempotency", a
     campaign: "br-017",
     term: null,
     content: null,
+  })
+  expect(requestBody?.firstTouch).toEqual({
+    referrerHost: "chatgpt.com",
+    landingPath: "/process",
+    landingLocale: "en",
+    sourceCategory: "ai_referral",
+    sourceName: "chatgpt",
   })
 })
 

@@ -29,9 +29,9 @@ export const esHomepage = {
   },
   operationalIntelligence: {
     title:
-      "La inteligencia operativa conecta procesos, datos y sistemas en una sola operación.",
+      "La inteligencia operativa aporta visibilidad y control sobre procesos, datos y sistemas.",
     description:
-      "Modelamos la operación como un sistema conectado: cómo fluye el trabajo, qué significan los datos, dónde se toman las decisiones, qué funciones corresponden al software y dónde la automatización o la IA pueden aportar valor con control.",
+      "Conectamos cómo fluye el trabajo, qué significan los datos y dónde se toman las decisiones, para que los equipos entiendan mejor la operación y actúen con mayor control. El software, la automatización y la IA apoyan ese modelo donde pueden hacerlo de forma segura.",
   },
   architecture: {
     question: "No empezamos por «¿qué automatizamos?»",
@@ -50,7 +50,8 @@ export const esHomepage = {
 export const esHomepageSymptoms = [
   {
     name: "Sistemas desconectados",
-    consequence: "La información crítica queda atrapada entre herramientas.",
+    consequence:
+      "La información crítica queda atrapada entre herramientas, reduciendo la confianza en reportes y decisiones.",
   },
   {
     name: "Operaciones dependientes de hojas de cálculo",
@@ -60,7 +61,7 @@ export const esHomepageSymptoms = [
   {
     name: "Automatizaciones frágiles",
     consequence:
-      "Un cambio en el origen provoca fallas silenciosas en etapas posteriores.",
+      "Un cambio en el origen provoca fallas silenciosas que consumen la atención de la dirección.",
   },
   {
     name: "Reportes poco confiables",
@@ -69,7 +70,7 @@ export const esHomepageSymptoms = [
   {
     name: "Transferencias manuales",
     consequence:
-      "El estado, el contexto y la gobernanza se diluyen entre equipos.",
+      "El estado y la responsabilidad se diluyen entre equipos, dificultando el control de entregas y excepciones.",
   },
   {
     name: "Dependencia de personas clave",
@@ -142,7 +143,7 @@ export const esCapabilities = [
     name: "Arquitectura de sistemas y plataformas internas",
     navigationLabel: "Arquitectura",
     shortDescription:
-      "Diseñamos límites, servicios, modelos operativos y plataformas internas para sostener operaciones críticas.",
+      "Para operaciones críticas que crecieron sin responsables claros ni un sistema diseñado para sostenerlas.",
     problemClass:
       "Las operaciones críticas crecieron sin límites compartidos ni una gobernanza clara.",
     approach:
@@ -165,7 +166,7 @@ export const esCapabilities = [
     name: "Ingeniería de datos e integraciones",
     navigationLabel: "Datos e integraciones",
     shortDescription:
-      "Conectamos APIs, bases de datos, plataformas SaaS y almacenes con definiciones y gobernanza claras para cada flujo de datos.",
+      "Para reportes y trabajo diario que dependen de datos dispersos entre sistemas sin una fuente confiable.",
     problemClass:
       "Los datos distribuidos carecen de significado, recorrido y gobernanza consistentes.",
     approach:
@@ -191,7 +192,7 @@ export const esCapabilities = [
     name: "Automatización financiera y operativa",
     navigationLabel: "Automatización financiera",
     shortDescription:
-      "Construimos automatizaciones controladas para procesos financieros y operativos críticos: integraciones contables, conciliación, reportes, cuentas por cobrar y por pagar e inventario.",
+      "Para trabajo financiero y operativo que aún depende de conciliaciones manuales, relevos y automatizaciones desconectadas.",
     problemClass:
       "El trabajo financiero crítico depende de relevos manuales y automatizaciones desconectadas.",
     approach:
@@ -217,7 +218,7 @@ export const esCapabilities = [
     name: "Ingeniería de flujos y procesos",
     navigationLabel: "Ingeniería de procesos",
     shortDescription:
-      "Rediseñamos el proceso antes de automatizarlo: estados, responsables, aprobaciones, excepciones, revisión humana y escalamiento.",
+      "Para procesos que pierden control cuando cambian de manos, aparecen excepciones o se requiere criterio.",
     problemClass:
       "Un proceso pierde control cuando cambia de manos, aparecen excepciones o se requiere criterio.",
     approach:
@@ -240,7 +241,7 @@ export const esCapabilities = [
     name: "Modernización de automatizaciones frágiles",
     navigationLabel: "Modernización",
     shortDescription:
-      "Modernizamos automatizaciones valiosas que se han vuelto frágiles, opacas o dependientes de una persona, sin reemplazar lo que todavía funciona.",
+      "Para automatizaciones que aún funcionan, pero son difíciles de entender, recuperar o modificar con seguridad.",
     problemClass:
       "Automatizaciones útiles se han vuelto frágiles, opacas o dependientes de una persona.",
     approach:
@@ -263,6 +264,9 @@ export const esProcessStages = [
     description:
       "Convertimos una situación operativa poco clara en un problema de sistema definido.",
     timeline: "1–2 semanas",
+    price: "USD 999",
+    preview:
+      "Para una situación operativa poco clara; produce un problema de sistema definido y un siguiente paso recomendado.",
     problemSolved:
       "El problema de sistema, sus límites y el origen de la falla no están claros.",
     entryKnowledge:
@@ -282,6 +286,9 @@ export const esProcessStages = [
     description:
       "Convertimos un problema definido en un diseño operativo y técnico listo para implementar.",
     timeline: "2–4 semanas",
+    price: "Desde USD 1,999",
+    preview:
+      "Para un problema conocido; produce un diseño operativo y técnico listo para implementar.",
     problemSolved:
       "El problema está claro, pero el sistema aún no está suficientemente definido para construirlo.",
     entryKnowledge:
@@ -301,6 +308,9 @@ export const esProcessStages = [
     description:
       "Construimos y ponemos en operación una capacidad definida del sistema.",
     timeline: "4–8 semanas por alcance definido",
+    price: "Desde USD 2,999",
+    preview:
+      "Para una arquitectura aprobada; produce una capacidad operable en producción.",
     problemSolved:
       "El diseño debe convertirse en un sistema operable en producción.",
     entryKnowledge:
@@ -320,6 +330,10 @@ export const esProcessStages = [
     description:
       "Mejoramos la confiabilidad, arquitectura y capacidad de sistemas críticos en producción.",
     timeline: "Colaboración mensual continua",
+    price: "Desde USD 1,999/mes",
+    preview:
+      "Para un sistema crítico existente; produce mejoras priorizadas de confiabilidad y arquitectura.",
+    commitment: "Mínimo 3 meses",
     problemSolved:
       "Un sistema en producción debe evolucionar cuando cambian la operación y los riesgos.",
     entryKnowledge:
@@ -447,12 +461,12 @@ export const esCompanyModel = [
   {
     title: "Arquitectura liderada por el fundador",
     description:
-      "Las decisiones de arquitectura se mantienen cerca del problema operativo y de quienes responden por el resultado.",
+      "Jorge Vera, fundador y arquitecto principal de sistemas, dirige el sistema y participa en las decisiones de arquitectura críticas.",
   },
   {
-    title: "Equipos según las necesidades del sistema",
+    title: "Ingeniería según las necesidades del sistema",
     description:
-      "Cada sistema reúne las disciplinas de ingeniería que realmente necesita.",
+      "La ejecución se organiza alrededor de las disciplinas que requiere cada sistema, mientras la arquitectura y los compromisos técnicos relevantes permanecen bajo revisión senior.",
   },
   {
     title: "Vinculados a la operación",
@@ -464,7 +478,7 @@ export const esCompanyModel = [
 export const esOperationalLens = {
   title: "Inteligencia operativa",
   description:
-    "La inteligencia operativa conecta procesos, datos, sistemas y automatización en todo el modelo.",
+    "La inteligencia operativa conecta procesos, datos, sistemas y automatización para dar a los equipos mayor visibilidad, control y soporte para decidir.",
 } as const
 
 export const esPrivacyContent = {
@@ -485,15 +499,15 @@ export const esPrivacyContent = {
       id: "attribution",
       title: "Atribución de primer contacto",
       paragraphs: [
-        "Si una URL de llegada contiene parámetros UTM, el sitio almacena los primeros valores de fuente, medio, campaña, término y contenido en sessionStorage del navegador, junto con la ruta de llegada, la hora de captura y el referente disponible.",
-        "Ese registro de primer contacto permanece durante la sesión actual del navegador. Los valores UTM de fuente, medio, campaña, término y contenido se incluyen con el envío del formulario cuando están disponibles.",
+        "El sitio almacena un registro de primer contacto en sessionStorage del navegador durante la sesión actual. Incluye la ruta y el idioma de llegada, la hora de captura, el nombre de host referente cuando está disponible, una clasificación limitada de la fuente y cualquier valor UTM de fuente, medio, campaña, término y contenido incluido en la URL de llegada.",
+        "El sitio no conserva la URL referente completa ni su cadena de consulta. Los campos de primer contacto y los valores UTM disponibles se incluyen con el envío del formulario para que Brunova pueda entender qué fuentes de descubrimiento producen conversaciones.",
       ],
     },
     {
       id: "processing",
       title: "Límite de procesamiento del contacto",
       paragraphs: [
-        "El navegador envía el formulario al servidor de Brunova. El servidor valida y limita el envío antes de reenviar únicamente los campos de contacto aceptados y los valores UTM de primer contacto al flujo operativo privado de Brunova en el servidor.",
+        "El navegador envía el formulario al servidor de Brunova. El servidor valida y limita el envío antes de reenviar únicamente los campos de contacto aceptados, los campos limitados de primer contacto y los valores UTM disponibles al flujo operativo privado de Brunova en el servidor.",
         "Ese flujo apoya la revisión interna y el seguimiento operativo. El sitio no envía al flujo el campo señuelo, la información de tiempo del formulario, la dirección de red sin procesar ni una huella del navegador.",
       ],
     },

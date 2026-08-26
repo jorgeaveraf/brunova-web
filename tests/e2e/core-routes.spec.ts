@@ -6,9 +6,9 @@ const indexRoutes = [
     path: "/capabilities",
     heading: "Engineering disciplines for operational systems.",
   },
-  { path: "/process", heading: "Enter where the system is." },
+  { path: "/process", heading: "Start with what you already know." },
   { path: "/work", heading: "Operational systems we’ve engineered." },
-  { path: "/about", heading: "Built at the operating boundary." },
+  { path: "/about", heading: "Where operations require engineering." },
   { path: "/portal", heading: "Brunova Client Portal" },
   { path: "/privacy", heading: "Privacy" },
 ] as const
@@ -65,6 +65,18 @@ test("core routes expose their approved content contracts", async ({
   await expect(
     page.getByText("Existing production system", { exact: true }),
   ).toBeVisible()
+  await expect(page.getByText("USD 999", { exact: true })).toBeVisible()
+  await expect(page.getByText("From USD 1,999", { exact: true })).toBeVisible()
+  await expect(page.getByText("From USD 2,999", { exact: true })).toBeVisible()
+  await expect(
+    page.getByText("From USD 1,999/month", { exact: true }),
+  ).toBeVisible()
+  await expect(page.getByText("3-month minimum", { exact: true })).toBeVisible()
+  await expect(
+    page.getByText(/produces a defined system problem/),
+  ).toBeVisible()
+  await expect(page.getByText(/USD 1,999–2,999/)).toHaveCount(0)
+  await expect(page.getByText(/USD 2,999–7,999\+/)).toHaveCount(0)
 
   await page.goto("/work")
   await expect(page.locator(".work-folio article")).toHaveCount(4)
@@ -104,7 +116,7 @@ test("core routes expose their approved content contracts", async ({
   )
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
     "content",
-    /noindex/,
+    /index, follow/,
   )
 })
 
@@ -120,6 +132,13 @@ test("all four typed work routes progressively disclose technical depth", async 
     const technicalDepth = page.locator(".case-technical")
     await expect(technicalDepth).not.toHaveAttribute("open", "")
     await expect(page.locator(".case-evidence__territory")).toHaveCount(3)
+    const breadcrumb = JSON.parse(
+      (await page
+        .locator('script[type="application/ld+json"]')
+        .textContent()) ?? "{}",
+    ) as { "@type": string; itemListElement: unknown[] }
+    expect(breadcrumb["@type"]).toBe("BreadcrumbList")
+    expect(breadcrumb.itemListElement).toHaveLength(2)
     await expect(
       page.getByRole("heading", { name: "What was happening" }),
     ).toBeVisible()

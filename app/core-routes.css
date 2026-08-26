@@ -2360,6 +2360,33 @@ details[open] > summary .disclosure-mark::after {
   gap: var(--space-sm);
 }
 
+.process-stage__terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+}
+
+.process-stage__price {
+  color: var(--color-foreground);
+  font-weight: 700;
+}
+
+.process-stage__preview {
+  display: block;
+  max-width: 52rem;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.process-pricing-note {
+  max-width: var(--measure);
+  padding-block-start: var(--space-xl);
+  margin: 0;
+  color: var(--color-muted-foreground);
+  font-size: var(--text-sm);
+}
+
 .process-stage__summary > .disclosure-mark {
   grid-column: 2;
   grid-row: 1 / span 2;

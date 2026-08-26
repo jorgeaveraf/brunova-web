@@ -186,6 +186,11 @@
   line-height: 1.18;
 }
 
+.problem-shift__case-link {
+  width: max-content;
+  margin-inline-start: calc(var(--space-xl) + var(--space-sm));
+}
+
 .operational-intelligence {
   padding-block: var(--space-4xl) var(--space-5xl);
   background: var(--color-model-surface);
@@ -768,6 +773,10 @@
     padding-inline-start: calc(var(--space-3xl) + var(--space-xl));
   }
 
+  .problem-shift__case-link {
+    margin-inline-start: calc(var(--space-3xl) + var(--space-xl));
+  }
+
   .operational-intelligence__inner {
     gap: var(--space-xl);
   }
@@ -884,6 +893,10 @@
   .problem-shift__transition {
     max-width: none;
     text-align: end;
+  }
+
+  .problem-shift__case-link {
+    margin-inline-start: auto;
   }
 }
 
