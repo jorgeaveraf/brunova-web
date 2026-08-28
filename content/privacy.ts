@@ -3,7 +3,7 @@ export const privacyContent = {
   updatedLabel:
     "Privacy Notice · Effective August 24, 2026 · Last updated August 25, 2026",
   introduction:
-    "This integral Privacy Notice explains how Jorge Alfredo Vera Fuentes, trading as Brunova, handles personal data collected through the Brunova website.",
+    "This integral Privacy Notice explains how Jorge Alfredo Vera Fuentes, operating as Brunova, handles personal data collected through the Brunova website.",
   sections: [
     {
       id: "controller",

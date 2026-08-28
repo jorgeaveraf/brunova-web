@@ -300,7 +300,7 @@
 .contact-privacy {
   display: grid;
   width: 100%;
-  gap: var(--space-lg);
+  gap: var(--space-md);
   padding-block-start: var(--space-xl);
   border-block-start: var(--rule-hair) solid var(--color-border);
   color: var(--color-muted-foreground);
@@ -332,7 +332,7 @@
 .contact-privacy__facts {
   display: grid;
   min-width: 0;
-  gap: var(--space-md) var(--space-xl);
+  gap: var(--space-md) var(--space-lg);
 }
 
 .contact-privacy__facts > div {
@@ -345,6 +345,7 @@
 .contact-privacy__facts address {
   min-width: 0;
   overflow-wrap: anywhere;
+  line-height: 1.5;
 }
 
 .contact-privacy__facts address {

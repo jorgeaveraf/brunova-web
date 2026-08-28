@@ -634,7 +634,7 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
               <dd>
                 {es
                   ? "Jorge Alfredo Vera Fuentes, quien opera como Brunova."
-                  : "Jorge Alfredo Vera Fuentes, trading as Brunova."}
+                  : "Jorge Alfredo Vera Fuentes, operating as Brunova."}
               </dd>
             </div>
             <div>

@@ -37,7 +37,7 @@ describe("contact form", () => {
 
     const privacy = screen.getByRole("region", { name: "Privacy" })
     expect(privacy).toHaveTextContent(
-      "Jorge Alfredo Vera Fuentes, trading as Brunova.",
+      "Jorge Alfredo Vera Fuentes, operating as Brunova.",
     )
     expect(privacy).toHaveTextContent(
       "Calle Poniente 1 #16, Centro, 94730 Río Blanco, Veracruz, Mexico.",
