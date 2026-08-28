@@ -60,6 +60,23 @@ test("Spanish contact route presents the equivalent visible privacy notice", asy
   ).toHaveAttribute("href", "/es/privacy")
 })
 
+test("desktop expectations align with the operation section", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 })
+  await page.goto("/contact")
+
+  const expectationsTop = await page
+    .locator(".contact-expectations strong")
+    .first()
+    .evaluate((element) => element.getBoundingClientRect().top)
+  const operationTop = await page
+    .getByText("The operation", { exact: true })
+    .evaluate((element) => element.getBoundingClientRect().top)
+
+  expect(Math.abs(expectationsTop - operationTop)).toBeLessThanOrEqual(4)
+})
+
 test("contact form supports ordered keyboard completion", async ({ page }) => {
   await page.goto("/contact")
   await page.getByLabel("Name").focus()

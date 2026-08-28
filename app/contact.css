@@ -450,7 +450,12 @@
   }
 
   .contact-studio__context {
+    align-content: start;
     min-height: 72rem;
+  }
+
+  .contact-expectations {
+    margin-block-start: calc(var(--space-5xl) + var(--space-lg));
   }
 }
 
