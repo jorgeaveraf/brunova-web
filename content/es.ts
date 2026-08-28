@@ -493,7 +493,7 @@ export const esPrivacyContent = {
       title: "Responsable del tratamiento",
       paragraphs: [
         "Jorge Alfredo Vera Fuentes, persona física establecida en México que opera bajo el nombre comercial Brunova, es responsable del tratamiento de los datos personales a través de este sitio web.",
-        "Domicilio de privacidad: Río Blanco, Veracruz, México. Contacto de privacidad: brunova@brunova.mx.",
+        "Domicilio de privacidad: Calle Poniente 1 #16, Centro, C.P. 94730, Río Blanco, Veracruz, México. Contacto de privacidad: brunova@brunova.mx.",
       ],
     },
     {

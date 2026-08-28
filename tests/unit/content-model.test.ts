@@ -87,9 +87,13 @@ describe("typed public content", () => {
       expect(notice).toContain("20")
       expect(notice).toContain("15")
     }
-    expect(englishPrivacy).toContain("Río Blanco, Veracruz, Mexico")
+    expect(englishPrivacy).toContain(
+      "Calle Poniente 1 #16, Centro, 94730 Río Blanco, Veracruz, Mexico",
+    )
     expect(englishPrivacy).toContain("not a statutory Mexican retention period")
-    expect(spanishPrivacy).toContain("Río Blanco, Veracruz, México")
+    expect(spanishPrivacy).toContain(
+      "Calle Poniente 1 #16, Centro, C.P. 94730, Río Blanco, Veracruz, México",
+    )
     expect(spanishPrivacy).toContain(
       "no es un plazo de conservación establecido por la legislación mexicana",
     )

@@ -10,7 +10,7 @@ export const privacyContent = {
       title: "Data controller",
       paragraphs: [
         "Jorge Alfredo Vera Fuentes, an individual established in Mexico and trading under the commercial name Brunova, is responsible for processing personal data through this website.",
-        "Privacy domicile: Río Blanco, Veracruz, Mexico. Privacy contact: brunova@brunova.mx.",
+        "Privacy domicile: Calle Poniente 1 #16, Centro, 94730 Río Blanco, Veracruz, Mexico. Privacy contact: brunova@brunova.mx.",
       ],
     },
     {

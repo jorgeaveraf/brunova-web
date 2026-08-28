@@ -35,6 +35,29 @@ test("contact route renders the production conversion contract", async ({
     "href",
     /\/contact$/,
   )
+  await expect(page.getByRole("region", { name: "Privacy" })).toContainText(
+    "Calle Poniente 1 #16, Centro, 94730 Río Blanco, Veracruz, Mexico.",
+  )
+  await expect(
+    page.getByRole("link", { name: "Full Privacy Notice" }),
+  ).toHaveAttribute("href", "/privacy")
+})
+
+test("Spanish contact route presents the equivalent visible privacy notice", async ({
+  page,
+}) => {
+  await page.goto("/es/contact")
+
+  const privacy = page.getByRole("region", { name: "Privacidad" })
+  await expect(privacy).toContainText(
+    "Calle Poniente 1 #16, Centro, C.P. 94730, Río Blanco, Veracruz, México.",
+  )
+  await expect(privacy).toContainText(
+    "No existen finalidades secundarias de marketing.",
+  )
+  await expect(
+    page.getByRole("link", { name: "Aviso de Privacidad completo" }),
+  ).toHaveAttribute("href", "/es/privacy")
 })
 
 test("contact form supports ordered keyboard completion", async ({ page }) => {
@@ -55,6 +78,18 @@ test("contact form supports ordered keyboard completion", async ({ page }) => {
   await page.getByLabel("Problem category").selectOption("fragmented_systems")
   await page.keyboard.press("Tab")
   await expect(page.getByLabel("Problem description")).toBeFocused()
+  await page.keyboard.press("Tab")
+  await expect(
+    page.getByRole("button", { name: "Send the context" }),
+  ).toBeFocused()
+  await page.keyboard.press("Tab")
+  await expect(
+    page.getByRole("link", { name: "brunova@brunova.mx" }),
+  ).toBeFocused()
+  await page.keyboard.press("Tab")
+  await expect(
+    page.getByRole("link", { name: "Full Privacy Notice" }),
+  ).toBeFocused()
 })
 
 test("client validation retains stable error associations", async ({

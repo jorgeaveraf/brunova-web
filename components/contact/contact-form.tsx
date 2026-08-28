@@ -615,15 +615,66 @@ export function ContactForm({ locale = "en" }: { locale?: Locale }) {
               ? "Enviar consulta"
               : "Send the context"}
         </button>
-        <p>
-          {es
-            ? "Jorge Alfredo Vera Fuentes, persona física con domicilio en Río Blanco, Veracruz, México, que opera bajo el nombre comercial Brunova, es responsable del tratamiento. Su nombre, correo de trabajo, empresa, cargo, categoría y descripción se usan para evaluar y responder su consulta y dar seguimiento necesario; no se usan para fines secundarios de marketing. Puede limitar su uso o ejercer sus derechos en brunova@brunova.mx."
-            : "Jorge Alfredo Vera Fuentes, an individual domiciled in Río Blanco, Veracruz, Mexico and trading as Brunova, is responsible for processing. Your name, work email, company, role, category and description are used to evaluate and respond to your inquiry and provide necessary follow-up; they are not used for secondary marketing. You may limit their use or exercise your rights at brunova@brunova.mx."}{" "}
-          <a href={es ? "/es/privacy" : "/privacy"}>
-            {es ? "Aviso de Privacidad integral" : "Full Privacy Notice"}
+        <section
+          aria-labelledby="contact-privacy-title"
+          className="contact-privacy"
+        >
+          <div className="contact-privacy__heading">
+            <h3 id="contact-privacy-title">{es ? "Privacidad" : "Privacy"}</h3>
+            <p>
+              {es
+                ? "Brunova utiliza la información que proporciona para revisar su consulta y contexto de negocio, evaluar si existe un encaje adecuado y cuál podría ser el siguiente paso, responder, mantener el seguimiento operativo y comercial necesario y conservar la correspondencia y los registros razonables de la relación actual o potencial. No existen finalidades secundarias de marketing."
+                : "Brunova uses the information you provide to review your inquiry and business context, assess fit and a useful next step, respond, maintain necessary operational and commercial follow-up, and preserve necessary correspondence and reasonable records of the current or potential relationship. There are no secondary marketing purposes."}
+            </p>
+          </div>
+
+          <dl className="contact-privacy__facts">
+            <div>
+              <dt>{es ? "Responsable" : "Responsible party"}</dt>
+              <dd>
+                {es
+                  ? "Jorge Alfredo Vera Fuentes, quien opera como Brunova."
+                  : "Jorge Alfredo Vera Fuentes, trading as Brunova."}
+              </dd>
+            </div>
+            <div>
+              <dt>{es ? "Domicilio de privacidad" : "Privacy domicile"}</dt>
+              <dd>
+                <address>
+                  {es
+                    ? "Calle Poniente 1 #16, Centro, C.P. 94730, Río Blanco, Veracruz, México."
+                    : "Calle Poniente 1 #16, Centro, 94730 Río Blanco, Veracruz, Mexico."}
+                </address>
+              </dd>
+            </div>
+            <div>
+              <dt>{es ? "Datos" : "Data"}</dt>
+              <dd>
+                {es
+                  ? "Nombre, correo electrónico de trabajo, empresa, cargo, categoría del problema y descripción del problema."
+                  : "Name, work email, company, role, problem category and problem description."}
+              </dd>
+            </div>
+            <div>
+              <dt>
+                {es
+                  ? "Limitar el uso o divulgación"
+                  : "Limit use or disclosure"}
+              </dt>
+              <dd>
+                <a href="mailto:brunova@brunova.mx">brunova@brunova.mx</a>
+              </dd>
+            </div>
+          </dl>
+
+          <a
+            className="contact-privacy__notice-link"
+            href={es ? "/es/privacy" : "/privacy"}
+          >
+            {es ? "Aviso de Privacidad completo" : "Full Privacy Notice"}
+            <span aria-hidden="true"> →</span>
           </a>
-          {"."}
-        </p>
+        </section>
       </div>
     </form>
   )
