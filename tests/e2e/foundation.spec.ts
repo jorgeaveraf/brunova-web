@@ -45,13 +45,115 @@ test("the approved Brunova mark is published as the browser icon", async ({
   const response = await page.request.get("/brand/brunova-mark.svg")
   expect(response.status()).toBe(200)
   expect(response.headers()["content-type"]).toContain("image/svg+xml")
-  expect(await response.text()).toContain(
-    'transform="translate(-72.996242 237.872848) scale(0.1 -0.1)"',
-  )
+  const svg = await response.text()
+  expect(svg).toContain('viewBox="0 0 181 181"')
+  expect(svg).toContain("<path")
+  expect(svg).not.toMatch(/<(?:image|filter)\b/i)
 
   const fallback = await page.request.get("/favicon.ico")
   expect(fallback.status()).toBe(200)
   expect(fallback.headers()["content-type"]).toContain("image/x-icon")
+})
+
+test("Brunova SVG logos stay raster-free and preserve brand geometry", async ({
+  page,
+}) => {
+  const assets = [
+    {
+      path: "/brand/brunova-mark.svg",
+      viewBox: "0 0 181 181",
+      paths: 1,
+      colors: ["#14110e", "#eeeae5"],
+    },
+    {
+      path: "/brand/brunova-wordmark-dark.svg",
+      viewBox: "0 0 898.869449 180.770293",
+      paths: 7,
+      colors: ["#14110e"],
+    },
+    {
+      path: "/brand/brunova-wordmark-light.svg",
+      viewBox: "0 0 898.869449 180.770293",
+      paths: 7,
+      colors: ["#eeeae5"],
+    },
+  ]
+
+  for (const asset of assets) {
+    const response = await page.request.get(asset.path)
+    expect(response.status()).toBe(200)
+    const svg = await response.text()
+
+    expect(svg).toContain(`viewBox="${asset.viewBox}"`)
+    expect(svg.match(/<path\b/g)).toHaveLength(asset.paths)
+    expect(svg).not.toMatch(/<(?:image|filter|foreignObject)\b/i)
+    expect(svg).not.toContain("data:image/")
+    for (const color of asset.colors) {
+      expect(svg.toLowerCase()).toContain(color)
+    }
+  }
+
+  await page.setViewportSize({ width: 1600, height: 900 })
+  await page.goto("/")
+  await page.setContent(`
+    <style>body { margin: 0 } img { display: block; width: 14381.911px; height: auto }</style>
+    <img src="/brand/brunova-wordmark-dark.svg" alt="" />
+  `)
+  const logo = page.locator("img")
+  await logo.evaluate((image: HTMLImageElement) => image.decode())
+  const geometry = await logo.evaluate((image) => {
+    const bounds = image.getBoundingClientRect()
+    return { width: bounds.width, height: bounds.height }
+  })
+  expect(geometry.width).toBeCloseTo(14381.911, 1)
+  expect(geometry.height).toBeCloseTo(2892.325, 1)
+})
+
+test("high-resolution Brunova PNG exports retain their native dimensions", async ({
+  page,
+}) => {
+  const assets = [
+    { path: "/brand/brunova-mark-4096.png", width: 4096, height: 4096 },
+    {
+      path: "/brand/brunova-wordmark-dark-8192.png",
+      width: 8192,
+      height: 1647,
+    },
+    {
+      path: "/brand/brunova-wordmark-light-8192.png",
+      width: 8192,
+      height: 1647,
+    },
+  ]
+
+  for (const asset of assets) {
+    const response = await page.request.get(asset.path)
+    expect(response.status()).toBe(200)
+    expect(response.headers()["content-type"]).toContain("image/png")
+  }
+
+  await page.goto("/")
+  const dimensions = await page.evaluate(async (pngAssets) => {
+    return Promise.all(
+      pngAssets.map(
+        (asset) =>
+          new Promise<{ width: number; height: number }>((resolve, reject) => {
+            const image = new Image()
+            image.onload = () =>
+              resolve({
+                width: image.naturalWidth,
+                height: image.naturalHeight,
+              })
+            image.onerror = reject
+            image.src = asset.path
+          }),
+      ),
+    )
+  }, assets)
+
+  expect(dimensions).toEqual(
+    assets.map(({ width, height }) => ({ width, height })),
+  )
 })
 
 test("explicit theme preference persists", async ({ page }) => {
