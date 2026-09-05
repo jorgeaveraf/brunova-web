@@ -76,12 +76,17 @@ cookie for validation. Runtime production uses the existing nginx API boundary.
 `tests/unit/acquisition.test.tsx` covers empty/gate/loading/auth states, epistemic
 presentation, confirmation/refill, stale conflicts, stable retries and contract drift.
 
-3G validation (2026-09-05): 84 tests, typecheck, lint and production build pass.
-Local real-PostgreSQL browser QA completed CONTINUE/HOLD/REJECT with deterministic
-refill (five active; overflow 14 to 11). Wide desktop (1440), laptop (1280) and mobile
-(390) layouts showed no horizontal overflow; axe found no violations in the tested
-dialog states. This local harness used a synthetic identity, not Google production auth.
-Production authenticated empty state, health and logout were observed. The populated
-deployed Google trace is still blocked by operator reauthentication, so 3G is NOT
-COMPLETE and 3H must not begin. Temporary production routing was restored and its
-synthetic database removed; production remains empty with both safety gates disabled.
+3G is COMPLETE (2026-09-05): 84 tests, typecheck, lint and production build pass.
+The deployed Google-authenticated browser completed CONTINUE/HOLD/REJECT through
+the UI with deterministic refill (five active; overflow 14 → 11). PostgreSQL audit
+confirmed three unique Human commands/receipts and three refill events. Cycle,
+Accounts/detail, conflict exclusions and queued/working/completed Work were inspected.
+Wide desktop (1440), laptop (1280) and mobile (390) showed no horizontal overflow;
+axe reported no violations in the tested detail, confirmation and empty states.
+
+Backend `d40e357d130d` fixes the Google return/Strict-cookie redirect loop without
+relaxing cookie security: a same-origin callback document precedes authenticated SSR.
+After restoring production, fresh Google login, empty UI/reads, health and logout
+204 → session/Engine reads 401 passed. The temporary database was removed and runtime
+configuration restored exactly; zero business rows/work, both safety gates disabled.
+Web runtime remains `cd6cde03a2a6`. No Gateway, outbound or 3H changes.
