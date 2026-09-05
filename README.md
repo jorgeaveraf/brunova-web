@@ -75,3 +75,13 @@ Never point this server-only value at an untrusted origin: it receives the sessi
 cookie for validation. Runtime production uses the existing nginx API boundary.
 `tests/unit/acquisition.test.tsx` covers empty/gate/loading/auth states, epistemic
 presentation, confirmation/refill, stale conflicts, stable retries and contract drift.
+
+3G validation (2026-09-05): 84 tests, typecheck, lint and production build pass.
+Local real-PostgreSQL browser QA completed CONTINUE/HOLD/REJECT with deterministic
+refill (five active; overflow 14 to 11). Wide desktop (1440), laptop (1280) and mobile
+(390) layouts showed no horizontal overflow; axe found no violations in the tested
+dialog states. This local harness used a synthetic identity, not Google production auth.
+Production authenticated empty state, health and logout were observed. The populated
+deployed Google trace is still blocked by operator reauthentication, so 3G is NOT
+COMPLETE and 3H must not begin. Temporary production routing was restored and its
+synthetic database removed; production remains empty with both safety gates disabled.
