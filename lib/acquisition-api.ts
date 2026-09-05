@@ -33,6 +33,13 @@ const assertionSchema = z.object({
   falsifier: z.string().nullable().optional(),
 })
 const detailSchema = accountSchema.extend({
+  sourceObservations: z.array(
+    z.object({
+      id: z.string(),
+      canonical_uri: z.string(),
+      observed_at: z.string().nullable(),
+    }),
+  ),
   assertions: z.array(assertionSchema),
   knownUnknowns: z.array(z.string()),
   rationale: z
@@ -210,9 +217,9 @@ export const acquisitionApi = {
   counts: (cycle: string) =>
     request(`/cycles/${id(cycle)}/attention-counts`, countsSchema),
   health: () => request("/engine-health", healthSchema),
-  work: (cycle: string, cursor = "") =>
+  work: (cycle: string, cursor = "", state = "") =>
     request(
-      `/work?limit=20${cycle ? `&cycleId=${id(cycle)}` : ""}${cursor ? `&cursor=${id(cursor)}` : ""}`,
+      `/work?limit=20${cycle ? `&cycleId=${id(cycle)}` : ""}${cursor ? `&cursor=${id(cursor)}` : ""}${state ? `&state=${id(state)}` : ""}`,
       page(workSchema),
     ),
   disposition: (body: DispositionInput, csrf: string) =>

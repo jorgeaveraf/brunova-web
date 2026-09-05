@@ -71,6 +71,7 @@ const item = (name = "SYNTHETIC First"): Attention => ({
   },
 })
 const research: AccountDetail = {
+  sourceObservations: [],
   schemaVersion: "1",
   accountId: "SYNTHETIC First",
   cycleId: "synthetic",

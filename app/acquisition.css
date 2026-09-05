@@ -182,6 +182,7 @@
   padding: 0.8rem 0;
 }
 .acq-dialog {
+  margin: auto;
   width: min(800px, calc(100% - 2rem));
   max-height: 90dvh;
   background: var(--color-background);

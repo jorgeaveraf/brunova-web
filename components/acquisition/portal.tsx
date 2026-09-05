@@ -16,7 +16,21 @@ import {
   type DispositionInput,
 } from "@/lib/acquisition-api"
 
-const humanize = (text: string) => text.replaceAll("_", " ")
+const labels: Record<string, string> = {
+  REVIEW_ACCOUNT_PRIORITY: "Revisar la prioridad de la cuenta",
+  WAIT_FOR_SUPPORTED_READINESS: "Esperar evidencia vigente y sustentada",
+  UNKNOWNS_REMAIN_EXPLICIT: "Persisten incógnitas explícitas",
+  EXPLICIT_MATERIAL_UNKNOWN:
+    "Existe una incógnita material que bloquea el avance",
+  UNRESOLVED_CONFLICT_OR_STALE:
+    "La evidencia está desactualizada o en conflicto",
+  BELOW_ATTENTION_EVIDENCE_STANDARD:
+    "La evidencia no alcanza el estándar de Attention",
+  SUPPORTED_BUT_MODERATE_CONFIDENCE:
+    "Premisa sustentada con confianza moderada",
+  HYPOTHESIS_NOT_CURRENTLY_SUPPORTED: "La hipótesis no tiene soporte vigente",
+}
+const humanize = (text: string) => labels[text] ?? text.replaceAll("_", " ")
 const when = (date: string | null) =>
   date ? new Date(date).toLocaleString("es-MX") : "Sin actividad"
 const epistemic: Record<string, string> = {
@@ -53,18 +67,14 @@ function Meaning({ item }: { item: Attention }) {
         <span>{humanize(item.status)}</span>
         {item.stale && <span>Revisión desactualizada</span>}
       </div>
-      <h3>Por qué ahora</h3>
-      <Lines
-        values={r.whyNow.map((w) => w.observedContext)}
-        empty="No hay un fundamento vigente registrado."
-      />
-      <p className="acq-muted">Recomendación: {humanize(r.recommendation)}</p>
-      <h3>Soporte de la hipótesis</h3>
+      <h3>Por qué ahora · soporte observado</h3>
       <Lines
         values={r.whyNow.map(
           (w) => `${w.observedContext} · ${when(w.validAsOf)}`,
         )}
+        empty="No hay un fundamento vigente registrado."
       />
+      <p className="acq-muted">Recomendación: {humanize(r.recommendation)}</p>
       <h3>Qué limita la confianza</h3>
       <Lines values={[...r.hardStops, ...r.limitingFactors]} />
       <h3>Qué falta saber</h3>
@@ -91,6 +101,7 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
   const [health, setHealth] = useState<Health | null>(null),
     [work, setWork] = useState<Work[]>([]),
     [workCursor, setWorkCursor] = useState(""),
+    [workState, setWorkState] = useState(""),
     [workNext, setWorkNext] = useState<string | null>(null)
   const [loading, setLoading] = useState(true),
     [error, setError] = useState<AcquisitionError | null>(null),
@@ -137,7 +148,7 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
           api.attention(current, true),
           api.attention(current, false),
           api.counts(current),
-          api.work(current, workCursor),
+          api.work(current, workCursor, workState),
         ])
         if (run !== generation.current) return
         setAccounts(as.items)
@@ -160,7 +171,14 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
     } finally {
       if (run === generation.current) setLoading(false)
     }
-  }, [cycleId, outcome, cursor, workCursor, session.actor.capabilities])
+  }, [
+    cycleId,
+    outcome,
+    cursor,
+    workCursor,
+    workState,
+    session.actor.capabilities,
+  ])
   useEffect(() => {
     let cancelled = false
     queueMicrotask(() => {
@@ -230,6 +248,9 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
         setChoice(null)
         setSelected(
           await api.attentionDetail(selected.attention_id).catch(() => null),
+        )
+        setDetail(
+          await api.detail(cycleId, selected.account_id).catch(() => null),
         )
         await refresh()
         setError(failure)
@@ -517,6 +538,28 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
       {tab === "Work / Health" && (
         <section className="acq-panel">
           <h2>Work / Health</h2>
+          <label>
+            Estado del trabajo
+            <select
+              value={workState}
+              onChange={(e) => {
+                setWorkState(e.target.value)
+                setWorkCursor("")
+              }}
+            >
+              <option value="">Todos</option>
+              {[
+                "QUEUED",
+                "WORKING",
+                "COMPLETED",
+                "BLOCKED",
+                "FAILED",
+                "CANCELLED",
+              ].map((state) => (
+                <option key={state}>{state}</option>
+              ))}
+            </select>
+          </label>
           <p>Observabilidad; las colas no se editan desde el Portal.</p>
           {health && (
             <p>
@@ -579,6 +622,25 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
           <>
             <h3>Razón de investigación</h3>
             <p>{detail.rationale?.summary ?? "Sin rationale registrado."}</p>
+            <h3>Fuentes registradas</h3>
+            <ul>
+              {detail.sourceObservations.map((source) => (
+                <li key={source.id}>
+                  {/^https?:\/\//.test(source.canonical_uri) ? (
+                    <a
+                      href={source.canonical_uri}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {source.canonical_uri}
+                    </a>
+                  ) : (
+                    source.canonical_uri
+                  )}{" "}
+                  · {when(source.observed_at)}
+                </li>
+              ))}
+            </ul>
             {Object.entries(epistemic).map(([kind, title]) => (
               <section className="acq-evidence" key={kind}>
                 <h3>{title}</h3>
