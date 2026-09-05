@@ -126,8 +126,13 @@ production control verification confirms zero business rows/work, restricted Por
 DB privileges and both safety gates disabled. Public pages and backend live/ready
 remain healthy, with `authConfigured=true`.
 
-Closure is pending a fresh Google credential step in the QA browser to verify the
-complete localized callback after the reverse-proxy canonical-origin fix. Login
-navigation now uses the existing trusted `SITE_URL`, with a regression test for an
-internal request origin/untrusted Host. Do not mark this refinement COMPLETE or
-start 3H until that final real-browser round trip is verified.
+Post-3G refinement is COMPLETE (2026-09-05). Fresh Google browser round trips
+passed in both locales: callback 200 → localized Acquisition 200 → authorized
+session/empty Engine reads 200 → logout 204 → same-locale Portal → session/Engine
+reads 401. The ES callback consumed the bounded return path with a 307 to the ES
+route; EN returned directly to the EN route. Login navigation uses the existing
+trusted `SITE_URL`, with a regression test for internal origins/untrusted Host.
+All four authenticated routes passed at 1440, 1280 and 390 px, without horizontal
+overflow or axe violations. Final production verification retained zero business
+rows/pending work, disabled gates and restricted DB privileges. No outbound actions
+were invoked. 3G remains COMPLETE; 3H was not started and requires separate scope.
