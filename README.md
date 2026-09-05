@@ -54,3 +54,24 @@ feature/* → develop → main
 ```
 
 Feature branches are reviewed through `develop`. `main` represents the explicitly approved production line; deployment work must not bypass that policy.
+# Acquisition Portal (3G)
+
+`/portal/acquisition` is dynamically authenticated against the existing Portal
+Backend session before rendering. It is noindex/private/no-store. API traffic is
+same-origin `/api/acquisition/v1`; no DB/Gateway access or business decisions live
+in Web. The typed client validates schema version 1 and the `3g-v1` surface handshake.
+The existing operator can inspect evidence and submit confirmed CONTINUE/HOLD/REJECT
+with CSRF, stable command identity and expected version. A conflict refreshes detail
+without automatically retrying the decision. A network retry retains the original
+payload. Counts, eligibility, permitted actions and refill come from Engine.
+
+Cycle, Accounts (outcome filter and cursor pages), primary Attention, and Work/Health
+are bounded surfaces. Empty capacity is intentional; no enable-gate, arbitrary CRUD,
+buyer/contact, message, email or HubSpot action is present. Refresh is explicit.
+
+For isolated local server-rendered auth checks, `PORTAL_BACKEND_INTERNAL_URL` may
+point to a trusted local backend; production defaults to `https://brunova.mx`.
+Never point this server-only value at an untrusted origin: it receives the session
+cookie for validation. Runtime production uses the existing nginx API boundary.
+`tests/unit/acquisition.test.tsx` covers empty/gate/loading/auth states, epistemic
+presentation, confirmation/refill, stale conflicts, stable retries and contract drift.

@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
         headers: apiBoundaryHeaders,
       },
       {
-        source: "/portal",
+        source: "/portal/:path*",
         headers: portalBoundaryHeaders,
       },
       {

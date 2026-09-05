@@ -1,4 +1,5 @@
 import "@/app/core-routes.css"
+import Link from "next/link"
 
 import { Container } from "@/components/layout/container"
 import { RouteContext } from "@/components/layout/route-context"
@@ -33,6 +34,12 @@ export function PortalPageView({ locale }: { locale: Locale }) {
           <p>{portalDescription}</p>
         </div>
         <div className="portal-threshold__access">
+          <Link
+            className="action-link action-link--primary"
+            href="/portal/acquisition"
+          >
+            Acquisition · Acceso operativo
+          </Link>
           {portalUrl ? (
             <>
               <p>
