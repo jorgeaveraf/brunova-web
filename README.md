@@ -114,3 +114,20 @@ grants no access; it is not another locale preference. Only the two Acquisition
 routes are accepted, never external return URLs. Logout returns to the same-locale
 Portal. Both localized Portal trees are private/no-store/noindex. 3G stays COMPLETE;
 this refinement introduces no Engine, DB, Signal or 3H behavior.
+
+Post-3G verification (2026-09-05): Web runtime `2f9b9f8efb5a`; 106 tests,
+typecheck, lint and production build pass. Real Chrome QA with the Brunova profile
+verified authenticated EN/ES Portal and empty Acquisition, route switching,
+desktop/laptop/mobile layouts without horizontal overflow, and ES logout followed
+by session/Engine-read 401. Tested surfaces reported no axe violations. Capability
+absence and localized forbidden states are covered by isolated tests, not a new
+production identity. Backend, Engine, Gateway and database schema are unchanged;
+production control verification confirms zero business rows/work, restricted Portal
+DB privileges and both safety gates disabled. Public pages and backend live/ready
+remain healthy, with `authConfigured=true`.
+
+Closure is pending a fresh Google credential step in the QA browser to verify the
+complete localized callback after the reverse-proxy canonical-origin fix. Login
+navigation now uses the existing trusted `SITE_URL`, with a regression test for an
+internal request origin/untrusted Host. Do not mark this refinement COMPLETE or
+start 3H until that final real-browser round trip is verified.
