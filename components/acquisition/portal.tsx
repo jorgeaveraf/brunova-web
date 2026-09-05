@@ -2,6 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import {
+  acquisitionText,
+  acquisitionErrorText,
+  acquisitionCode,
+  type AcquisitionCopyKey,
+} from "@/content/acquisition-locale"
+import { localizedPath, type Locale } from "@/lib/i18n"
+import {
   acquisitionApi as api,
   AcquisitionError,
   type PortalSession,
@@ -16,78 +23,99 @@ import {
   type DispositionInput,
 } from "@/lib/acquisition-api"
 
-const labels: Record<string, string> = {
-  REVIEW_ACCOUNT_PRIORITY: "Revisar la prioridad de la cuenta",
-  WAIT_FOR_SUPPORTED_READINESS: "Esperar evidencia vigente y sustentada",
-  UNKNOWNS_REMAIN_EXPLICIT: "Persisten incógnitas explícitas",
-  EXPLICIT_MATERIAL_UNKNOWN:
-    "Existe una incógnita material que bloquea el avance",
-  UNRESOLVED_CONFLICT_OR_STALE:
-    "La evidencia está desactualizada o en conflicto",
-  BELOW_ATTENTION_EVIDENCE_STANDARD:
-    "La evidencia no alcanza el estándar de Attention",
-  SUPPORTED_BUT_MODERATE_CONFIDENCE:
-    "Premisa sustentada con confianza moderada",
-  HYPOTHESIS_NOT_CURRENTLY_SUPPORTED: "La hipótesis no tiene soporte vigente",
+function copyFor(locale: Locale) {
+  const t = (key: AcquisitionCopyKey) => acquisitionText(locale, key)
+  return {
+    t,
+    humanize: (code: string) => acquisitionCode(locale, code),
+    when: (date: string | null) =>
+      date
+        ? new Date(date).toLocaleString(locale === "es" ? "es-MX" : "en-US")
+        : t("Sin actividad"),
+  }
 }
-const humanize = (text: string) => labels[text] ?? text.replaceAll("_", " ")
-const when = (date: string | null) =>
-  date ? new Date(date).toLocaleString("es-MX") : "Sin actividad"
-const epistemic: Record<string, string> = {
+const epistemic: Record<string, AcquisitionCopyKey> = {
   OBSERVED_FACT: "Lo que sabemos · Hechos observados",
   SUPPORTED_INFERENCE: "Lo que respalda la evidencia · Inferencias",
   WORKING_HYPOTHESIS: "Hipótesis de trabajo",
   UNKNOWN: "Lo que no sabemos",
-  CONFLICT_OR_STALE: "Evidencia stale / en conflicto",
+  CONFLICT_OR_STALE: "Evidencia desactualizada / en conflicto",
 }
 function Lines({
   values,
-  empty = "Sin factores adicionales registrados.",
+  empty,
+  locale,
+  coded = false,
 }: {
   values: string[]
   empty?: string
+  locale: Locale
+  coded?: boolean
 }) {
+  const { t, humanize } = copyFor(locale)
   return values.length ? (
     <ul>
       {values.map((v, i) => (
-        <li key={i}>{humanize(v)}</li>
+        <li key={i}>{coded ? humanize(v) : v}</li>
       ))}
     </ul>
   ) : (
-    <p className="acq-muted">{empty}</p>
+    <p className="acq-muted">
+      {empty ?? t("Sin factores adicionales registrados.")}
+    </p>
   )
 }
-function Meaning({ item }: { item: Attention }) {
+function Meaning({ item, locale }: { item: Attention; locale: Locale }) {
+  const { t, humanize, when } = copyFor(locale)
   const r = item.result
   return (
     <>
       <div className="acq-badges">
-        <span>Prioridad {r.tier}</span>
-        <span>Evidencia {r.evidenceConfidence}</span>
+        <span>
+          {t("Prioridad")} {humanize(r.tier)}
+        </span>
+        <span>
+          {t("Evidencia")} {humanize(r.evidenceConfidence)}
+        </span>
         <span>{humanize(item.status)}</span>
-        {item.stale && <span>Revisión desactualizada</span>}
+        {item.stale && <span>{t("Revisión desactualizada")}</span>}
       </div>
-      <h3>Por qué ahora · soporte observado</h3>
+      <h3>{t("Por qué ahora · soporte observado")}</h3>
       <Lines
+        locale={locale}
         values={r.whyNow.map(
           (w) => `${w.observedContext} · ${when(w.validAsOf)}`,
         )}
-        empty="No hay un fundamento vigente registrado."
+        empty={t("No hay un fundamento vigente registrado.")}
       />
-      <p className="acq-muted">Recomendación: {humanize(r.recommendation)}</p>
-      <h3>Qué limita la confianza</h3>
-      <Lines values={[...r.hardStops, ...r.limitingFactors]} />
-      <h3>Qué falta saber</h3>
-      <Lines values={r.knownUnknowns} />
-      <h3>Unknowns materiales</h3>
+      <p className="acq-muted">
+        {t("Recomendación:")} {humanize(r.recommendation)}
+      </p>
+      <h3>{t("Qué limita la confianza")}</h3>
       <Lines
+        locale={locale}
+        coded
+        values={[...r.hardStops, ...r.limitingFactors]}
+      />
+      <h3>{t("Qué falta saber")}</h3>
+      <Lines locale={locale} values={r.knownUnknowns} />
+      <h3>{t("Incógnitas materiales")}</h3>
+      <Lines
+        locale={locale}
         values={r.materialUnknowns}
-        empty="Ningún bloqueo material explícito registrado."
+        empty={t("Ningún bloqueo material explícito registrado.")}
       />
     </>
   )
 }
-export function AcquisitionPortal({ session }: { session: PortalSession }) {
+export function AcquisitionPortal({
+  session,
+  locale,
+}: {
+  session: PortalSession
+  locale: Locale
+}) {
+  const { t, humanize, when } = copyFor(locale)
   const [cycles, setCycles] = useState<Cycle[]>([]),
     [cycleId, setCycleId] = useState("")
   const [tab, setTab] = useState("Attention"),
@@ -231,7 +259,7 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
     try {
       const receipt = await api.disposition(command.current, session.csrfToken)
       setNotice(
-        `Decisión confirmada: ${choice}. ${receipt.refill.activated.length ? "La siguiente cuenta elegible fue promovida según la política vigente." : "Sin nuevas promociones. La capacidad es un máximo, no una cuota."}`,
+        `${t("Decisión confirmada:")} ${humanize(choice)}. ${receipt.refill.activated.length ? t("La siguiente cuenta elegible fue promovida según la política vigente.") : t("Sin nuevas promociones. La capacidad es un máximo, no una cuota.")}`,
       )
       command.current = null
       setHasCommand(false)
@@ -261,41 +289,41 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
     }
   }
   return (
-    <main id="main-content" className="acq" lang="es">
+    <main id="main-content" className="acq" lang={locale}>
       <header className="acq-heading">
         <div>
-          <p className="acq-kicker">Portal / Acquisition</p>
-          <h1>Atención con fundamento.</h1>
-          <p>Brunova Acquisition Engine · Observa, revisa y decide.</p>
+          <p className="acq-kicker">{t("Portal / Adquisición")}</p>
+          <h1>{t("Atención con fundamento.")}</h1>
+          <p>{t("Brunova Acquisition Engine · Observa, revisa y decide.")}</p>
         </div>
         <div className="acq-actions">
           <button onClick={() => void refresh()} disabled={loading || pending}>
-            Actualizar
+            {t("Actualizar")}
           </button>
           <button
             onClick={async () => {
               try {
                 await api.logout(session.csrfToken)
-                window.location.assign("/portal")
+                window.location.assign(localizedPath(locale, "/portal"))
               } catch {
                 setError(new AcquisitionError(503))
               }
             }}
           >
-            Cerrar sesión
+            {t("Cerrar sesión")}
           </button>
         </div>
       </header>
       {error && (
         <div role="alert" className="acq-alert">
-          {error.message}
+          {acquisitionErrorText(locale, error.status)}
           {error.status === 401 && (
             <button
               onClick={() =>
-                window.location.assign("/api/acquisition/v1/auth/login")
+                window.location.assign(`/portal/login?locale=${locale}`)
               }
             >
-              Iniciar sesión
+              {t("Iniciar sesión")}
             </button>
           )}
         </div>
@@ -305,10 +333,10 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
           {notice}
         </p>
       )}
-      {loading && <p role="status">Actualizando estado del Engine…</p>}
+      {loading && <p role="status">{t("Actualizando estado del Engine…")}</p>}
       <div className="acq-cycle">
         <label>
-          Ciclo{" "}
+          {t("Ciclo")}{" "}
           <select
             value={cycleId}
             disabled={!cycles.length || pending}
@@ -318,100 +346,118 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
               setWorkCursor("")
             }}
           >
-            {!cycles.length && <option value="">Sin ciclo</option>}
+            {!cycles.length && <option value="">{t("Sin ciclo")}</option>}
             {cycles.map((c) => (
               <option key={c.cycleId} value={c.cycleId}>
-                {c.cycleId} · {c.status}
+                {c.cycleId} · {humanize(c.status)}
               </option>
             ))}
           </select>
         </label>
         {cycle && (
           <p>
-            {cycle.status} · {cycle.policy.id} / {cycle.policy.version}
+            {humanize(cycle.status)} · {cycle.policy.id} /{" "}
+            {cycle.policy.version}
           </p>
         )}
       </div>
-      <section className="acq-metrics" aria-label="Resumen">
+      <section className="acq-metrics" aria-label={t("Resumen")}>
         <div>
-          <span>Qualified</span>
+          <span>{t("Calificadas")}</span>
           <strong>{cycle?.outcomeCounts.qualified ?? "—"}</strong>
         </div>
         <div>
-          <span>Priorizadas</span>
+          <span>{t("Priorizadas")}</span>
           <strong>{counts?.counts?.prioritized_count ?? "—"}</strong>
         </div>
         <div>
-          <span>Atención activa</span>
+          <span>{t("Atención activa")}</span>
           <strong>{counts?.counts?.active_count ?? "—"}</strong>
         </div>
         <div>
-          <span>Overflow</span>
+          <span>{t("En espera de capacidad")}</span>
           <strong>{counts?.counts?.overflow_count ?? "—"}</strong>
         </div>
         <div>
-          <span>Trabajo pendiente · global</span>
+          <span>{t("Trabajo pendiente · global")}</span>
           <strong>{health?.pendingWorkCount ?? "—"}</strong>
         </div>
         <div>
-          <span>Base de datos</span>
+          <span>{t("Base de datos")}</span>
           <strong>
             {health
               ? health.databaseReady
-                ? "Disponible"
-                : "No disponible"
+                ? t("Disponible")
+                : t("No disponible")
               : "—"}
           </strong>
         </div>
       </section>
       {health && (
         <p className="acq-safety">
-          REAL ACQUISITION DATA:{" "}
-          {health.realAcquisitionDataAllowed ? "ENABLED" : "DISABLED"}{" "}
+          {t("DATOS REALES DE ADQUISICIÓN:")}{" "}
+          {t(
+            health.realAcquisitionDataAllowed
+              ? "HABILITADOS"
+              : "DESHABILITADOS",
+          )}{" "}
           <span>
-            EXTERNAL EFFECTS: {health.externalEffectsMode.toUpperCase()}
+            {t("EFECTOS EXTERNOS:")}{" "}
+            {health.externalEffectsMode === "disabled"
+              ? t("DESHABILITADOS")
+              : health.externalEffectsMode}
           </span>
           <small>
-            Estado de seguridad intencional. No hay controles de activación.
+            {t(
+              "Estado de seguridad intencional. No hay controles de activación.",
+            )}
           </small>
         </p>
       )}
-      <nav className="acq-tabs" aria-label="Secciones de Acquisition">
+      <nav className="acq-tabs" aria-label={t("Secciones de Adquisición")}>
         {["Attention", "Ciclo", "Accounts", "Work / Health"].map((name) => (
           <button
             key={name}
             aria-current={tab === name ? "page" : undefined}
             onClick={() => setTab(name)}
           >
-            {name === "Attention" ? "Necesita tu atención" : name}
+            {name === "Attention"
+              ? t("Necesita tu atención")
+              : name === "Ciclo"
+                ? t("Ciclo")
+                : name === "Accounts"
+                  ? t("Cuentas")
+                  : name}
           </button>
         ))}
       </nav>
       {!loading && !cycles.length && !error && (
         <section className="acq-empty">
-          <h2>Aún no hay un ciclo de Acquisition.</h2>
+          <h2>{t("Aún no hay un ciclo de Adquisición.")}</h2>
           <p>
-            El Engine está preparado; no se ha iniciado investigación real. Aquí
-            aparecerá el contexto de un ciclo autorizado.
+            {t(
+              "El Engine está preparado; no se ha iniciado investigación real. Aquí aparecerá el contexto de un ciclo autorizado.",
+            )}
           </p>
         </section>
       )}
       {tab === "Attention" && (
         <section>
           <div className="acq-section-heading">
-            <h2>Necesita tu atención</h2>
+            <h2>{t("Necesita tu atención")}</h2>
             <p>
               {counts?.counts
-                ? `Máximo ${counts.counts.capacity} activas · ${counts.counts.eligible_unresolved_count} elegibles pendientes`
-                : "Sin capacidad configurada"}
+                ? `${t("Máximo")} ${counts.counts.capacity} ${t("activas")} · ${counts.counts.eligible_unresolved_count} ${t("elegibles pendientes")}`
+                : t("Sin capacidad configurada")}
             </p>
           </div>
           {!active.length && !loading && (
             <div className="acq-empty">
-              <h3>No hay decisiones pendientes.</h3>
+              <h3>{t("No hay decisiones pendientes.")}</h3>
               <p>
-                Solo aparecerán cuentas que cumplan el estándar vigente. Los
-                espacios libres no son un error.
+                {t(
+                  "Solo aparecerán cuentas que cumplan el estándar vigente. Los espacios libres no son un error.",
+                )}
               </p>
             </div>
           )}
@@ -420,12 +466,12 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
               <article key={item.attention_id}>
                 <h2>{item.displayName}</h2>
                 <p className="acq-muted">{item.domain}</p>
-                <Meaning item={item} />
+                <Meaning locale={locale} item={item} />
                 <button
                   disabled={pending}
                   onClick={() => void inspect(item.account_id, item)}
                 >
-                  Revisar evidencia y decisión
+                  {t("Revisar evidencia y decisión")}
                 </button>
               </article>
             ))}
@@ -434,10 +480,10 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
       )}
       {tab === "Ciclo" && (
         <section className="acq-panel">
-          <h2>Estado del ciclo</h2>
+          <h2>{t("Estado del ciclo")}</h2>
           {cycle ? (
             <>
-              <h3>Investigación</h3>
+              <h3>{t("Investigación")}</h3>
               <dl>
                 {Object.entries(cycle.outcomeCounts).map(([label, n]) => (
                   <div key={label}>
@@ -446,36 +492,37 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
                   </div>
                 ))}
               </dl>
-              <h3>Prioridad</h3>
+              <h3>{t("Prioridad")}</h3>
               {counts?.configured ? (
                 <>
                   <dl>
                     {Object.entries(counts.tiers).map(([label, n]) => (
                       <div key={label}>
-                        <dt>{label.toUpperCase()}</dt>
+                        <dt>{humanize(label)}</dt>
                         <dd>{n}</dd>
                       </div>
                     ))}
                   </dl>
                   <p>
-                    Pool candidato: {counts.counts?.candidate_count}. Overflow:{" "}
+                    {t("Grupo candidato:")} {counts.counts?.candidate_count}.{" "}
+                    {t("En espera de capacidad")}:{" "}
                     {counts.counts?.overflow_count}.
                   </p>
                 </>
               ) : (
-                <p>Aún no hay pool priorizado.</p>
+                <p>{t("Aún no hay pool priorizado.")}</p>
               )}
             </>
           ) : (
-            <p>No hay un ciclo configurado.</p>
+            <p>{t("No hay un ciclo configurado.")}</p>
           )}
         </section>
       )}
       {tab === "Accounts" && (
         <section>
-          <h2>Accounts</h2>
+          <h2>{t("Cuentas")}</h2>
           <label>
-            Resultado de investigación{" "}
+            {t("Resultado de investigación")}{" "}
             <select
               value={outcome}
               onChange={(e) => {
@@ -483,15 +530,17 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
                 setCursor("")
               }}
             >
-              <option value="">Todos</option>
+              <option value="">{t("Todos")}</option>
               {["QUALIFIED", "HOLD", "REJECTED"].map((o) => (
-                <option key={o}>{o}</option>
+                <option key={o} value={o}>
+                  {humanize(o)}
+                </option>
               ))}
             </select>
           </label>
           {!accounts.length && !loading && (
             <p className="acq-empty">
-              No hay cuentas para este ciclo o filtro.
+              {t("No hay cuentas para este ciclo o filtro.")}
             </p>
           )}
           <div className="acq-account-list">
@@ -504,18 +553,18 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
                     <p>{a.canonicalIdentity.domain}</p>
                   </div>
                   <div>
-                    <p>{a.researchOutcome ?? a.stage}</p>
+                    <p>{humanize(a.researchOutcome ?? a.stage)}</p>
                     <p>
                       {att
-                        ? `${att.result.tier} · ${att.status}${att.stale ? " · Desactualizado" : ""}`
-                        : "Sin prioridad / Attention"}
+                        ? `${humanize(att.result.tier)} · ${humanize(att.status)}${att.stale ? ` · ${t("Desactualizado")}` : ""}`
+                        : t("Sin prioridad / atención")}
                     </p>
                     <small>{when(a.latestMaterialActivityAt)}</small>
                   </div>
                   <button
                     onClick={() => void inspect(a.accountId, att ?? null)}
                   >
-                    Inspeccionar cuenta
+                    {t("Inspeccionar cuenta")}
                   </button>
                 </article>
               )
@@ -523,15 +572,16 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
           </div>
           <div className="acq-actions">
             <button disabled={!cursor} onClick={() => setCursor("")}>
-              Primera página
+              {t("Primera página")}
             </button>
             <button disabled={!next} onClick={() => setCursor(next ?? "")}>
-              Siguiente página
+              {t("Siguiente página")}
             </button>
           </div>
           <p className="acq-muted">
-            Solicitar investigación no está habilitado en esta superficie de
-            preactivación.
+            {t(
+              "Solicitar investigación no está habilitado en esta superficie de preactivación.",
+            )}
           </p>
         </section>
       )}
@@ -539,7 +589,7 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
         <section className="acq-panel">
           <h2>Work / Health</h2>
           <label>
-            Estado del trabajo
+            {t("Estado del trabajo")}
             <select
               value={workState}
               onChange={(e) => {
@@ -547,7 +597,7 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
                 setWorkCursor("")
               }}
             >
-              <option value="">Todos</option>
+              <option value="">{t("Todos")}</option>
               {[
                 "QUEUED",
                 "WORKING",
@@ -556,44 +606,50 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
                 "FAILED",
                 "CANCELLED",
               ].map((state) => (
-                <option key={state}>{state}</option>
+                <option key={state} value={state}>
+                  {humanize(state)}
+                </option>
               ))}
             </select>
           </label>
-          <p>Observabilidad; las colas no se editan desde el Portal.</p>
+          <p>{t("Observabilidad; las colas no se editan desde el Portal.")}</p>
           {health && (
             <p>
-              Trabajo pendiente más antiguo: {when(health.oldestPendingAt)}.
+              {t("Trabajo pendiente más antiguo:")}
+              {when(health.oldestPendingAt)}.
             </p>
           )}
           {!work.length && !loading && (
             <p className="acq-empty">
-              No hay trabajo registrado. El Engine no tiene tareas para este
-              ciclo.
+              {t(
+                "No hay trabajo registrado. El Engine no tiene tareas para este ciclo.",
+              )}
             </p>
           )}
           {work.map((w) => (
             <article className="acq-work" key={w.workItemId}>
               <h3>{humanize(w.workType)}</h3>
               <p>
-                {w.state} · Intentos {w.attemptCount}/{w.maxAttempts} ·
-                Disponible {when(w.availableAt)}
+                {humanize(w.state)} · {t("Intentos")} {w.attemptCount}/
+                {w.maxAttempts} · {t("Disponible")} {when(w.availableAt)}
               </p>
               <details>
-                <summary>Detalles técnicos</summary>
+                <summary>{t("Detalles técnicos")}</summary>
                 <p>{w.workItemId}</p>
-                <p>Correlación: {w.correlationId ?? "No registrada"}</p>
+                <p>
+                  {t("Correlación:")} {w.correlationId ?? t("No registrada")}
+                </p>
               </details>
             </article>
           ))}
           <button disabled={!workCursor} onClick={() => setWorkCursor("")}>
-            Primera página de trabajo
+            {t("Primera página de trabajo")}
           </button>
           <button
             disabled={!workNext}
             onClick={() => setWorkCursor(workNext ?? "")}
           >
-            Más trabajo
+            {t("Más trabajo")}
           </button>
         </section>
       )}
@@ -607,22 +663,26 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
       >
         <div className="acq-actions">
           <button disabled={pending} onClick={() => dialog.current?.close()}>
-            Cerrar detalle
+            {t("Cerrar detalle")}
           </button>
         </div>
         <h2 id="acq-detail-title">
           {detail?.canonicalIdentity.displayName ??
             selected?.displayName ??
-            "Detalle de cuenta"}
+            t("Detalle de cuenta")}
         </h2>
-        {detailLoading && <p role="status">Cargando evidencia…</p>}
-        {error && <p role="alert">{error.message}</p>}
-        {selected && <Meaning item={selected} />}
+        {detailLoading && <p role="status">{t("Cargando evidencia…")}</p>}
+        {error && (
+          <p role="alert">{acquisitionErrorText(locale, error.status)}</p>
+        )}
+        {selected && <Meaning locale={locale} item={selected} />}
         {detail && (
           <>
-            <h3>Razón de investigación</h3>
-            <p>{detail.rationale?.summary ?? "Sin rationale registrado."}</p>
-            <h3>Fuentes registradas</h3>
+            <h3>{t("Razón de investigación")}</h3>
+            <p>
+              {detail.rationale?.summary ?? t("Sin justificación registrada.")}
+            </p>
+            <h3>{t("Fuentes registradas")}</h3>
             <ul>
               {detail.sourceObservations.map((source) => (
                 <li key={source.id}>
@@ -643,25 +703,33 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
             </ul>
             {Object.entries(epistemic).map(([kind, title]) => (
               <section className="acq-evidence" key={kind}>
-                <h3>{title}</h3>
+                <h3>{t(title)}</h3>
                 {detail.assertions
                   .filter((a) => a.epistemic_status === kind)
                   .map((a) => (
                     <div key={a.id}>
                       <p>{a.statement}</p>
-                      <small>Confianza: {a.confidence}</small>
-                      {a.falsifier && <p>Falsificador: {a.falsifier}</p>}
+                      <small>
+                        {t("Confianza:")} {humanize(a.confidence)}
+                      </small>
+                      {a.falsifier && (
+                        <p>
+                          {t("Falsificador:")} {a.falsifier}
+                        </p>
+                      )}
                     </div>
                   ))}
                 {!detail.assertions.some(
                   (a) => a.epistemic_status === kind,
                 ) && (
-                  <p className="acq-muted">Sin registros en esta categoría.</p>
+                  <p className="acq-muted">
+                    {t("Sin registros en esta categoría.")}
+                  </p>
                 )}
               </section>
             ))}
             <details>
-              <summary>Actividad y política</summary>
+              <summary>{t("Actividad y política")}</summary>
               {selected && (
                 <p>
                   {selected.result.policyId} / {selected.result.policyVersion}
@@ -677,9 +745,9 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
         )}
         {selected?.human && (
           <section>
-            <h3>Decisión Human registrada</h3>
+            <h3>{t("Decisión Humana registrada")}</h3>
             <p>
-              {selected.human.decision} · {selected.human.reason}
+              {humanize(selected.human.decision)} · {selected.human.reason}
             </p>
             <p>{selected.human.notes}</p>
             <p>{when(selected.human.decidedAt)}</p>
@@ -687,15 +755,16 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
         )}
         {selected?.reconsideration_required && (
           <p>
-            El Engine requiere reconsideración explícita. La decisión anterior
-            se conserva.
+            {t(
+              "El Engine requiere reconsideración explícita. La decisión anterior se conserva.",
+            )}
           </p>
         )}
         {canDecide && !detailLoading && detail && selected && (
           <section className="acq-decision">
-            <h3>Decisión Human</h3>
+            <h3>{t("Decisión Humana")}</h3>
             {!selected.allowedDispositions.length && (
-              <p>No hay acciones permitidas en el estado actual.</p>
+              <p>{t("No hay acciones permitidas en el estado actual.")}</p>
             )}
             <div className="acq-actions">
               {selected.allowedDispositions.map((d) => (
@@ -708,7 +777,7 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
                     setNotes("")
                   }}
                 >
-                  {d}
+                  {humanize(d)}
                 </button>
               ))}
             </div>
@@ -719,16 +788,24 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
                   void decide()
                 }}
               >
-                <h4>Confirmar {choice}</h4>
+                <h4>
+                  {t("Confirmar")} {humanize(choice)}
+                </h4>
                 <p>
                   {choice === "CONTINUE"
-                    ? "Registra la decisión para la etapa posterior. No ejecuta investigación de personas ni mensajes."
+                    ? t(
+                        "Registra la decisión para la etapa posterior. No ejecuta investigación de personas ni mensajes.",
+                      )
                     : choice === "HOLD"
-                      ? "Retira el ítem de Attention hasta una reconsideración gobernada."
-                      : "Resuelve el ítem para este ciclo. No volverá por refill automático."}
+                      ? t(
+                          "Retira el ítem de atención hasta una reconsideración gobernada.",
+                        )
+                      : t(
+                          "Resuelve el ítem para este ciclo. No volverá por refill automático.",
+                        )}
                 </p>
                 <label>
-                  Motivo (obligatorio)
+                  {t("Motivo (obligatorio)")}
                   <textarea
                     required
                     maxLength={1000}
@@ -738,7 +815,7 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
                   />
                 </label>
                 <label>
-                  Notas opcionales
+                  {t("Notas opcionales")}
                   <textarea
                     maxLength={2000}
                     disabled={pending || hasCommand}
@@ -748,10 +825,10 @@ export function AcquisitionPortal({ session }: { session: PortalSession }) {
                 </label>
                 <button type="submit" disabled={pending || !reason.trim()}>
                   {pending
-                    ? "Confirmando…"
+                    ? t("Confirmando…")
                     : hasCommand
-                      ? "Reintentar la misma decisión"
-                      : `Confirmar ${choice}`}
+                      ? t("Reintentar la misma decisión")
+                      : `${t("Confirmar")} ${humanize(choice)}`}
                 </button>
               </form>
             )}

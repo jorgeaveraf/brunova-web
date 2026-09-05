@@ -90,3 +90,27 @@ After restoring production, fresh Google login, empty UI/reads, health and logou
 204 → session/Engine reads 401 passed. The temporary database was removed and runtime
 configuration restored exactly; zero business rows/work, both safety gates disabled.
 Web runtime remains `cd6cde03a2a6`. No Gateway, outbound or 3H changes.
+
+## Portal semantics and locale standard (post-3G)
+
+Brunova Portal is the authenticated umbrella workspace, not a Client-only product.
+The neutral public sign-in threshold reveals no applications. Its server-rendered
+authenticated landing exposes Acquisition only with backend-verified
+`VIEW_ACQUISITION`; identities without it see no Acquisition entry. Acquisition
+remains an internal operational surface. No future Client modules are implemented.
+The shared session reader fails closed; backend capability checks remain authoritative.
+
+The existing route locale drives all Portal-owned copy: `/portal` and
+`/portal/acquisition` are EN; `/es/portal` and `/es/portal/acquisition` are ES.
+The existing language selector switches equivalent routes. The Acquisition catalog
+covers labels, state presentation, errors, dialogs, confirmations and refill; Engine
+payloads/enums stay unchanged. Evidence and Human-authored text remain verbatim;
+product names, `Work / Health` and technical identifiers are intentionally preserved.
+
+`/portal/login?locale=en|es` forwards to the unchanged Google OIDC endpoint. A
+ten-minute, HttpOnly, same-site bounded return-path cookie is consumed at the existing
+callback destination to preserve the selected route. It carries no credentials and
+grants no access; it is not another locale preference. Only the two Acquisition
+routes are accepted, never external return URLs. Logout returns to the same-locale
+Portal. Both localized Portal trees are private/no-store/noindex. 3G stays COMPLETE;
+this refinement introduces no Engine, DB, Signal or 3H behavior.

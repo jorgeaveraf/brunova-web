@@ -153,20 +153,7 @@ export type DispositionInput = {
 }
 export class AcquisitionError extends Error {
   constructor(public status: number) {
-    super(
-      (
-        {
-          401: "Tu sesión terminó. Vuelve a iniciar sesión.",
-          403: "Tu identidad no tiene permiso para esta acción.",
-          409: "El ítem cambió. Revisa el estado actualizado antes de decidir.",
-          422: "La decisión no puede aplicarse al estado actual.",
-          429: "Espera un momento antes de volver a intentar.",
-          503: "El servicio no está disponible. Intenta actualizar en unos momentos.",
-          502: "El contrato del Portal no es compatible. No se aplicó ninguna acción automática.",
-        } as Record<number, string>
-      )[status] ??
-        "No se pudo confirmar la operación. Puedes reintentar la misma solicitud de forma segura.",
-    )
+    super(`ACQUISITION_HTTP_${status}`)
   }
 }
 async function request<T>(

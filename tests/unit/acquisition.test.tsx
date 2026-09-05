@@ -8,6 +8,10 @@ import {
 import { beforeAll, beforeEach, expect, it, vi } from "vitest"
 import { AcquisitionPortal } from "@/components/acquisition/portal"
 import {
+  acquisitionText as text,
+  acquisitionCode,
+} from "@/content/acquisition-locale"
+import {
   acquisitionApi as api,
   AcquisitionError,
   type Attention,
@@ -167,17 +171,19 @@ function populated() {
   })
 }
 it("shows intentional empty state and disabled gates, no fake accounts", async () => {
-  render(<AcquisitionPortal session={session} />)
+  render(<AcquisitionPortal session={session} locale="es" />)
   expect(
-    await screen.findByText("Aún no hay un ciclo de Acquisition."),
+    await screen.findByText("Aún no hay un ciclo de Adquisición."),
   ).toBeVisible()
-  expect(screen.getByText(/REAL ACQUISITION DATA: DISABLED/)).toBeVisible()
-  expect(screen.getByText(/EXTERNAL EFFECTS: DISABLED/)).toBeVisible()
+  expect(
+    screen.getByText(/DATOS REALES DE ADQUISICIÓN: DESHABILITADOS/),
+  ).toBeVisible()
+  expect(screen.getByText(/EFECTOS EXTERNOS: DESHABILITADOS/)).toBeVisible()
   expect(screen.queryByText("SYNTHETIC First")).not.toBeInTheDocument()
 })
 it("401 and unavailable/loading states are explicit", async () => {
   vi.mocked(api.contract).mockRejectedValue(new AcquisitionError(401))
-  render(<AcquisitionPortal session={session} />)
+  render(<AcquisitionPortal session={session} locale="es" />)
   expect(screen.getByText(/Actualizando estado/)).toBeVisible()
   expect(
     await screen.findByRole("button", { name: "Iniciar sesión" }),
@@ -198,7 +204,7 @@ it("shows epistemic distinctions, confirms disposition and displays Engine refil
       refill: { activated: ["next"], withdrawn: [] },
     }
   })
-  render(<AcquisitionPortal session={session} />)
+  render(<AcquisitionPortal session={session} locale="es" />)
   fireEvent.click(
     await screen.findByRole("button", { name: "Revisar evidencia y decisión" }),
   )
@@ -206,11 +212,11 @@ it("shows epistemic distinctions, confirms disposition and displays Engine refil
   expect(await modal.findByText("SYNTHETIC observed fact")).toBeVisible()
   expect(modal.getByText("Hipótesis de trabajo")).toBeVisible()
   expect(modal.getByText("Lo que no sabemos")).toBeVisible()
-  fireEvent.click(modal.getByRole("button", { name: "CONTINUE" }))
+  fireEvent.click(modal.getByRole("button", { name: "Continuar" }))
   fireEvent.change(modal.getByLabelText("Motivo (obligatorio)"), {
     target: { value: "Synthetic review complete" },
   })
-  fireEvent.click(modal.getByRole("button", { name: "Confirmar CONTINUE" }))
+  fireEvent.click(modal.getByRole("button", { name: "Confirmar Continuar" }))
   expect(
     await screen.findByRole("heading", { name: "SYNTHETIC Next" }),
   ).toBeVisible()
@@ -228,12 +234,12 @@ it("409 refreshes current state without retrying with a new version", async () =
   const decide = vi
     .spyOn(api, "disposition")
     .mockRejectedValue(new AcquisitionError(409))
-  render(<AcquisitionPortal session={session} />)
+  render(<AcquisitionPortal session={session} locale="es" />)
   fireEvent.click(
     await screen.findByRole("button", { name: "Revisar evidencia y decisión" }),
   )
   const modal = within(screen.getByRole("dialog"))
-  fireEvent.click(await modal.findByRole("button", { name: "HOLD" }))
+  fireEvent.click(await modal.findByRole("button", { name: "Poner en espera" }))
   fireEvent.change(modal.getByLabelText("Motivo (obligatorio)"), {
     target: { value: "Need more evidence" },
   })
@@ -242,13 +248,15 @@ it("409 refreshes current state without retrying with a new version", async () =
     version: 3,
     allowedDispositions: [],
   })
-  fireEvent.click(modal.getByRole("button", { name: "Confirmar HOLD" }))
+  fireEvent.click(
+    modal.getByRole("button", { name: "Confirmar Poner en espera" }),
+  )
   expect(
     await modal.findByText("No hay acciones permitidas en el estado actual."),
   ).toBeVisible()
   expect(decide).toHaveBeenCalledTimes(1)
   expect(
-    modal.queryByRole("button", { name: "Confirmar HOLD" }),
+    modal.queryByRole("button", { name: "Confirmar Poner en espera" }),
   ).not.toBeInTheDocument()
 })
 it("network retry retains command ID and payload; read-only users have no decisions", async () => {
@@ -256,16 +264,16 @@ it("network retry retains command ID and payload; read-only users have no decisi
   const decide = vi
     .spyOn(api, "disposition")
     .mockRejectedValue(new AcquisitionError(503))
-  render(<AcquisitionPortal session={session} />)
+  render(<AcquisitionPortal session={session} locale="es" />)
   fireEvent.click(
     await screen.findByRole("button", { name: "Revisar evidencia y decisión" }),
   )
   const modal = within(screen.getByRole("dialog"))
-  fireEvent.click(await modal.findByRole("button", { name: "REJECT" }))
+  fireEvent.click(await modal.findByRole("button", { name: "Rechazar" }))
   fireEvent.change(modal.getByLabelText("Motivo (obligatorio)"), {
     target: { value: "Synthetic not suitable" },
   })
-  fireEvent.click(modal.getByRole("button", { name: "Confirmar REJECT" }))
+  fireEvent.click(modal.getByRole("button", { name: "Confirmar Rechazar" }))
   fireEvent.click(
     await modal.findByRole("button", { name: "Reintentar la misma decisión" }),
   )
@@ -289,3 +297,143 @@ it("transport rejects incompatible contract and does not leak raw errors", async
   await expect(api.contract()).rejects.toMatchObject({ status: 502 })
   vi.unstubAllGlobals()
 })
+
+it.each(["en", "es"] as const)(
+  "%s covers populated tabs, evidence, actions and unchanged Engine payloads",
+  async (locale) => {
+    populated()
+    vi.mocked(api.accounts).mockResolvedValue({
+      items: [research],
+      nextCursor: null,
+    })
+    vi.mocked(api.work).mockResolvedValue({
+      items: [
+        {
+          workItemId: "synthetic-work",
+          schemaVersion: "1",
+          workType: "ACCOUNT_RESEARCH",
+          state: "QUEUED",
+          attemptCount: 0,
+          maxAttempts: 3,
+          availableAt: "2026-09-05T12:00:00Z",
+          correlationId: null,
+        },
+      ],
+      nextCursor: null,
+    })
+    const decide = vi.spyOn(api, "disposition").mockResolvedValue({
+      schemaVersion: "1",
+      status: "accepted",
+      nextStageReady: true,
+      refill: { activated: ["next"], withdrawn: [] },
+    })
+    const { container } = render(
+      <AcquisitionPortal session={session} locale={locale} />,
+    )
+    const t = (key: Parameters<typeof text>[1]) => text(locale, key)
+    await screen.findByRole("button", {
+      name: t("Revisar evidencia y decisión"),
+    })
+    expect(screen.getByRole("main")).toHaveAttribute("lang", locale)
+    expect(container.textContent).not.toMatch(
+      locale === "en"
+        ? /Actualizar|Cerrar sesión|Por qué ahora|Qué falta saber|Cargando evidencia|Sin actividad/
+        : /Refresh|Logout|Why now|What remains unknown|Loading evidence|No activity/,
+    )
+    fireEvent.click(screen.getByRole("button", { name: t("Ciclo") }))
+    expect(
+      screen.getByRole("heading", { name: t("Estado del ciclo") }),
+    ).toBeVisible()
+    fireEvent.click(screen.getByRole("button", { name: t("Cuentas") }))
+    fireEvent.change(screen.getByLabelText(t("Resultado de investigación")), {
+      target: { value: "QUALIFIED" },
+    })
+    await waitFor(() =>
+      expect(api.accounts).toHaveBeenCalledWith("synthetic", "QUALIFIED", ""),
+    )
+    fireEvent.click(screen.getByRole("button", { name: "Work / Health" }))
+    expect(
+      await screen.findByRole("heading", {
+        name: t("Investigación de cuenta"),
+      }),
+    ).toBeVisible()
+    fireEvent.change(screen.getByLabelText(t("Estado del trabajo")), {
+      target: { value: "WORKING" },
+    })
+    await waitFor(() =>
+      expect(api.work).toHaveBeenCalledWith("synthetic", "", "WORKING"),
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: t("Necesita tu atención") }),
+    )
+    fireEvent.click(
+      screen.getByRole("button", { name: t("Revisar evidencia y decisión") }),
+    )
+    const modal = within(screen.getByRole("dialog"))
+    expect(await modal.findByText("SYNTHETIC observed fact")).toBeVisible()
+    for (const title of [
+      "Lo que sabemos · Hechos observados",
+      "Lo que respalda la evidencia · Inferencias",
+      "Hipótesis de trabajo",
+      "Lo que no sabemos",
+      "Evidencia desactualizada / en conflicto",
+    ] as const)
+      expect(modal.getByText(t(title))).toBeVisible()
+    for (const action of ["CONTINUE", "HOLD", "REJECT"])
+      expect(
+        modal.getByRole("button", { name: acquisitionCode(locale, action) }),
+      ).toBeVisible()
+    fireEvent.click(
+      modal.getByRole("button", { name: acquisitionCode(locale, "CONTINUE") }),
+    )
+    fireEvent.change(modal.getByLabelText(t("Motivo (obligatorio)")), {
+      target: { value: "SYNTHETIC unchanged reason" },
+    })
+    fireEvent.click(
+      modal.getByRole("button", {
+        name: `${t("Confirmar")} ${acquisitionCode(locale, "CONTINUE")}`,
+      }),
+    )
+    await waitFor(() => expect(decide).toHaveBeenCalledTimes(1))
+    expect(decide.mock.calls[0]?.[0]).toMatchObject({
+      disposition: "CONTINUE",
+      expectedVersion: 2,
+      reason: "SYNTHETIC unchanged reason",
+    })
+    expect(
+      await screen.findByText(new RegExp(t("Decisión confirmada:"))),
+    ).toHaveTextContent(
+      t(
+        "La siguiente cuenta elegible fue promovida según la política vigente.",
+      ),
+    )
+  },
+)
+
+it.each(["en", "es"] as const)(
+  "%s empty UI has no opposite-locale navigation or gate labels",
+  async (locale) => {
+    const { container } = render(
+      <AcquisitionPortal session={session} locale={locale} />,
+    )
+    await screen.findByText(text(locale, "Aún no hay un ciclo de Adquisición."))
+    expect(container.textContent).not.toMatch(
+      locale === "en"
+        ? /Sin ciclo|Calificadas|Priorizadas|Atención activa|Trabajo pendiente|Base de datos|DESHABILITADOS/
+        : /No cycle|Qualified|Prioritized|Active Attention|Pending Work|Database|DISABLED/,
+    )
+  },
+)
+
+it.each([401, 403, 409, 422, 429, 502, 503, 500])(
+  "EN renders localized safe HTTP %i errors",
+  async (status) => {
+    const error = new AcquisitionError(status)
+    vi.mocked(api.contract).mockRejectedValue(error)
+    render(<AcquisitionPortal session={session} locale="en" />)
+    expect(await screen.findByRole("alert")).not.toHaveTextContent(
+      error.message,
+    )
+    expect(screen.getByRole("alert").textContent?.trim()).toBeTruthy()
+  },
+)
