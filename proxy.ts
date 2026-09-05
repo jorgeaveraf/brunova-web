@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getSiteUrl } from "@/lib/env"
 import {
   portalReturnCookie,
   portalReturnCookiePath,
@@ -11,7 +12,7 @@ export function proxy(request: NextRequest) {
   const response =
     path === request.nextUrl.pathname
       ? NextResponse.next()
-      : NextResponse.redirect(new URL(path, request.url))
+      : NextResponse.redirect(new URL(path, getSiteUrl()))
   response.cookies.set(portalReturnCookie, "", {
     path: portalReturnCookiePath,
     maxAge: 0,

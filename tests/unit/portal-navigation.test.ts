@@ -8,6 +8,9 @@ import { portalReturnCookie, validPortalReturn } from "@/lib/portal-navigation"
 import { readPortalSession } from "@/lib/portal-session"
 import { cookies } from "next/headers"
 vi.mock("next/headers", () => ({ cookies: vi.fn() }))
+vi.mock("@/lib/env", () => ({
+  getSiteUrl: () => new URL("https://brunova.mx"),
+}))
 it.each(["en", "es"] as const)(
   "%s preserves the route locale through the existing Google endpoint",
   (locale) => {
@@ -50,6 +53,24 @@ it("never accepts external, arbitrary or malformed auth return paths", () => {
     "/es/portal/acquisition?token=x",
   ])
     expect(validPortalReturn(input)).toBe("/portal/acquisition")
+})
+it("uses the canonical origin behind the production reverse proxy, never the internal or supplied Host", () => {
+  const response = GET(
+    new NextRequest("http://0.0.0.0:3000/portal/login?locale=es", {
+      headers: { host: "evil.invalid" },
+    }),
+  )
+  expect(response.headers.get("location")).toBe(
+    "https://brunova.mx/api/acquisition/v1/auth/login",
+  )
+  const arrival = proxy(
+    new NextRequest("http://0.0.0.0:3000/portal/acquisition", {
+      headers: { cookie: `${portalReturnCookie}=/es/portal/acquisition` },
+    }),
+  )
+  expect(arrival.headers.get("location")).toBe(
+    "https://brunova.mx/es/portal/acquisition",
+  )
 })
 it("SSR only trusts a valid backend session and never exposes the session cookie", async () => {
   vi.mocked(cookies).mockResolvedValue({

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getSiteUrl } from "@/lib/env"
 import {
   portalReturnCookie,
   portalReturnCookiePath,
@@ -9,7 +10,7 @@ export function GET(request: NextRequest) {
   const locale =
     request.nextUrl.searchParams.get("locale") === "es" ? "es" : "en"
   const response = NextResponse.redirect(
-    new URL("/api/acquisition/v1/auth/login", request.url),
+    new URL("/api/acquisition/v1/auth/login", getSiteUrl()),
   )
   response.cookies.set(portalReturnCookie, portalAuthReturnPath(locale), {
     httpOnly: true,
