@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { CrmBoundarySection } from "./crm-boundary"
 import {
   acquisitionText,
   acquisitionErrorText,
@@ -678,6 +679,13 @@ export function AcquisitionPortal({
         {selected && <Meaning locale={locale} item={selected} />}
         {detail && (
           <>
+            <CrmBoundarySection
+              key={detail.accountId}
+              cycleId={cycleId}
+              accountId={detail.accountId}
+              session={session}
+              locale={locale}
+            />
             <h3>{t("Razón de investigación")}</h3>
             <p>
               {detail.rationale?.summary ?? t("Sin justificación registrada.")}

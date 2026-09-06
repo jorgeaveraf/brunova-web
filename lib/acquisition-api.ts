@@ -142,6 +142,27 @@ export type Counts = z.infer<typeof countsSchema>
 export type Health = z.infer<typeof healthSchema>
 export type Work = z.infer<typeof workSchema>
 export type Disposition = z.infer<typeof dispositionSchema>
+const crmSchema = z.object({
+  intent_id: z.string(),
+  status: z.string(),
+  version: z.number().int(),
+  reason: z.string().nullable(),
+  company_id: z.string().nullable(),
+  contact_id: z.string().nullable(),
+  company_name: z.string(),
+  contact_name: z.string(),
+  association_observed: z.boolean(),
+  authority: z.string(),
+  handoffs: z.array(
+    z.object({
+      handoffId: z.string(),
+      reason: z.string(),
+      status: z.string(),
+      accepted: z.boolean(),
+    }),
+  ),
+})
+export type CrmBoundary = z.infer<typeof crmSchema>
 export type DispositionInput = {
   schemaVersion: "1"
   commandId: string
@@ -178,6 +199,26 @@ async function request<T>(
 }
 const id = encodeURIComponent
 export const acquisitionApi = {
+  crm: (cycle: string, account: string) =>
+    request(
+      `/cycles/${id(cycle)}/crm?accountId=${id(account)}&limit=20`,
+      z.object({ schemaVersion: version, items: z.array(crmSchema) }),
+    ),
+  crmCommand: (
+    operation: string,
+    commandId: string,
+    body: Record<string, unknown>,
+    csrf: string,
+  ) =>
+    request(
+      `/commands/crm/${id(operation)}`,
+      z.object({ commandId: z.string(), wakeRequired: z.boolean() }),
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-csrf-token": csrf },
+        body: JSON.stringify({ commandId, request: body }),
+      },
+    ),
   contract: () =>
     request(
       "/contract",
