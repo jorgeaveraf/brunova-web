@@ -2,6 +2,14 @@ import { describe, expect, it } from "vitest"
 import { readinessText } from "@/lib/acquisition-readiness"
 
 describe("business readiness presentation", () => {
+  it("does not describe supported non-fit as merely missing evidence", () => {
+    expect(readinessText("SUPPORTED_NONFIT", "es")).toContain(
+      "respalda un no-fit",
+    )
+    expect(readinessText("SUPPORTED_NONFIT", "en")).toContain(
+      "material new evidence",
+    )
+  })
   it("preserves no-channel retention and does not promise permission to send", () => {
     expect(readinessText("NO_EXECUTABLE_CHANNEL", "es")).toContain("conserva")
     expect(readinessText("EXECUTABLE_CANDIDATE", "en")).toContain(

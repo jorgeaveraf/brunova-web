@@ -278,6 +278,10 @@ const cycleReviewSchema = z.object({
   attempts: z.number(),
   newProspects: z.number(),
   attemptsToday: z.number(),
+  delivery: z.record(z.string(), z.number()).optional(),
+  funnel: z
+    .object({ handoffs: z.number(), acceptedHandoffs: z.number() })
+    .optional(),
   responses: z.record(z.string(), z.number()),
   quality: z.record(z.string(), z.number()),
   zeroResponseMeansFailure: z.literal(false),

@@ -83,6 +83,29 @@ beforeEach(() => {
     wakeRequired: false,
   })
 })
+it("shows review outcomes in business language before technical JSON", async () => {
+  vi.mocked(api.cycleReview).mockResolvedValue({
+    schemaVersion: "1",
+    review: {
+      ...review,
+      delivery: { SUCCEEDED: 1 },
+      funnel: { handoffs: 1, acceptedHandoffs: 1 },
+      responses: { UNKNOWN: 1 },
+    },
+  })
+  render(
+    <CycleControlSection
+      cycleId="synthetic-7c"
+      session={session}
+      locale="en"
+    />,
+  )
+  expect(await screen.findByText("Confirmed deliveries: 1")).toBeInTheDocument()
+  expect(
+    screen.getByText("Response requiring interpretation: 1"),
+  ).toBeInTheDocument()
+  expect(screen.getByText("Handoffs / accepted: 1 / 1")).toBeInTheDocument()
+})
 it("approves the exact displayed companies without asking for technical references", async () => {
   vi.mocked(api.cycleReview).mockResolvedValue({
     schemaVersion: "1",

@@ -258,8 +258,8 @@ export function CrmBoundarySection({
       )}
       <p className="acq-muted">
         {es
-          ? "No crea Deals ni autoriza envíos. El transporte comercial sigue sin aprobación."
-          : "Does not create Deals or authorize sends. Commercial transport remains unapproved."}
+          ? "No crea Deals ni autoriza envíos. Email de producción sigue deshabilitado."
+          : "Does not create Deals or authorize sends. Production Email remains disabled."}
       </p>
     </section>
   )

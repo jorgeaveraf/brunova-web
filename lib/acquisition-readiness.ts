@@ -2,6 +2,10 @@ import type { Locale } from "@/lib/i18n"
 
 // Presentation only: never infer readiness or turn an unknown code into success.
 const reasons: Record<string, readonly [string, string]> = {
+  SUPPORTED_NONFIT: [
+    "La evidencia actual respalda un no-fit. Conserva su historial; nueva evidencia material puede justificar reconsiderarla.",
+    "Current evidence supports non-fit. History is retained; material new evidence may justify reconsideration.",
+  ],
   MANAGEMENT_HOLD: [
     "Management puso esta oportunidad en espera. Revisa el motivo y solicita más investigación si corresponde; no está rechazada.",
     "Management placed this opportunity on hold. Review the reason and request further research if appropriate; it is not rejected.",
@@ -27,8 +31,8 @@ const reasons: Record<string, readonly [string, string]> = {
     "Current priority needs review.",
   ],
   BUYER_REVALIDATION: [
-    "La evidencia del responsable necesita actualización.",
-    "Problem-owner evidence needs refreshing.",
+    "Falta resolver o actualizar la evidencia del responsable.",
+    "Problem-owner evidence needs resolution or refreshing.",
   ],
   BUYER_UNRESOLVED: [
     "Todavía no hay un responsable suficientemente respaldado.",

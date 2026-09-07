@@ -349,7 +349,14 @@ export function CycleControlSection({
                         : "Inspect evidence and explanation"}
                     </button>
                   )}
-                  <p>{readinessText(item.readiness_reason, locale)}</p>
+                  <p>
+                    {readinessText(
+                      item.pool_state === "REJECTED"
+                        ? "SUPPORTED_NONFIT"
+                        : item.readiness_reason,
+                      locale,
+                    )}
+                  </p>
                   <p>
                     {typeof item.rationale?.summary === "string"
                       ? item.rationale.summary
@@ -549,6 +556,74 @@ export function CycleControlSection({
               ? "Sin respuesta no significa fracaso. CONTINUE o ADJUST no aprueban automáticamente la siguiente wave."
               : "No response is not failure. CONTINUE or ADJUST does not automatically approve the next wave."}
           </p>
+          <section
+            aria-label={es ? "Resultados para revisión" : "Outcomes for review"}
+          >
+            <h3>
+              {es
+                ? "Resultados acumulados del Cycle"
+                : "Cumulative Cycle outcomes"}
+            </h3>
+            <p>
+              {es ? "Entregas confirmadas" : "Confirmed deliveries"}:{" "}
+              {review.delivery?.SUCCEEDED ?? 0}
+            </p>
+            <p>
+              {es ? "Handoffs / aceptados" : "Handoffs / accepted"}:{" "}
+              {review.funnel?.handoffs ?? 0} /{" "}
+              {review.funnel?.acceptedHandoffs ?? 0}
+            </p>
+            <ul>
+              {Object.entries(review.responses).map(([kind, count]) => {
+                const labels: Record<string, readonly [string, string]> = {
+                  INTERESTED: ["Interés expresado", "Expressed interest"],
+                  UNKNOWN: [
+                    "Respuesta que requiere interpretación",
+                    "Response requiring interpretation",
+                  ],
+                  QUESTION: ["Pregunta", "Question"],
+                  DO_NOT_CONTACT: ["No contactar", "Do not contact"],
+                  COMPLAINT: ["Queja", "Complaint"],
+                  BOUNCE: ["Rebote", "Bounce"],
+                  OUT_OF_OFFICE: ["Fuera de oficina", "Out of office"],
+                  NOT_INTERESTED: ["Sin interés", "Not interested"],
+                }
+                return (
+                  <li key={kind}>
+                    {labels[kind]?.[es ? 0 : 1] ??
+                      (es
+                        ? "Respuesta pendiente de revisión"
+                        : "Response pending review")}
+                    : {count}
+                  </li>
+                )
+              })}
+            </ul>
+            {Object.keys(review.responses).length === 0 && (
+              <p>
+                {es
+                  ? "Todavía no hay respuestas observadas; no significa fracaso."
+                  : "No responses observed yet; this does not mean failure."}
+              </p>
+            )}
+            <details>
+              <summary>
+                {es ? "Qué necesita revisión" : "What needs review"}
+              </summary>
+              <ul>
+                {Object.entries(review.quality).map(([code, count]) => (
+                  <li key={code}>
+                    {readinessText(code, locale)} · {count}
+                  </li>
+                ))}
+              </ul>
+            </details>
+            <p>
+              {es
+                ? "Revisa evidencia, targeting, responsable, canal y mensaje antes de decidir. Los resultados sintéticos no son aprendizaje de mercado."
+                : "Review evidence, targeting, problem owner, channel and message before deciding. Synthetic results are not market learning."}
+            </p>
+          </section>
           <details>
             <summary>
               {es
