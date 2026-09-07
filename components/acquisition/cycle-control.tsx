@@ -32,6 +32,7 @@ export function CycleControlSection({
   const retry = useRef<{ key: string; id: string } | null>(null)
   const [pool, setPool] = useState<CyclePoolItem[]>([])
   const [hasNext, setHasNext] = useState(false)
+  const [commandNotice, setCommandNotice] = useState(false)
   const load = useCallback(async () => {
     setError(false)
     try {
@@ -102,6 +103,7 @@ export function CycleControlSection({
     if (retry.current?.key !== key)
       retry.current = { key, id: crypto.randomUUID() }
     setPending(true)
+    setCommandNotice(false)
     try {
       await (reconsider ? api.reconsiderAccount : api.cycleCommand)(
         retry.current.id,
@@ -113,7 +115,7 @@ export function CycleControlSection({
       await load()
     } catch {
       await load()
-      setError(true)
+      setCommandNotice(true)
     } finally {
       setPending(false)
     }
@@ -136,7 +138,7 @@ export function CycleControlSection({
       await load()
     } catch {
       await load()
-      setError(true)
+      setCommandNotice(true)
     } finally {
       setPending(false)
     }
@@ -162,7 +164,7 @@ export function CycleControlSection({
       await load()
     } catch {
       await load()
-      setError(true)
+      setCommandNotice(true)
     } finally {
       setPending(false)
     }
@@ -177,6 +179,13 @@ export function CycleControlSection({
           ? "Cycle 1 · Configuración y control"
           : "Cycle 1 · Configuration and control"}
       </h2>
+      {commandNotice && (
+        <p role="alert">
+          {es
+            ? "No se confirmó la acción. Consulta el estado actualizado y los requisitos de preparación o aprobación antes de reintentar. No se sustituyó ninguna empresa."
+            : "The action was not confirmed. Check current state and preparation or approval requirements before retrying. No company was substituted."}
+        </p>
+      )}
       {error && (
         <p>
           {es
@@ -328,6 +337,11 @@ export function CycleControlSection({
                 <li key={item.account_id}>
                   <strong>{item.display_name}</strong> ·{" "}
                   {names[item.pool_state] ?? item.pool_state}
+                  <p>
+                    {item.canonical_domain} ·{" "}
+                    {item.country ??
+                      (es ? "Mercado sin confirmar" : "Market unconfirmed")}
+                  </p>
                   {onInspect && (
                     <button onClick={() => onInspect(item.account_id)}>
                       {es

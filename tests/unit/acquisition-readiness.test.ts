@@ -15,4 +15,10 @@ describe("business readiness presentation", () => {
       expect(text).toMatch(/review|revisión/)
     }
   })
+  it("distinguishes Management HOLD from rejection", () => {
+    expect(readinessText("MANAGEMENT_HOLD", "es")).toContain(
+      "no está rechazada",
+    )
+    expect(readinessText("MANAGEMENT_HOLD", "en")).toContain("not rejected")
+  })
 })

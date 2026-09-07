@@ -289,6 +289,8 @@ export type CycleReview = z.infer<typeof cycleReviewSchema>
 const poolItemSchema = z.object({
   account_id: z.string(),
   display_name: z.string(),
+  canonical_domain: z.string().optional(),
+  country: z.string().nullable().optional(),
   pool_state: z.string(),
   readiness_reason: z.string(),
   rationale: z.record(z.string(), z.unknown()).nullable(),

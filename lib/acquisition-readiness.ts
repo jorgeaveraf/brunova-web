@@ -2,6 +2,10 @@ import type { Locale } from "@/lib/i18n"
 
 // Presentation only: never infer readiness or turn an unknown code into success.
 const reasons: Record<string, readonly [string, string]> = {
+  MANAGEMENT_HOLD: [
+    "Management puso esta oportunidad en espera. Revisa el motivo y solicita más investigación si corresponde; no está rechazada.",
+    "Management placed this opportunity on hold. Review the reason and request further research if appropriate; it is not rejected.",
+  ],
   RESEARCH_EVIDENCE_REQUIRED: [
     "Se necesita más evidencia antes de avanzar.",
     "More evidence is needed before progressing.",
