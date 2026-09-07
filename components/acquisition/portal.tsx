@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { CrmBoundarySection } from "./crm-boundary"
 import { CycleControlSection } from "./cycle-control"
+import { EvidenceDimensions } from "./evidence-dimensions"
+import { ProblemOwner } from "./problem-owner"
 import {
   acquisitionText,
   acquisitionErrorText,
@@ -368,6 +370,7 @@ export function AcquisitionPortal({
         cycleId={cycleId}
         session={session}
         locale={locale}
+        onInspect={(accountId) => void inspect(accountId, null)}
       />
       <section className="acq-metrics" aria-label={t("Resumen")}>
         <div>
@@ -686,6 +689,17 @@ export function AcquisitionPortal({
         {selected && <Meaning locale={locale} item={selected} />}
         {detail && (
           <>
+            <EvidenceDimensions
+              assertions={detail.assertions}
+              locale={locale}
+            />
+            <ProblemOwner
+              key={detail.accountId}
+              cycleId={cycleId}
+              accountId={detail.accountId}
+              roleHypothesis={detail.researchDecision?.buyer_role_hypothesis}
+              locale={locale}
+            />
             <CrmBoundarySection
               key={detail.accountId}
               cycleId={cycleId}

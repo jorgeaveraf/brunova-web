@@ -9,16 +9,19 @@ import {
   type PortalSession,
 } from "@/lib/acquisition-api"
 import type { Locale } from "@/lib/i18n"
+import { readinessText } from "@/lib/acquisition-readiness"
 
 /** Transient presentation only. All decisions, versions and accounting are Engine projections. */
 export function CycleControlSection({
   cycleId,
   session,
   locale,
+  onInspect,
 }: {
   cycleId: string
   session: PortalSession
   locale: Locale
+  onInspect?: (accountId: string) => void
 }) {
   const es = locale === "es"
   const [policy, setPolicy] = useState<CyclePolicyDefinition | null>(null),
@@ -79,6 +82,65 @@ export function CycleControlSection({
         CONFIGURED: "Configured",
       }
   const current = review?.waves.at(-1)
+  async function operate(operation: string, item?: CyclePoolItem) {
+    if (!review || pending) return
+    const reconsider = ["DEEPER_RESEARCH", "RECONSIDER_BUYER"].includes(
+      operation,
+    )
+    if (operation !== "COMPOSE_WAVE" && !reason.trim()) return
+    if (reconsider && !item?.research_version) return
+    const body = {
+      cycleId,
+      operation,
+      expectedVersion: reconsider
+        ? item!.research_version
+        : (review.control?.version ?? 1),
+      ...(item ? { accountId: item.account_id } : {}),
+      ...(operation === "COMPOSE_WAVE" ? {} : { reason: reason.trim() }),
+    }
+    const key = JSON.stringify(body)
+    if (retry.current?.key !== key)
+      retry.current = { key, id: crypto.randomUUID() }
+    setPending(true)
+    try {
+      await (reconsider ? api.reconsiderAccount : api.cycleCommand)(
+        retry.current.id,
+        body,
+        session.csrfToken,
+      )
+      retry.current = null
+      setReason("")
+      await load()
+    } catch {
+      await load()
+      setError(true)
+    } finally {
+      setPending(false)
+    }
+  }
+  async function approve() {
+    if (!review?.control || !current || pending) return
+    const body = {
+      cycleId,
+      expectedVersion: review.control.version,
+      waveId: current.id,
+      compositionHash: current.composition_hash,
+    }
+    const key = JSON.stringify(body)
+    if (retry.current?.key !== key)
+      retry.current = { key, id: crypto.randomUUID() }
+    setPending(true)
+    try {
+      await api.approveWave(retry.current.id, body, session.csrfToken)
+      retry.current = null
+      await load()
+    } catch {
+      await load()
+      setError(true)
+    } finally {
+      setPending(false)
+    }
+  }
   async function decide(decision: "CONTINUE" | "ADJUST" | "STOP") {
     if (!review?.control || !current || pending || !reason.trim()) return
     const body = {
@@ -131,11 +193,15 @@ export function CycleControlSection({
       )}
       {policy && (
         <>
-          <p>
-            {policy.policy.policyId} / {policy.policy.policyVersion} ·{" "}
-            {names[policy.policy.configurationState] ??
-              policy.policy.configurationState}
-          </p>
+          <details>
+            <summary>
+              {es ? "Política · detalle técnico" : "Policy · technical detail"}
+            </summary>
+            <p>
+              {policy.policy.policyId} / {policy.policy.policyVersion} ·{" "}
+              {policy.policy.configurationState}
+            </p>
+          </details>
           <p>
             {policy.readyForRehearsal
               ? es
@@ -166,6 +232,25 @@ export function CycleControlSection({
       )}
       {review && (
         <>
+          <p role="status">
+            {review.control?.technical_halt ||
+            review.control?.state === "STOPPED"
+              ? es
+                ? "El Cycle está pausado: no se permite avanzar."
+                : "The Cycle is paused: progression is not permitted."
+              : current?.state === "PLANNED"
+                ? es
+                  ? "Siguiente paso: revisa las empresas y aprueba la wave si estás de acuerdo."
+                  : "Next: review the companies and approve the wave if you agree."
+                : current &&
+                    ["APPROVED", "REVIEW_REQUIRED"].includes(current.state)
+                  ? es
+                    ? "Siguiente paso: revisa resultados y decide continuar, ajustar o detener. Email de producción sigue deshabilitado."
+                    : "Next: review outcomes and decide to continue, adjust or stop. Production Email remains disabled."
+                  : es
+                    ? "Siguiente paso: revisa las oportunidades y prepara las mejores disponibles. Preparar no autoriza ejecutar."
+                    : "Next: review opportunities and prepare the strongest available. Preparation does not authorize execution."}
+          </p>
           <div className="acq-metrics">
             {["READY_NOW", "RETAINED", "HOLD", "REJECTED"].map((state) => (
               <div key={state}>
@@ -180,6 +265,58 @@ export function CycleControlSection({
               : "New prospects / attempts / attempts today UTC"}
             : {review.newProspects} / {review.attempts} / {review.attemptsToday}
           </p>
+          {policy && (
+            <p>
+              {es ? "Presupuesto restante" : "Remaining budget"}:{" "}
+              {Math.max(
+                0,
+                policy.policy.limits.outboundApproved - review.newProspects,
+              )}{" "}
+              {es ? "prospectos nuevos" : "new prospects"} ·{" "}
+              {Math.max(0, 24 - review.attempts)}{" "}
+              {es ? "intentos en el Cycle" : "Cycle attempts"}
+            </p>
+          )}
+          {session.actor.capabilities.includes("MANAGE_CYCLE") && (
+            <fieldset disabled={pending || error}>
+              <legend>{es ? "Acciones del Cycle" : "Cycle actions"}</legend>
+              {(!current ||
+                !["APPROVED", "REVIEW_REQUIRED"].includes(current.state)) && (
+                <label>
+                  {es
+                    ? "Razón basada en evidencia"
+                    : "Evidence-grounded reason"}
+                  <textarea
+                    value={reason}
+                    maxLength={1000}
+                    onChange={(e) => setReason(e.target.value)}
+                  />
+                </label>
+              )}
+              <p>
+                {es
+                  ? "Para reconsiderar o conservar una empresa, escribe la razón y elige la acción en la lista de oportunidades."
+                  : "To reconsider or retain a company, enter the reason and choose its action in the opportunity list."}
+              </p>
+              {(!current || current.state === "COMPLETE") &&
+                !review.control?.technical_halt &&
+                review.control?.state !== "STOPPED" && (
+                  <button onClick={() => void operate("COMPOSE_WAVE")}>
+                    {es
+                      ? "Preparar las mejores disponibles (hasta cuatro)"
+                      : "Prepare strongest available (up to four)"}
+                  </button>
+                )}
+              <button
+                disabled={!reason.trim() || !!review.control?.technical_halt}
+                onClick={() => void operate("TECHNICAL_HALT")}
+              >
+                {es
+                  ? "Pausar por problema técnico"
+                  : "Pause for a technical issue"}
+              </button>
+            </fieldset>
+          )}
           <details>
             <summary>
               {es
@@ -191,7 +328,14 @@ export function CycleControlSection({
                 <li key={item.account_id}>
                   <strong>{item.display_name}</strong> ·{" "}
                   {names[item.pool_state] ?? item.pool_state}
-                  <p>{item.readiness_reason}</p>
+                  {onInspect && (
+                    <button onClick={() => onInspect(item.account_id)}>
+                      {es
+                        ? "Ver evidencia y explicación"
+                        : "Inspect evidence and explanation"}
+                    </button>
+                  )}
+                  <p>{readinessText(item.readiness_reason, locale)}</p>
                   <p>
                     {typeof item.rationale?.summary === "string"
                       ? item.rationale.summary
@@ -203,6 +347,69 @@ export function CycleControlSection({
                       {item.known_unknowns.join(" · ")}
                     </p>
                   ) : null}
+                  <fieldset disabled={pending || error || !reason.trim()}>
+                    <legend>{es ? "Siguiente acción" : "Next action"}</legend>
+                    {session.actor.capabilities.includes("REQUEST_RESEARCH") &&
+                      item.research_version && (
+                        <>
+                          <button
+                            onClick={() =>
+                              void operate("DEEPER_RESEARCH", item)
+                            }
+                          >
+                            {es ? "Investigar más" : "Investigate more"}
+                          </button>
+                          <button
+                            onClick={() =>
+                              void operate("RECONSIDER_BUYER", item)
+                            }
+                          >
+                            {es
+                              ? "Reconsiderar responsable"
+                              : "Reconsider problem owner"}
+                          </button>
+                        </>
+                      )}
+                    {session.actor.capabilities.includes("MANAGE_CYCLE") &&
+                      (current &&
+                      ["PLANNED", "APPROVED", "REVIEW_REQUIRED"].includes(
+                        current.state,
+                      ) &&
+                      current.composition.some(
+                        (m) => m.accountId === item.account_id,
+                      ) ? (
+                        <>
+                          <p>
+                            {es
+                              ? "Retirar esta empresa cancela la wave completa sin sustituciones. Su número queda consumido y se requiere nueva composición y aprobación. Si ya hubo intentos, debes revisar la wave."
+                              : "Removing this company cancels the entire wave without substitution. Its number remains consumed and a new composition and approval are required. If attempts already exist, review the wave instead."}
+                          </p>
+                          <button
+                            onClick={() =>
+                              void operate("REMOVE_FROM_WAVE", item)
+                            }
+                          >
+                            {es
+                              ? "Retirar empresa y cancelar esta wave"
+                              : "Remove company and cancel this wave"}
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => void operate("RETAIN_ACCOUNT", item)}
+                        >
+                          {es ? "Conservar para después" : "Retain for later"}
+                        </button>
+                      ))}
+                  </fieldset>
+                  <details>
+                    <summary>
+                      {es ? "Auditoría técnica" : "Technical audit"}
+                    </summary>
+                    <p>
+                      {item.account_id} · {item.readiness_reason}
+                    </p>
+                  </details>
                 </li>
               ))}
             </ul>
@@ -263,6 +470,66 @@ export function CycleControlSection({
           ) : (
             <p>{es ? "Sin wave compuesta." : "No wave composed."}</p>
           )}
+          {current && (
+            <section aria-label={es ? "Empresas de la wave" : "Wave companies"}>
+              <ul>
+                {current.members?.map((member) => (
+                  <li key={member.accountId}>
+                    <strong>{member.company}</strong> · {member.domain}
+                    {onInspect && (
+                      <button onClick={() => onInspect(member.accountId)}>
+                        {es ? "Ver empresa" : "Inspect company"}
+                      </button>
+                    )}
+                    <p>
+                      {es ? "Responsable" : "Problem owner"}:{" "}
+                      {member.buyer ?? (es ? "Sin resolver" : "Unresolved")} ·{" "}
+                      {member.channel}
+                    </p>
+                    <p>
+                      {member.reason ??
+                        (es
+                          ? "Explicación pendiente de verificar."
+                          : "Explanation needs verification.")}
+                    </p>
+                    <p>
+                      {readinessText(
+                        member.readinessReason ?? "UNKNOWN",
+                        locale,
+                      )}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+              {!current.members && (
+                <p>
+                  {es
+                    ? "Actualiza para verificar las empresas antes de aprobar."
+                    : "Refresh to verify the companies before approving."}
+                </p>
+              )}
+              {current.state === "PLANNED" &&
+                session.actor.capabilities.includes("MANAGE_CYCLE") && (
+                  <fieldset
+                    disabled={pending || error || !current.members?.length}
+                  >
+                    <legend>
+                      {es
+                        ? "Aprobar esta composición exacta"
+                        : "Approve this exact composition"}
+                    </legend>
+                    <p>
+                      {es
+                        ? "Autoriza a Pancracio sólo para estas empresas y esta wave durante 14 días, bajo los límites vigentes. No activa Email ni datos reales."
+                        : "Authorizes Pancracio only for these companies and this wave for 14 days, under current limits. Does not activate Email or real data."}
+                    </p>
+                    <button onClick={() => void approve()}>
+                      {es ? "Aprobar wave" : "Approve wave"}
+                    </button>
+                  </fieldset>
+                )}
+            </section>
+          )}
           <p>
             {es
               ? "Sin respuesta no significa fracaso. CONTINUE o ADJUST no aprueban automáticamente la siguiente wave."
@@ -271,8 +538,8 @@ export function CycleControlSection({
           <details>
             <summary>
               {es
-                ? "Resultados y composición · detalle"
-                : "Outcomes and composition · detail"}
+                ? "Auditoría técnica de resultados y composición"
+                : "Technical audit of outcomes and composition"}
             </summary>
             <pre>
               {JSON.stringify(

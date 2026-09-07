@@ -68,6 +68,10 @@ const review: CycleReview = {
   productionExecution: "DISABLED",
 }
 beforeEach(() => {
+  vi.spyOn(api, "approveWave").mockResolvedValue({
+    cycleVersion: 4,
+    wakeRequired: false,
+  })
   vi.spyOn(api, "cyclePool").mockResolvedValue({
     schemaVersion: "1",
     items: [],
@@ -78,6 +82,61 @@ beforeEach(() => {
     cycleVersion: 4,
     wakeRequired: false,
   })
+})
+it("approves the exact displayed companies without asking for technical references", async () => {
+  vi.mocked(api.cycleReview).mockResolvedValue({
+    schemaVersion: "1",
+    review: {
+      ...review,
+      waves: [
+        {
+          ...review.waves[0]!,
+          state: "PLANNED",
+          members: [
+            {
+              accountId: "synthetic-a",
+              company: "SYNTHETIC Monterrey Logistics",
+              domain: "mx.synthetic.local",
+              buyer: "SYNTHETIC Operations Director",
+              channel: "EMAIL",
+              poolState: "READY_NOW",
+              readinessReason: "EXECUTABLE_CANDIDATE",
+              tier: "HIGH",
+              reason: "Observed coordination warrants investigation",
+              knownUnknowns: ["Budget"],
+            },
+          ],
+        },
+      ],
+    },
+  })
+  render(
+    <CycleControlSection
+      cycleId="synthetic-7c"
+      session={session}
+      locale="en"
+    />,
+  )
+  expect(await screen.findByText("SYNTHETIC Monterrey Logistics")).toBeVisible()
+  expect(
+    screen.getByText(/SYNTHETIC Operations Director/, { selector: "p" }),
+  ).toBeVisible()
+  fireEvent.click(screen.getByRole("button", { name: "Approve wave" }))
+  await waitFor(() =>
+    expect(api.approveWave).toHaveBeenCalledWith(
+      expect.any(String),
+      {
+        cycleId: "synthetic-7c",
+        expectedVersion: 3,
+        waveId: "wave-synthetic",
+        compositionHash: "exact",
+      },
+      "synthetic-csrf",
+    ),
+  )
+  expect(
+    screen.queryByRole("textbox", { name: /objective|hash|identifier/i }),
+  ).not.toBeInTheDocument()
 })
 it.each(["en", "es"] as const)(
   "shows configured/not-active policy without inventing a real Cycle (%s)",

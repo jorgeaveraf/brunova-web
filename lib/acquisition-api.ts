@@ -31,8 +31,22 @@ const assertionSchema = z.object({
   statement: z.string(),
   confidence: z.string(),
   falsifier: z.string().nullable().optional(),
+  context: z
+    .object({
+      dimension: z.string().optional(),
+      signalClass: z.string().optional(),
+      painFamily: z.string().optional(),
+      interventionHorizon: z.string().optional(),
+      revalidateAfter: z.string().optional(),
+    })
+    .optional(),
+  known_unknowns: z.array(z.string()).optional(),
 })
 const detailSchema = accountSchema.extend({
+  researchDecision: z
+    .object({ buyer_role_hypothesis: z.string().nullable().optional() })
+    .nullable()
+    .optional(),
   sourceObservations: z.array(
     z.object({
       id: z.string(),
@@ -243,6 +257,22 @@ const cycleReviewSchema = z.object({
       state: z.string(),
       composition_hash: z.string(),
       composition: z.array(z.object({ accountId: z.string() }).passthrough()),
+      members: z
+        .array(
+          z.object({
+            accountId: z.string(),
+            company: z.string(),
+            domain: z.string(),
+            buyer: z.string().nullable(),
+            channel: z.string(),
+            poolState: z.string().nullable(),
+            readinessReason: z.string().nullable(),
+            tier: z.string().nullable(),
+            reason: z.string().nullable(),
+            knownUnknowns: z.array(z.string()).nullable(),
+          }),
+        )
+        .optional(),
     }),
   ),
   attempts: z.number(),
@@ -267,6 +297,42 @@ const poolItemSchema = z.object({
 })
 export type CyclePoolItem = z.infer<typeof poolItemSchema>
 export const acquisitionApi = {
+  buyerPackage: (cycle: string, account: string) =>
+    request(
+      `/cycles/${id(cycle)}/accounts/${id(account)}/buyer-dry-run`,
+      z.object({
+        schemaVersion: version,
+        package: z
+          .object({
+            current: z.boolean(),
+            messageability: z.string(),
+            result: z.object({
+              buyer: z.object({
+                state: z.string(),
+                selected: z
+                  .object({
+                    name: z.string(),
+                    role: z.string(),
+                    companyDomain: z.string(),
+                    sourceUri: z.string(),
+                    observedAt: z.string(),
+                    confidence: z.string(),
+                    supports: z.array(z.string()),
+                  })
+                  .nullable(),
+              }),
+              contact: z
+                .object({
+                  type: z.string(),
+                  state: z.string(),
+                  sourceUri: z.string(),
+                })
+                .nullable(),
+            }),
+          })
+          .nullable(),
+      }),
+    ),
   cyclePool: (cycle: string, after?: string) =>
     request(
       `/cycles/${id(cycle)}/pool?limit=25${after ? `&after=${id(after)}` : ""}`,
@@ -286,6 +352,34 @@ export const acquisitionApi = {
     request(
       "/commands/cycle-control/cycle",
       z.object({ cycleVersion: z.number(), wakeRequired: z.boolean() }),
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-csrf-token": csrf },
+        body: JSON.stringify({ commandId, request: body }),
+      },
+    ),
+  approveWave: (
+    commandId: string,
+    body: Record<string, unknown>,
+    csrf: string,
+  ) =>
+    request(
+      "/commands/cycle-control/approve-wave",
+      z.object({ cycleVersion: z.number(), wakeRequired: z.boolean() }),
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-csrf-token": csrf },
+        body: JSON.stringify({ commandId, request: body }),
+      },
+    ),
+  reconsiderAccount: (
+    commandId: string,
+    body: Record<string, unknown>,
+    csrf: string,
+  ) =>
+    request(
+      "/commands/cycle-control/reconsideration",
+      z.object({ wakeRequired: z.boolean() }),
       {
         method: "POST",
         headers: { "content-type": "application/json", "x-csrf-token": csrf },
