@@ -198,7 +198,100 @@ async function request<T>(
   return parsed.data
 }
 const id = encodeURIComponent
+const cyclePolicySchema = z.object({
+  schemaVersion: version,
+  implementationReadiness: z.string(),
+  readyForRehearsal: z.boolean(),
+  executable: z.literal(false),
+  policyHash: z.string(),
+  policy: z.object({
+    policyId: z.string(),
+    policyVersion: z.string(),
+    configurationState: z.string(),
+    productionExecution: z.literal("DISABLED"),
+    geography: z.array(z.string()),
+    limits: z.object({
+      researchUniverse: z.number(),
+      outboundApproved: z.number(),
+      waveSize: z.number(),
+      waveCount: z.number(),
+    }),
+  }),
+})
+const cycleReviewSchema = z.object({
+  cycleId: z.string(),
+  control: z
+    .object({
+      version: z.number(),
+      state: z.string(),
+      technical_halt: z.string().nullable(),
+      discovery_stop_reason: z.string().nullable(),
+    })
+    .nullable(),
+  pool: z.record(z.string(), z.number()),
+  markets: z.array(
+    z.object({
+      country: z.string().nullable(),
+      discovered: z.number(),
+      qualified: z.number(),
+    }),
+  ),
+  waves: z.array(
+    z.object({
+      id: z.string(),
+      number: z.number(),
+      state: z.string(),
+      composition_hash: z.string(),
+      composition: z.array(z.object({ accountId: z.string() }).passthrough()),
+    }),
+  ),
+  attempts: z.number(),
+  newProspects: z.number(),
+  attemptsToday: z.number(),
+  responses: z.record(z.string(), z.number()),
+  quality: z.record(z.string(), z.number()),
+  zeroResponseMeansFailure: z.literal(false),
+  automaticIcpMutation: z.literal(false),
+  productionExecution: z.literal("DISABLED"),
+})
+export type CyclePolicyDefinition = z.infer<typeof cyclePolicySchema>
+export type CycleReview = z.infer<typeof cycleReviewSchema>
+const poolItemSchema = z.object({
+  account_id: z.string(),
+  display_name: z.string(),
+  pool_state: z.string(),
+  readiness_reason: z.string(),
+  rationale: z.record(z.string(), z.unknown()).nullable(),
+  known_unknowns: z.array(z.string()).nullable(),
+  research_version: z.number().nullable(),
+})
+export type CyclePoolItem = z.infer<typeof poolItemSchema>
 export const acquisitionApi = {
+  cyclePool: (cycle: string, after?: string) =>
+    request(
+      `/cycles/${id(cycle)}/pool?limit=25${after ? `&after=${id(after)}` : ""}`,
+      z.object({ schemaVersion: version, items: z.array(poolItemSchema) }),
+    ),
+  cyclePolicy: () => request("/cycle-policy", cyclePolicySchema),
+  cycleReview: (cycle: string) =>
+    request(
+      `/cycles/${id(cycle)}/review`,
+      z.object({ schemaVersion: version, review: cycleReviewSchema }),
+    ),
+  cycleCommand: (
+    commandId: string,
+    body: Record<string, unknown>,
+    csrf: string,
+  ) =>
+    request(
+      "/commands/cycle-control/cycle",
+      z.object({ cycleVersion: z.number(), wakeRequired: z.boolean() }),
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-csrf-token": csrf },
+        body: JSON.stringify({ commandId, request: body }),
+      },
+    ),
   crm: (cycle: string, account: string) =>
     request(
       `/cycles/${id(cycle)}/crm?accountId=${id(account)}&limit=20`,

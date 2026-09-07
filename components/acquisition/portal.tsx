@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { CrmBoundarySection } from "./crm-boundary"
+import { CycleControlSection } from "./cycle-control"
 import {
   acquisitionText,
   acquisitionErrorText,
@@ -362,6 +363,12 @@ export function AcquisitionPortal({
           </p>
         )}
       </div>
+      <CycleControlSection
+        key={cycleId}
+        cycleId={cycleId}
+        session={session}
+        locale={locale}
+      />
       <section className="acq-metrics" aria-label={t("Resumen")}>
         <div>
           <span>{t("Calificadas")}</span>
