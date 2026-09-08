@@ -120,6 +120,42 @@ beforeAll(() => {
   }
 })
 beforeEach(() => {
+  vi.spyOn(api, "cyclePool").mockResolvedValue({
+    schemaVersion: "1",
+    items: [],
+  })
+  vi.spyOn(api, "cycleReview").mockResolvedValue({
+    schemaVersion: "1",
+    review: {
+      cycleId: "synthetic",
+      control: null,
+      pool: {},
+      markets: [],
+      waves: [],
+      attempts: 0,
+      newProspects: 0,
+      attemptsToday: 0,
+      responses: {},
+      quality: {},
+      zeroResponseMeansFailure: false,
+      automaticIcpMutation: false,
+      productionExecution: "DISABLED",
+    },
+  })
+  vi.spyOn(api, "operatingModel").mockResolvedValue({
+    currentExecutionScope: "ADMITTED_INTERNAL_ROUTINE_WORK",
+    chatRequiredForRuntime: false,
+    portalRequiredForRuntime: false,
+    activity: [],
+  })
+  vi.spyOn(api, "activationPreflight").mockResolvedValue({
+    ready: false,
+    executable: false,
+    activationAvailable: false,
+    observedAt: "2026-09-08T00:00:00Z",
+    policyVersion: 3,
+    checks: [],
+  })
   vi.spyOn(api, "contract").mockResolvedValue({
     schemaVersion: "1",
     attentionSurfaceVersion: "3g-v1",
@@ -370,19 +406,20 @@ it.each(["en", "es"] as const)(
       }),
     )
     expect(
-      screen.getByRole("heading", { name: t("Estado del ciclo") }),
+      await screen.findByRole("heading", {
+        name: locale === "es" ? "Qué sigue" : "What happens next",
+      }),
     ).toBeVisible()
     fireEvent.click(
       screen.getByRole("button", {
         name: locale === "es" ? "Oportunidades" : "Opportunities",
       }),
     )
-    fireEvent.change(screen.getByLabelText(t("Resultado de investigación")), {
-      target: { value: "QUALIFIED" },
-    })
-    await waitFor(() =>
-      expect(api.accounts).toHaveBeenCalledWith("synthetic", "QUALIFIED", ""),
-    )
+    expect(
+      await screen.findByRole("heading", {
+        name: locale === "es" ? "Retenidas" : "Retained",
+      }),
+    ).toBeVisible()
     fireEvent.click(
       screen.getByRole("button", {
         name: locale === "es" ? "Trabajo y salud" : "Work / Health",

@@ -5,6 +5,8 @@ import { CrmBoundarySection } from "./crm-boundary"
 import { CycleControlSection } from "./cycle-control"
 import { PolicySettings } from "./policy-settings"
 import { EngineActivity } from "./engine-activity"
+import { ActivationPreflight } from "./activation-preflight"
+import { OperatingOverview, OpportunityPool } from "./operating-overview"
 import { EvidenceDimensions } from "./evidence-dimensions"
 import { ProblemOwner } from "./problem-owner"
 import {
@@ -392,6 +394,23 @@ export function AcquisitionPortal({
         <PolicySettings locale={locale} session={session} />
       )}
       {tab === "Work / Health" && <EngineActivity locale={locale} />}
+      {tab === "Work / Health" && <ActivationPreflight locale={locale} />}
+      {tab === "Overview" && cycle && (
+        <OperatingOverview
+          key={cycleId}
+          cycleId={cycleId}
+          locale={locale}
+          onNavigate={setTab}
+        />
+      )}
+      {tab === "Accounts" && (
+        <OpportunityPool
+          key={cycleId}
+          cycleId={cycleId}
+          locale={locale}
+          onInspect={(id) => void inspect(id, null)}
+        />
+      )}
       {tab === "Waves" && (
         <CycleControlSection
           key={cycleId}
@@ -401,7 +420,7 @@ export function AcquisitionPortal({
           onInspect={(accountId) => void inspect(accountId, null)}
         />
       )}
-      {tab === "Overview" && cycle && (
+      {tab === "Work / Health" && cycle && (
         <section className="acq-metrics" aria-label={t("Resumen")}>
           <div>
             <span>{t("Calificadas")}</span>
@@ -474,6 +493,7 @@ export function AcquisitionPortal({
               ? "Revisar configuración del Cycle"
               : "Review Cycle settings"}
           </button>
+          <ActivationPreflight locale={locale} />
           <h3>
             {locale === "es" ? "Aprendizaje de mercado" : "Market learning"}
           </h3>
@@ -521,7 +541,7 @@ export function AcquisitionPortal({
           </div>
         </section>
       )}
-      {tab === "Overview" && cycle && (
+      {tab === "Work / Health" && cycle && (
         <section className="acq-panel">
           <h2>{t("Estado del ciclo")}</h2>
           {cycle ? (
@@ -561,7 +581,7 @@ export function AcquisitionPortal({
           )}
         </section>
       )}
-      {tab === "Accounts" && (
+      {tab === "Work / Health" && (
         <section>
           <h2>{t("Cuentas")}</h2>
           <label>

@@ -234,6 +234,13 @@ const cyclePolicySchema = z.object({
 })
 const cycleReviewSchema = z.object({
   cycleId: z.string(),
+  discovery: z
+    .object({
+      maximum: z.number(),
+      admitted: z.number(),
+      stoppedReason: z.string().nullable(),
+    })
+    .optional(),
   control: z
     .object({
       version: z.number(),
@@ -300,6 +307,10 @@ const poolItemSchema = z.object({
   rationale: z.record(z.string(), z.unknown()).nullable(),
   known_unknowns: z.array(z.string()).nullable(),
   research_version: z.number().nullable(),
+  buyer_role_hypothesis: z.string().nullable().optional(),
+  intervention_hypothesis: z.string().nullable().optional(),
+  buyer_name: z.string().nullable().optional(),
+  channel: z.string().optional(),
 })
 export type CyclePoolItem = z.infer<typeof poolItemSchema>
 export const acquisitionApi = {
@@ -345,6 +356,25 @@ export const acquisitionApi = {
       z.object({ schemaVersion: version, items: z.array(poolItemSchema) }),
     ),
   cyclePolicy: () => request("/cycle-policy", cyclePolicySchema),
+  activationPreflight: () =>
+    request(
+      "/activation-preflight",
+      z.object({
+        ready: z.boolean(),
+        executable: z.literal(false),
+        activationAvailable: z.literal(false),
+        observedAt: z.string(),
+        policyVersion: z.number().nullable(),
+        checks: z.array(
+          z.object({
+            component: z.string(),
+            ready: z.boolean(),
+            reason: z.string(),
+            observedAt: z.string().optional(),
+          }),
+        ),
+      }),
+    ),
   operatingModel: () =>
     request(
       "/operating-model",
