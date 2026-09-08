@@ -150,6 +150,7 @@ export function AcquisitionPortal({
     [notes, setNotes] = useState(""),
     [pending, setPending] = useState(false)
   const [hasCommand, setHasCommand] = useState(false)
+  const [projectionRevision, setProjectionRevision] = useState(0)
   const command = useRef<DispositionInput | null>(null),
     generation = useRef(0),
     lock = useRef(false),
@@ -205,7 +206,10 @@ export function AcquisitionPortal({
       if (run === generation.current)
         setError(e instanceof AcquisitionError ? e : new AcquisitionError(503))
     } finally {
-      if (run === generation.current) setLoading(false)
+      if (run === generation.current) {
+        setLoading(false)
+        setProjectionRevision((v) => v + 1)
+      }
     }
   }, [
     cycleId,
@@ -301,7 +305,7 @@ export function AcquisitionPortal({
       <header className="acq-heading">
         <div>
           <p className="acq-kicker">{t("Portal / Adquisición")}</p>
-          <h1>{t("Atención con fundamento.")}</h1>
+          <h1>Acquisition</h1>
           <p>{t("Brunova Acquisition Engine · Observa, revisa y decide.")}</p>
         </div>
         <div className="acq-actions">
@@ -391,13 +395,21 @@ export function AcquisitionPortal({
         ))}
       </nav>
       {tab === "Settings" && (
-        <PolicySettings locale={locale} session={session} />
+        <PolicySettings
+          key={projectionRevision}
+          locale={locale}
+          session={session}
+        />
       )}
-      {tab === "Work / Health" && <EngineActivity locale={locale} />}
-      {tab === "Work / Health" && <ActivationPreflight locale={locale} />}
+      {tab === "Work / Health" && (
+        <EngineActivity key={projectionRevision} locale={locale} />
+      )}
+      {tab === "Work / Health" && (
+        <ActivationPreflight key={projectionRevision} locale={locale} />
+      )}
       {tab === "Overview" && cycle && (
         <OperatingOverview
-          key={cycleId}
+          key={`${cycleId}:${projectionRevision}`}
           cycleId={cycleId}
           locale={locale}
           onNavigate={setTab}
@@ -405,7 +417,7 @@ export function AcquisitionPortal({
       )}
       {tab === "Accounts" && (
         <OpportunityPool
-          key={cycleId}
+          key={`${cycleId}:${projectionRevision}`}
           cycleId={cycleId}
           locale={locale}
           onInspect={(id) => void inspect(id, null)}
@@ -413,7 +425,7 @@ export function AcquisitionPortal({
       )}
       {tab === "Waves" && (
         <CycleControlSection
-          key={cycleId}
+          key={`${cycleId}:${projectionRevision}`}
           cycleId={cycleId}
           session={session}
           locale={locale}
@@ -493,7 +505,7 @@ export function AcquisitionPortal({
               ? "Revisar configuración del Cycle"
               : "Review Cycle settings"}
           </button>
-          <ActivationPreflight locale={locale} />
+          <ActivationPreflight key={projectionRevision} locale={locale} />
           <h3>
             {locale === "es" ? "Aprendizaje de mercado" : "Market learning"}
           </h3>
