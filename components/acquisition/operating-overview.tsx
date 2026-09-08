@@ -358,7 +358,7 @@ export function CycleAttention({
     return null
   return (
     <section className="acq-panel">
-      <h3>
+      <h2>
         {halt
           ? es
             ? "Cycle pausado"
@@ -370,7 +370,7 @@ export function CycleAttention({
             : es
               ? "Revisar preparación de wave"
               : "Review wave preparation"}
-      </h3>
+      </h2>
       <p>
         {halt
           ? es
@@ -380,7 +380,10 @@ export function CycleAttention({
             ? "La composición y su evidencia necesitan una decisión de Management; el scheduler no aprueba waves."
             : "Composition and evidence require a Management decision; the scheduler does not approve waves."}
       </p>
-      <button onClick={() => onNavigate(halt ? "Work / Health" : "Waves")}>
+      {review.control?.technical_halt && (
+        <p>{review.control.technical_halt}</p>
+      )}
+      <button onClick={() => onNavigate("Waves")}>
         {es ? "Inspeccionar decisión" : "Inspect decision"}
       </button>
     </section>
