@@ -365,16 +365,29 @@ export function AcquisitionPortal({
             {!cycles.length && <option value="">{t("Sin ciclo")}</option>}
             {cycles.map((c) => (
               <option key={c.cycleId} value={c.cycleId}>
-                {c.cycleId} · {humanize(c.status)}
+                {c.cycleId.startsWith("synthetic-")
+                  ? locale === "es"
+                    ? "Ensayo sintético"
+                    : "Synthetic rehearsal"
+                  : c.policy.id === "brunova-systems-cycle-1"
+                    ? "Cycle 1"
+                    : "Cycle"}{" "}
+                · {humanize(c.status)}
               </option>
             ))}
           </select>
         </label>
         {cycle && (
-          <p>
-            {humanize(cycle.status)} · {cycle.policy.id} /{" "}
-            {cycle.policy.version}
-          </p>
+          <details>
+            <summary>
+              {locale === "es"
+                ? "Identidad y política del Cycle"
+                : "Cycle identity and policy"}
+            </summary>
+            <p>
+              {cycle.cycleId} · {cycle.policy.id} / {cycle.policy.version}
+            </p>
+          </details>
         )}
       </div>
       <nav className="acq-tabs" aria-label={t("Secciones de Adquisición")}>
