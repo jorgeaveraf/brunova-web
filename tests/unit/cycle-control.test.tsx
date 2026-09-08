@@ -83,6 +83,48 @@ beforeEach(() => {
     wakeRequired: false,
   })
 })
+it("withholds approval when a displayed buyer or readiness binding needs revalidation", async () => {
+  vi.mocked(api.cycleReview).mockResolvedValue({
+    schemaVersion: "1",
+    review: {
+      ...review,
+      waves: [
+        {
+          ...review.waves[0]!,
+          state: "PLANNED",
+          members: [
+            {
+              accountId: "synthetic-a",
+              company: "SYNTHETIC stale buyer",
+              domain: "a.synthetic.local",
+              buyer: null,
+              channel: "EMAIL",
+              readinessReason: "BUYER_REVALIDATION",
+              poolState: "RETAINED",
+              tier: "HIGH",
+              reason: null,
+              knownUnknowns: [],
+            },
+          ],
+        },
+      ],
+    },
+  })
+  render(
+    <CycleControlSection
+      cycleId="synthetic-7c"
+      session={session}
+      locale="en"
+    />,
+  )
+  expect(
+    await screen.findByText(/composition needs revalidation/),
+  ).toBeVisible()
+  expect(
+    screen.queryByRole("button", { name: "Approve wave" }),
+  ).not.toBeInTheDocument()
+  expect(api.approveWave).not.toHaveBeenCalled()
+})
 it("shows review outcomes in business language before technical JSON", async () => {
   vi.mocked(api.cycleReview).mockResolvedValue({
     schemaVersion: "1",

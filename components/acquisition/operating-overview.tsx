@@ -49,7 +49,11 @@ export function OperatingOverview({
     halt =
       !!review.control?.technical_halt || review.control?.state === "STOPPED",
     needsReview = wave?.state === "REVIEW_REQUIRED",
-    waveReady = wave?.state === "PLANNED"
+    waveReady = wave?.state === "PLANNED",
+    revalidation =
+      waveReady &&
+      (!wave.members?.length ||
+        wave.members.some((m) => m.readinessReason !== "EXECUTABLE_CANDIDATE"))
   return (
     <>
       <section className="acq-panel">
@@ -63,13 +67,17 @@ export function OperatingOverview({
               ? es
                 ? "La wave terminó su ventana inicial. Management debe revisar resultados."
                 : "The wave completed its initial window. Management review is required."
-              : waveReady
+              : revalidation
                 ? es
-                  ? "La composición está lista para revisión; aún no autoriza contacto."
-                  : "The composition is ready for review; it does not authorize outreach yet."
-                : es
-                  ? "El Engine procesa trabajo interno autorizado. La próxima wave requiere aprobación exacta."
-                  : "The Engine processes authorized internal work. The next wave requires exact approval."}
+                  ? "La wave propuesta necesita revalidación. Revisa sus condiciones pendientes; aún no se puede aprobar."
+                  : "The proposed wave needs revalidation. Review its unmet requirements; it cannot be approved yet."
+                : waveReady
+                  ? es
+                    ? "La composición está lista para revisión; aún no autoriza contacto."
+                    : "The composition is ready for review; it does not authorize outreach yet."
+                  : es
+                    ? "El Engine procesa trabajo interno autorizado. La próxima wave requiere aprobación exacta."
+                    : "The Engine processes authorized internal work. The next wave requires exact approval."}
         </p>
         <button onClick={() => onNavigate(halt ? "Work / Health" : "Waves")}>
           {halt
@@ -302,6 +310,79 @@ export function OpportunityPool({
           {es ? "Mostrar más oportunidades" : "Show more opportunities"}
         </button>
       )}
+    </section>
+  )
+}
+
+/** Management decisions only; routine queued research is not Human Attention. */
+export function CycleAttention({
+  cycleId,
+  locale,
+  onNavigate,
+}: {
+  cycleId: string
+  locale: Locale
+  onNavigate: (tab: string) => void
+}) {
+  const [review, setReview] = useState<CycleReview | null>(null),
+    [failed, setFailed] = useState(false)
+  useEffect(() => {
+    let live = true
+    api
+      .cycleReview(cycleId)
+      .then((r) => {
+        if (live) setReview(r.review)
+      })
+      .catch(() => {
+        if (live) setFailed(true)
+      })
+    return () => {
+      live = false
+    }
+  }, [cycleId])
+  const es = locale === "es",
+    wave = review?.waves.at(-1),
+    halt =
+      review?.control?.technical_halt || review?.control?.state === "STOPPED"
+  if (failed)
+    return (
+      <p role="alert">
+        {es
+          ? "No se pudo verificar la revisión del Cycle."
+          : "Cycle review could not be verified."}
+      </p>
+    )
+  if (!review)
+    return <p>{es ? "Consultando decisiones…" : "Loading decisions…"}</p>
+  if (!halt && !["PLANNED", "REVIEW_REQUIRED"].includes(wave?.state ?? ""))
+    return null
+  return (
+    <section className="acq-panel">
+      <h3>
+        {halt
+          ? es
+            ? "Cycle pausado"
+            : "Cycle paused"
+          : wave?.state === "REVIEW_REQUIRED"
+            ? es
+              ? "Revisar resultados de wave"
+              : "Review wave outcomes"
+            : es
+              ? "Revisar preparación de wave"
+              : "Review wave preparation"}
+      </h3>
+      <p>
+        {halt
+          ? es
+            ? "Una condición técnica o de Management impide continuar."
+            : "A technical or Management condition prevents progression."
+          : es
+            ? "La composición y su evidencia necesitan una decisión de Management; el scheduler no aprueba waves."
+            : "Composition and evidence require a Management decision; the scheduler does not approve waves."}
+      </p>
+      <button onClick={() => onNavigate(halt ? "Work / Health" : "Waves")}>
+        {es ? "Inspeccionar decisión" : "Inspect decision"}
+      </button>
     </section>
   )
 }

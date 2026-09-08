@@ -83,6 +83,14 @@ export function CycleControlSection({
         CONFIGURED: "Configured",
       }
   const current = review?.waves.at(-1)
+  const compositionCurrent =
+    !!current?.members?.length &&
+    current.members.length === current.composition.length &&
+    current.members.every(
+      (member) => member.readinessReason === "EXECUTABLE_CANDIDATE",
+    ) &&
+    !review?.control?.technical_halt &&
+    review?.control?.state !== "STOPPED"
   async function operate(operation: string, item?: CyclePoolItem) {
     if (!review || pending) return
     const reconsider = ["DEEPER_RESEARCH", "RECONSIDER_BUYER"].includes(
@@ -121,7 +129,7 @@ export function CycleControlSection({
     }
   }
   async function approve() {
-    if (!review?.control || !current || pending) return
+    if (!review?.control || !current || pending || !compositionCurrent) return
     const body = {
       cycleId,
       expectedVersion: review.control.version,
@@ -223,9 +231,13 @@ export function CycleControlSection({
                 ? "El Cycle está pausado: no se permite avanzar."
                 : "The Cycle is paused: progression is not permitted."
               : current?.state === "PLANNED"
-                ? es
-                  ? "Siguiente paso: revisa las empresas y aprueba la wave si estás de acuerdo."
-                  : "Next: review the companies and approve the wave if you agree."
+                ? !compositionCurrent
+                  ? es
+                    ? "La composición necesita revalidación. Revisa los requisitos pendientes antes de aprobar."
+                    : "The composition needs revalidation. Review unmet requirements before approval."
+                  : es
+                    ? "Siguiente paso: revisa las empresas y aprueba la wave si estás de acuerdo."
+                    : "Next: review the companies and approve the wave if you agree."
                 : current &&
                     ["APPROVED", "REVIEW_REQUIRED"].includes(current.state)
                   ? es
@@ -505,6 +517,7 @@ export function CycleControlSection({
                 </p>
               )}
               {current.state === "PLANNED" &&
+                compositionCurrent &&
                 session.actor.capabilities.includes("MANAGE_CYCLE") && (
                   <fieldset
                     disabled={pending || error || !current.members?.length}

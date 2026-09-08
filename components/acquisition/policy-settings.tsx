@@ -9,9 +9,11 @@ import type { Locale } from "@/lib/i18n"
 export function PolicySettings({
   locale,
   session,
+  cycleId,
 }: {
   locale: Locale
   session: PortalSession
+  cycleId?: string
 }) {
   const es = locale === "es",
     [state, setState] = useState<Awaited<
@@ -27,6 +29,22 @@ export function PolicySettings({
       value: number
     } | null>(null)
   const retry = useRef<{ body: string; id: string } | null>(null)
+  const [snapshotMaximum, setSnapshotMaximum] = useState<number | null>(null)
+  useEffect(() => {
+    let live = true
+    if (cycleId)
+      api
+        .cycleReview(cycleId)
+        .then((r) => {
+          if (live) setSnapshotMaximum(r.review.discovery?.maximum ?? null)
+        })
+        .catch(() => {
+          if (live) setSnapshotMaximum(null)
+        })
+    return () => {
+      live = false
+    }
+  }, [cycleId])
   useEffect(() => {
     let stopped = false
     api
@@ -168,8 +186,18 @@ export function PolicySettings({
             {es
               ? "Empresas que pueden entrar a investigación"
               : "Companies that may enter research"}
-            : <strong>{String(setting?.value)}</strong>
+            :{" "}
+            <strong>
+              {cycleId ? (snapshotMaximum ?? "—") : String(setting?.value)}
+            </strong>
           </p>
+          {cycleId && (
+            <p>
+              {es
+                ? `La política fijada en este Cycle es su autoridad. El candidato para una futura activación tiene un máximo de ${String(setting?.value)}; no cambia este Cycle.`
+                : `This Cycle's fixed policy is authoritative. The candidate for a future activation has a maximum of ${String(setting?.value)}; it does not change this Cycle.`}
+            </p>
+          )}
           <p>
             {setting?.editable
               ? es

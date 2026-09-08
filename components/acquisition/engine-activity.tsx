@@ -51,8 +51,8 @@ export function EngineActivity({ locale }: { locale: Locale }) {
           </p>
           <p>
             {es
-              ? "Último run programado observado"
-              : "Last observed scheduled run"}
+              ? "Última ejecución del proceso diario"
+              : "Last daily-process execution"}
             :{" "}
             {run
               ? new Date(run.heartbeat_at).toLocaleString(
@@ -71,8 +71,8 @@ export function EngineActivity({ locale }: { locale: Locale }) {
           <p>
             {listener?.current
               ? es
-                ? "Listener observado recientemente."
-                : "Listener observed recently."
+                ? "El Mac está disponible para recibir trabajo inmediato."
+                : "The Mac is available to receive immediate work."
               : es
                 ? "Disponibilidad inmediata del Mac sin confirmar. Las Signals no reemplazan al trabajo durable."
                 : "Immediate Mac availability unconfirmed. Signals do not replace durable work."}

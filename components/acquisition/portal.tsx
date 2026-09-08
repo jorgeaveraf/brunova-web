@@ -6,7 +6,11 @@ import { CycleControlSection } from "./cycle-control"
 import { PolicySettings } from "./policy-settings"
 import { EngineActivity } from "./engine-activity"
 import { ActivationPreflight } from "./activation-preflight"
-import { OperatingOverview, OpportunityPool } from "./operating-overview"
+import {
+  OperatingOverview,
+  OpportunityPool,
+  CycleAttention,
+} from "./operating-overview"
 import { EvidenceDimensions } from "./evidence-dimensions"
 import { ProblemOwner } from "./problem-owner"
 import {
@@ -399,6 +403,7 @@ export function AcquisitionPortal({
           key={projectionRevision}
           locale={locale}
           session={session}
+          cycleId={cycleId}
         />
       )}
       {tab === "Work / Health" && (
@@ -518,6 +523,14 @@ export function AcquisitionPortal({
       )}
       {tab === "Attention" && (
         <section>
+          {cycleId && (
+            <CycleAttention
+              key={projectionRevision}
+              cycleId={cycleId}
+              locale={locale}
+              onNavigate={setTab}
+            />
+          )}
           <div className="acq-section-heading">
             <h2>{t("Necesita tu atención")}</h2>
             <p>
@@ -528,7 +541,11 @@ export function AcquisitionPortal({
           </div>
           {!active.length && !loading && (
             <div className="acq-empty">
-              <h3>{t("No hay decisiones pendientes.")}</h3>
+              <h3>
+                {locale === "es"
+                  ? "No hay decisiones individuales de cuenta pendientes."
+                  : "No individual Account decisions are pending."}
+              </h3>
               <p>
                 {t(
                   "Solo aparecerán cuentas que cumplan el estándar vigente. Los espacios libres no son un error.",

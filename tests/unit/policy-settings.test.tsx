@@ -33,6 +33,32 @@ beforeEach(() => {
     wakeRequired: false,
   })
 })
+it("does not confuse an active snapshot with a later policy candidate", async () => {
+  vi.mocked(api.policySettings).mockResolvedValue({
+    ...state,
+    version: 5,
+    settings: [
+      {
+        ...state.settings[0]!,
+        value: 60,
+        editable: false,
+        mutability: "SNAPSHOT_LOCKED",
+      },
+    ],
+  })
+  vi.spyOn(api, "cycleReview").mockResolvedValue({
+    schemaVersion: "1",
+    review: { discovery: { maximum: 75 } },
+  } as Awaited<ReturnType<typeof api.cycleReview>>)
+  render(
+    <PolicySettings locale="en" session={session} cycleId="synthetic-active" />,
+  )
+  expect(await screen.findByText("75", { selector: "strong" })).toBeVisible()
+  expect(
+    await screen.findByText(/future activation has a maximum of 60/),
+  ).toBeVisible()
+  expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument()
+})
 it.each(["en", "es"] as const)(
   "%s proposal impact precedes exact confirmation; no technical input or activation",
   async (locale) => {
