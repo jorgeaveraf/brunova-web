@@ -345,6 +345,69 @@ export const acquisitionApi = {
       z.object({ schemaVersion: version, items: z.array(poolItemSchema) }),
     ),
   cyclePolicy: () => request("/cycle-policy", cyclePolicySchema),
+  operatingModel: () =>
+    request(
+      "/operating-model",
+      z.object({
+        currentExecutionScope: z.string(),
+        chatRequiredForRuntime: z.boolean(),
+        portalRequiredForRuntime: z.boolean(),
+        activity: z.array(
+          z.object({
+            mode: z.string(),
+            event: z.string(),
+            heartbeat_at: z.string(),
+            current: z.boolean(),
+            completed: z.string().nullable(),
+            pending_signals: z.string().nullable(),
+            schedule: z
+              .object({
+                hour: z.number(),
+                minute: z.number(),
+                timeZone: z.string(),
+              })
+              .nullable(),
+          }),
+        ),
+      }),
+    ),
+  policySettings: () =>
+    request(
+      "/policy-candidate",
+      z.object({
+        version: z.number(),
+        policyHash: z.string(),
+        executable: z.literal(false),
+        activationAvailable: z.literal(false),
+        settings: z.array(
+          z.object({
+            key: z.string(),
+            value: z.unknown().optional(),
+            editable: z.boolean(),
+            mutability: z.string(),
+          }),
+        ),
+      }),
+    ),
+  policyChange: (
+    commandId: string,
+    body: Record<string, unknown>,
+    csrf: string,
+  ) =>
+    request(
+      "/commands/policy-candidate",
+      z.object({
+        proposalId: z.string().optional(),
+        proposalHash: z.string().optional(),
+        version: z.number().nullable().optional(),
+        wakeRequired: z.literal(false),
+      }),
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-csrf-token": csrf },
+        body: JSON.stringify({ commandId, request: body }),
+      },
+    ),
   cycleReview: (cycle: string) =>
     request(
       `/cycles/${id(cycle)}/review`,

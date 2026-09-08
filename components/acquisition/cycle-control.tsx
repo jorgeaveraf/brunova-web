@@ -176,8 +176,8 @@ export function CycleControlSection({
     >
       <h2>
         {es
-          ? "Cycle 1 · Configuración y control"
-          : "Cycle 1 · Configuration and control"}
+          ? "Waves · Composición y revisión"
+          : "Waves · Composition and review"}
       </h2>
       {commandNotice && (
         <p role="alert">
@@ -200,37 +200,12 @@ export function CycleControlSection({
             : "Loading Engine policy…"}
         </p>
       )}
-      {policy && (
+      {policy && !cycleId && (
         <>
-          <details>
-            <summary>
-              {es ? "Política · detalle técnico" : "Policy · technical detail"}
-            </summary>
-            <p>
-              {policy.policy.policyId} / {policy.policy.policyVersion} ·{" "}
-              {policy.policy.configurationState}
-            </p>
-          </details>
-          <p>
-            {policy.readyForRehearsal
-              ? es
-                ? "Lista para ensayo; no activa."
-                : "Ready for rehearsal; not active."
-              : es
-                ? "Validación de implementación pendiente; no activa."
-                : "Implementation validation pending; not active."}
-          </p>
-          <p>
-            {es ? "Discovery máximo" : "Maximum discovery"}:{" "}
-            {policy.policy.limits.researchUniverse} ·{" "}
-            {es ? "Prospectos nuevos máximo" : "Maximum new prospects"}:{" "}
-            {policy.policy.limits.outboundApproved} · {es ? "Waves" : "Waves"}:{" "}
-            {policy.policy.limits.waveCount} × {policy.policy.limits.waveSize}
-          </p>
           <p>
             {es
-              ? "México y Estados Unidos: exploración en ambos mercados, sin cuotas de calidad."
-              : "Mexico and United States: explore both markets, without qualification quotas."}
+              ? "Una wave aparecerá cuando el Engine identifique candidatos ejecutables. Prepararla no autoriza contactar."
+              : "A wave appears when the Engine identifies executable candidates. Preparing it does not authorize outreach."}
           </p>
           <p>
             {es

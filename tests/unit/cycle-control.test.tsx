@@ -168,8 +168,8 @@ it.each(["en", "es"] as const)(
     expect(
       await screen.findByText(
         locale === "es"
-          ? "Lista para ensayo; no activa."
-          : "Ready for rehearsal; not active.",
+          ? "Una wave aparecerá cuando el Engine identifique candidatos ejecutables. Prepararla no autoriza contactar."
+          : "A wave appears when the Engine identifies executable candidates. Preparing it does not authorize outreach.",
       ),
     ).toBeVisible()
     expect(api.cycleReview).not.toHaveBeenCalled()

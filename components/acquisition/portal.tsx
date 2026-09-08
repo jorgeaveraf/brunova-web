@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { CrmBoundarySection } from "./crm-boundary"
 import { CycleControlSection } from "./cycle-control"
+import { PolicySettings } from "./policy-settings"
+import { EngineActivity } from "./engine-activity"
 import { EvidenceDimensions } from "./evidence-dimensions"
 import { ProblemOwner } from "./problem-owner"
 import {
@@ -122,7 +124,7 @@ export function AcquisitionPortal({
   const { t, humanize, when } = copyFor(locale)
   const [cycles, setCycles] = useState<Cycle[]>([]),
     [cycleId, setCycleId] = useState("")
-  const [tab, setTab] = useState("Attention"),
+  const [tab, setTab] = useState("Overview"),
     [outcome, setOutcome] = useState(""),
     [cursor, setCursor] = useState("")
   const [accounts, setAccounts] = useState<Account[]>([]),
@@ -365,46 +367,75 @@ export function AcquisitionPortal({
           </p>
         )}
       </div>
-      <CycleControlSection
-        key={cycleId}
-        cycleId={cycleId}
-        session={session}
-        locale={locale}
-        onInspect={(accountId) => void inspect(accountId, null)}
-      />
-      <section className="acq-metrics" aria-label={t("Resumen")}>
-        <div>
-          <span>{t("Calificadas")}</span>
-          <strong>{cycle?.outcomeCounts.qualified ?? "—"}</strong>
-        </div>
-        <div>
-          <span>{t("Priorizadas")}</span>
-          <strong>{counts?.counts?.prioritized_count ?? "—"}</strong>
-        </div>
-        <div>
-          <span>{t("Atención activa")}</span>
-          <strong>{counts?.counts?.active_count ?? "—"}</strong>
-        </div>
-        <div>
-          <span>{t("En espera de capacidad")}</span>
-          <strong>{counts?.counts?.overflow_count ?? "—"}</strong>
-        </div>
-        <div>
-          <span>{t("Trabajo pendiente · global")}</span>
-          <strong>{health?.pendingWorkCount ?? "—"}</strong>
-        </div>
-        <div>
-          <span>{t("Base de datos")}</span>
-          <strong>
-            {health
-              ? health.databaseReady
-                ? t("Disponible")
-                : t("No disponible")
-              : "—"}
-          </strong>
-        </div>
-      </section>
-      {health && (
+      <nav className="acq-tabs" aria-label={t("Secciones de Adquisición")}>
+        {[
+          ["Overview", locale === "es" ? "Resumen" : "Overview"],
+          ["Accounts", locale === "es" ? "Oportunidades" : "Opportunities"],
+          ["Waves", "Waves"],
+          ["Attention", t("Necesita tu atención")],
+          ["Settings", locale === "es" ? "Configuración" : "Settings"],
+          [
+            "Work / Health",
+            locale === "es" ? "Trabajo y salud" : "Work / Health",
+          ],
+        ].map(([key, label]) => (
+          <button
+            key={key}
+            aria-current={tab === key ? "page" : undefined}
+            onClick={() => setTab(key!)}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+      {tab === "Settings" && (
+        <PolicySettings locale={locale} session={session} />
+      )}
+      {tab === "Work / Health" && <EngineActivity locale={locale} />}
+      {tab === "Waves" && (
+        <CycleControlSection
+          key={cycleId}
+          cycleId={cycleId}
+          session={session}
+          locale={locale}
+          onInspect={(accountId) => void inspect(accountId, null)}
+        />
+      )}
+      {tab === "Overview" && cycle && (
+        <section className="acq-metrics" aria-label={t("Resumen")}>
+          <div>
+            <span>{t("Calificadas")}</span>
+            <strong>{cycle?.outcomeCounts.qualified ?? "—"}</strong>
+          </div>
+          <div>
+            <span>{t("Priorizadas")}</span>
+            <strong>{counts?.counts?.prioritized_count ?? "—"}</strong>
+          </div>
+          <div>
+            <span>{t("Atención activa")}</span>
+            <strong>{counts?.counts?.active_count ?? "—"}</strong>
+          </div>
+          <div>
+            <span>{t("En espera de capacidad")}</span>
+            <strong>{counts?.counts?.overflow_count ?? "—"}</strong>
+          </div>
+          <div>
+            <span>{t("Trabajo pendiente · global")}</span>
+            <strong>{health?.pendingWorkCount ?? "—"}</strong>
+          </div>
+          <div>
+            <span>{t("Base de datos")}</span>
+            <strong>
+              {health
+                ? health.databaseReady
+                  ? t("Disponible")
+                  : t("No disponible")
+                : "—"}
+            </strong>
+          </div>
+        </section>
+      )}
+      {health && (tab === "Overview" || tab === "Work / Health") && (
         <p className="acq-safety">
           {t("DATOS REALES DE ADQUISICIÓN:")}{" "}
           {t(
@@ -425,30 +456,31 @@ export function AcquisitionPortal({
           </small>
         </p>
       )}
-      <nav className="acq-tabs" aria-label={t("Secciones de Adquisición")}>
-        {["Attention", "Ciclo", "Accounts", "Work / Health"].map((name) => (
-          <button
-            key={name}
-            aria-current={tab === name ? "page" : undefined}
-            onClick={() => setTab(name)}
-          >
-            {name === "Attention"
-              ? t("Necesita tu atención")
-              : name === "Ciclo"
-                ? t("Ciclo")
-                : name === "Accounts"
-                  ? t("Cuentas")
-                  : name}
-          </button>
-        ))}
-      </nav>
-      {!loading && !cycles.length && !error && (
+      {tab === "Overview" && !loading && !cycles.length && !error && (
         <section className="acq-empty">
           <h2>{t("Aún no hay un ciclo de Adquisición.")}</h2>
           <p>
             {t(
               "El Engine está preparado; no se ha iniciado investigación real. Aquí aparecerá el contexto de un ciclo autorizado.",
             )}
+          </p>
+          <p>
+            {locale === "es"
+              ? "Cycle 1 está configurado. Primero se autorizará Discovery e investigación reales; después, Management revisará la primera wave antes de cualquier contacto."
+              : "Cycle 1 is configured. Real discovery and research will be authorized first; Management then reviews the first wave before any outreach."}
+          </p>
+          <button onClick={() => setTab("Settings")}>
+            {locale === "es"
+              ? "Revisar configuración del Cycle"
+              : "Review Cycle settings"}
+          </button>
+          <h3>
+            {locale === "es" ? "Aprendizaje de mercado" : "Market learning"}
+          </h3>
+          <p>
+            {locale === "es"
+              ? "Comenzará cuando Cycle 1 se inicie. Los ensayos sintéticos no son evidencia del mercado."
+              : "Begins when Cycle 1 starts. Synthetic rehearsals are not market evidence."}
           </p>
         </section>
       )}
@@ -489,7 +521,7 @@ export function AcquisitionPortal({
           </div>
         </section>
       )}
-      {tab === "Ciclo" && (
+      {tab === "Overview" && cycle && (
         <section className="acq-panel">
           <h2>{t("Estado del ciclo")}</h2>
           {cycle ? (

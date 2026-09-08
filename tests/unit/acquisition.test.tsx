@@ -205,6 +205,13 @@ it("shows epistemic distinctions, confirms disposition and displays Engine refil
     }
   })
   render(<AcquisitionPortal session={session} locale="es" />)
+  if (
+    screen.queryByRole("button", { name: "Necesita tu atención" }) &&
+    !screen.queryByText("Aún no hay un ciclo de Adquisición.")
+  )
+    fireEvent.click(
+      screen.getByRole("button", { name: "Necesita tu atención" }),
+    )
   fireEvent.click(
     await screen.findByRole("button", { name: "Revisar evidencia y decisión" }),
   )
@@ -235,6 +242,13 @@ it("409 refreshes current state without retrying with a new version", async () =
     .spyOn(api, "disposition")
     .mockRejectedValue(new AcquisitionError(409))
   render(<AcquisitionPortal session={session} locale="es" />)
+  if (
+    screen.queryByRole("button", { name: "Necesita tu atención" }) &&
+    !screen.queryByText("Aún no hay un ciclo de Adquisición.")
+  )
+    fireEvent.click(
+      screen.getByRole("button", { name: "Necesita tu atención" }),
+    )
   fireEvent.click(
     await screen.findByRole("button", { name: "Revisar evidencia y decisión" }),
   )
@@ -265,6 +279,13 @@ it("network retry retains command ID and payload; read-only users have no decisi
     .spyOn(api, "disposition")
     .mockRejectedValue(new AcquisitionError(503))
   render(<AcquisitionPortal session={session} locale="es" />)
+  if (
+    screen.queryByRole("button", { name: "Necesita tu atención" }) &&
+    !screen.queryByText("Aún no hay un ciclo de Adquisición.")
+  )
+    fireEvent.click(
+      screen.getByRole("button", { name: "Necesita tu atención" }),
+    )
   fireEvent.click(
     await screen.findByRole("button", { name: "Revisar evidencia y decisión" }),
   )
@@ -331,6 +352,9 @@ it.each(["en", "es"] as const)(
       <AcquisitionPortal session={session} locale={locale} />,
     )
     const t = (key: Parameters<typeof text>[1]) => text(locale, key)
+    fireEvent.click(
+      screen.getByRole("button", { name: t("Necesita tu atención") }),
+    )
     await screen.findByRole("button", {
       name: t("Revisar evidencia y decisión"),
     })
@@ -340,18 +364,30 @@ it.each(["en", "es"] as const)(
         ? /Actualizar|Cerrar sesión|Por qué ahora|Qué falta saber|Cargando evidencia|Sin actividad/
         : /Refresh|Logout|Why now|What remains unknown|Loading evidence|No activity/,
     )
-    fireEvent.click(screen.getByRole("button", { name: t("Ciclo") }))
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: locale === "es" ? "Resumen" : "Overview",
+      }),
+    )
     expect(
       screen.getByRole("heading", { name: t("Estado del ciclo") }),
     ).toBeVisible()
-    fireEvent.click(screen.getByRole("button", { name: t("Cuentas") }))
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: locale === "es" ? "Oportunidades" : "Opportunities",
+      }),
+    )
     fireEvent.change(screen.getByLabelText(t("Resultado de investigación")), {
       target: { value: "QUALIFIED" },
     })
     await waitFor(() =>
       expect(api.accounts).toHaveBeenCalledWith("synthetic", "QUALIFIED", ""),
     )
-    fireEvent.click(screen.getByRole("button", { name: "Work / Health" }))
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: locale === "es" ? "Trabajo y salud" : "Work / Health",
+      }),
+    )
     expect(
       await screen.findByRole("heading", {
         name: t("Investigación de cuenta"),
