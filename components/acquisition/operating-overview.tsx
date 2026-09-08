@@ -380,9 +380,7 @@ export function CycleAttention({
             ? "La composición y su evidencia necesitan una decisión de Management; el scheduler no aprueba waves."
             : "Composition and evidence require a Management decision; the scheduler does not approve waves."}
       </p>
-      {review.control?.technical_halt && (
-        <p>{review.control.technical_halt}</p>
-      )}
+      {review.control?.technical_halt && <p>{review.control.technical_halt}</p>}
       <button onClick={() => onNavigate("Waves")}>
         {es ? "Inspeccionar decisión" : "Inspect decision"}
       </button>

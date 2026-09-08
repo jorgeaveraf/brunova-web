@@ -83,6 +83,19 @@ export function CycleControlSection({
         CONFIGURED: "Configured",
       }
   const current = review?.waves.at(-1)
+  const previouslySelected = new Set(
+    review?.waves.flatMap((wave) =>
+      wave.composition.map((member) => member.personId),
+    ) ?? [],
+  )
+  const canPrepare =
+    hasNext ||
+    pool.some(
+      (item) =>
+        item.readiness_reason === "EXECUTABLE_CANDIDATE" &&
+        (!item.binding?.personId ||
+          !previouslySelected.has(item.binding.personId)),
+    )
   const compositionCurrent =
     !!current?.members?.length &&
     current.members.length === current.composition.length &&
@@ -243,9 +256,13 @@ export function CycleControlSection({
                   ? es
                     ? "Siguiente paso: revisa resultados y decide continuar, ajustar o detener. Email de producción sigue deshabilitado."
                     : "Next: review outcomes and decide to continue, adjust or stop. Production Email remains disabled."
-                  : es
-                    ? "Siguiente paso: revisa las oportunidades y prepara las mejores disponibles. Preparar no autoriza ejecutar."
-                    : "Next: review opportunities and prepare the strongest available. Preparation does not authorize execution."}
+                  : !canPrepare
+                    ? es
+                      ? "No hay nuevos prospectos ejecutables disponibles. Conserva las oportunidades y revisa qué evidencia o preparación falta."
+                      : "No new executable prospects are available. Opportunities remain retained; review missing evidence or preparation."
+                    : es
+                      ? "Siguiente paso: revisa las oportunidades y prepara las mejores disponibles. Preparar no autoriza ejecutar."
+                      : "Next: review opportunities and prepare the strongest available. Preparation does not authorize execution."}
           </p>
           <div className="acq-metrics">
             {["READY_NOW", "RETAINED", "HOLD", "REJECTED"].map((state) => (
@@ -295,6 +312,7 @@ export function CycleControlSection({
                   : "To reconsider or retain a company, enter the reason and choose its action in the opportunity list."}
               </p>
               {(!current || current.state === "COMPLETE") &&
+                canPrepare &&
                 !review.control?.technical_halt &&
                 review.control?.state !== "STOPPED" && (
                   <button onClick={() => void operate("COMPOSE_WAVE")}>

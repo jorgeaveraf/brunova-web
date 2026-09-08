@@ -311,6 +311,10 @@ const poolItemSchema = z.object({
   intervention_hypothesis: z.string().nullable().optional(),
   buyer_name: z.string().nullable().optional(),
   channel: z.string().optional(),
+  binding: z
+    .object({ personId: z.string().nullable().optional() })
+    .passthrough()
+    .optional(),
 })
 export type CyclePoolItem = z.infer<typeof poolItemSchema>
 export const acquisitionApi = {

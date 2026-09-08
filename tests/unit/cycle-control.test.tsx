@@ -125,6 +125,54 @@ it("withholds approval when a displayed buyer or readiness binding needs revalid
   ).not.toBeInTheDocument()
   expect(api.approveWave).not.toHaveBeenCalled()
 })
+it("does not offer another composition when all executable people already belong to a wave", async () => {
+  vi.mocked(api.cycleReview).mockResolvedValue({
+    schemaVersion: "1",
+    review: {
+      ...review,
+      waves: [
+        {
+          ...review.waves[0]!,
+          state: "COMPLETE",
+          composition: [
+            { accountId: "synthetic-a", personId: "synthetic-person" },
+          ],
+        },
+      ],
+    },
+  })
+  vi.mocked(api.cyclePool).mockResolvedValue({
+    schemaVersion: "1",
+    items: [
+      {
+        account_id: "synthetic-a",
+        display_name: "SYNTHETIC retained",
+        pool_state: "RETAINED",
+        readiness_reason: "EXECUTABLE_CANDIDATE",
+        binding: { personId: "synthetic-person" },
+        rationale: null,
+        known_unknowns: [],
+        research_version: 1,
+      },
+    ],
+  })
+  render(
+    <CycleControlSection
+      cycleId="synthetic-7c"
+      session={session}
+      locale="en"
+    />,
+  )
+  expect(
+    await screen.findByText(/No new executable prospects are available/),
+  ).toBeVisible()
+  expect(
+    screen.queryByRole("button", {
+      name: "Prepare strongest available (up to four)",
+    }),
+  ).not.toBeInTheDocument()
+  expect(api.cycleCommand).not.toHaveBeenCalled()
+})
 it("shows review outcomes in business language before technical JSON", async () => {
   vi.mocked(api.cycleReview).mockResolvedValue({
     schemaVersion: "1",
