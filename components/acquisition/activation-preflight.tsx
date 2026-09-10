@@ -29,6 +29,23 @@ const labels: Record<string, [string, string]> = {
   INBOUND: ["Recepción automática", "Automatic inbound"],
   HUBSPOT: ["Límite CRM", "CRM boundary"],
   MANAGEMENT_AUTHORITY: ["Autoridad de Management", "Management authority"],
+  DISCOVERY_AUTONOMY: [
+    "Reposición autónoma de búsquedas",
+    "Autonomous search replenishment",
+  ],
+  DISCOVERY_CODEX: ["Planificación de Discovery", "Discovery planning"],
+  DISCOVERY_COMPANY_ROUTE: [
+    "Fuente empresarial operativa",
+    "Operational company source",
+  ],
+  DISCOVERY_MX: ["Discovery en México", "Mexico discovery"],
+  DISCOVERY_US: ["Discovery en Estados Unidos", "United States discovery"],
+  DISCOVERY_IDENTITY: [
+    "Identidad empresarial respaldada",
+    "Supported company identity",
+  ],
+  DISCOVERY_ZERO_STATE: ["Discovery desde cero", "Zero-state discovery"],
+  DISCOVERY_RECOVERY: ["Recuperación de Discovery", "Discovery recovery"],
 }
 export function ActivationPreflight({ locale }: { locale: Locale }) {
   const es = locale === "es",

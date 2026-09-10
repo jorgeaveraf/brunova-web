@@ -13,7 +13,15 @@ it.each(["en", "es"] as const)(
       activationAvailable: false,
       policyVersion: 3,
       observedAt: "2026-09-08T12:00:00Z",
-      checks: [{ component: "INBOUND", ready: false, reason: "PROBE_STALE" }],
+      checks: [
+        { component: "INBOUND", ready: false, reason: "PROBE_STALE" },
+        { component: "DISCOVERY_MX", ready: false, reason: "PROBE_REQUIRED" },
+        {
+          component: "DISCOVERY_ZERO_STATE",
+          ready: false,
+          reason: "PROBE_REQUIRED",
+        },
+      ],
     })
     render(<ActivationPreflight locale={locale} />)
     expect(
@@ -29,6 +37,16 @@ it.each(["en", "es"] as const)(
     expect(
       screen.getByText(/observation expired|observación vencida/),
     ).toBeVisible()
+    expect(
+      screen.getAllByText(
+        locale === "es" ? /Discovery en México/ : /Mexico discovery/,
+      ).length,
+    ).toBeGreaterThan(0)
+    expect(
+      screen.getAllByText(
+        locale === "es" ? /Discovery desde cero/ : /Zero-state discovery/,
+      ).length,
+    ).toBeGreaterThan(0)
   },
 )
 it("opportunity groups retain uncertainty and supported context without a fabricated channel", async () => {
