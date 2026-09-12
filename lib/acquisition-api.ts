@@ -360,6 +360,72 @@ export const acquisitionApi = {
       z.object({ schemaVersion: version, items: z.array(poolItemSchema) }),
     ),
   cyclePolicy: () => request("/cycle-policy", cyclePolicySchema),
+  discovery: () =>
+    request(
+      "/discovery",
+      z.object({
+        schemaVersion: version,
+        state: z.enum(["NO_ACTIVE_CYCLE", "WORK_PENDING", "WAITING"]),
+        totals: z.object({
+          observations: z.coerce.number(),
+          candidates: z.coerce.number(),
+          resolved: z.coerce.number(),
+          ambiguous: z.coerce.number(),
+          unresolved: z.coerce.number(),
+          held: z.coerce.number(),
+          admitted: z.coerce.number(),
+          pending_work: z.coerce.number(),
+        }),
+        sources: z.array(
+          z.object({
+            id: z.string(),
+            available: z.boolean(),
+            health: z.string(),
+            markets: z.array(z.string()),
+          }),
+        ),
+        candidates: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string().nullable(),
+            domain: z.string().nullable(),
+            identity_state: z.string(),
+            screen_state: z.string(),
+            reasons: z.array(z.string()),
+            missing: z.array(z.string()),
+            market_contexts: z.array(z.string()).nullable(),
+            sources: z.array(z.string()).nullable(),
+            sightings: z.coerce.number(),
+            admissions: z.coerce.number(),
+          }),
+        ),
+        planning: z.array(
+          z.object({
+            id: z.string(),
+            status: z.string().nullable(),
+            hypothesis: z.string().nullable(),
+            reason: z.string().nullable(),
+            coverage_gap: z.string().nullable(),
+          }),
+        ),
+        missions: z.array(
+          z.object({
+            mission_id: z.string(),
+            source: z.string(),
+            market: z.string(),
+            observations: z.coerce.number(),
+            candidates: z.coerce.number(),
+            source_failures: z.coerce.number(),
+            requests: z.coerce.number(),
+          }),
+        ),
+        displayLimits: z.object({
+          missions: z.number(),
+          candidates: z.number(),
+          planning: z.number(),
+        }),
+      }),
+    ),
   activationPreflight: () =>
     request(
       "/activation-preflight",

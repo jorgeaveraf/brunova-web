@@ -6,6 +6,7 @@ import { CycleControlSection } from "./cycle-control"
 import { PolicySettings } from "./policy-settings"
 import { EngineActivity } from "./engine-activity"
 import { ActivationPreflight } from "./activation-preflight"
+import { DiscoverySection } from "./discovery"
 import {
   OperatingOverview,
   OpportunityPool,
@@ -393,6 +394,7 @@ export function AcquisitionPortal({
       <nav className="acq-tabs" aria-label={t("Secciones de Adquisición")}>
         {[
           ["Overview", locale === "es" ? "Resumen" : "Overview"],
+          ["Discovery", locale === "es" ? "Exploración" : "Discovery"],
           ["Accounts", locale === "es" ? "Oportunidades" : "Opportunities"],
           ["Waves", "Waves"],
           ["Attention", t("Necesita tu atención")],
@@ -419,6 +421,7 @@ export function AcquisitionPortal({
           cycleId={cycleId}
         />
       )}
+      {tab === "Discovery" && <DiscoverySection locale={locale} />}
       {tab === "Work / Health" && (
         <EngineActivity key={projectionRevision} locale={locale} />
       )}
