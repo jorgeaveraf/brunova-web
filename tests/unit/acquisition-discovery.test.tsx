@@ -4,6 +4,18 @@ import { DiscoverySection } from "@/components/acquisition/discovery"
 import { acquisitionApi as api } from "@/lib/acquisition-api"
 import axe from "axe-core"
 afterEach(() => vi.restoreAllMocks())
+it("authoritative Discovery pause overrides a waiting projection without deleting candidates", async () => {
+  vi.spyOn(api, "discovery").mockResolvedValue({ ...empty, state: "WAITING" })
+  vi.spyOn(api, "cycleReview").mockResolvedValue({
+    schemaVersion: "1",
+    review: { control: { discovery_stop_reason: "Synthetic identity review" } },
+  } as Awaited<ReturnType<typeof api.cycleReview>>)
+  render(<DiscoverySection locale="en" cycleId="synthetic" />)
+  expect(await screen.findByText(/Discovery paused for review/)).toBeVisible()
+  expect(
+    screen.queryByText(/Waiting for the next authorized/),
+  ).not.toBeInTheDocument()
+})
 const empty: Awaited<ReturnType<typeof api.discovery>> = {
   schemaVersion: "1",
   state: "NO_ACTIVE_CYCLE",

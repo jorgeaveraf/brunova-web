@@ -3,7 +3,31 @@ import { useEffect, useState } from "react"
 import { acquisitionApi as api } from "@/lib/acquisition-api"
 import type { Locale } from "@/lib/i18n"
 
-export function DiscoverySection({ locale }: { locale: Locale }) {
+export function DiscoverySection({
+  locale,
+  cycleId,
+}: {
+  locale: Locale
+  cycleId?: string
+}) {
+  const [stopReason, setStopReason] = useState<string | null>(null)
+  const [reviewFailed, setReviewFailed] = useState(false)
+  useEffect(() => {
+    let live = true
+    if (cycleId)
+      api
+        .cycleReview(cycleId)
+        .then((review) => {
+          if (live)
+            setStopReason(review.review.control?.discovery_stop_reason ?? null)
+        })
+        .catch(() => {
+          if (live) setReviewFailed(true)
+        })
+    return () => {
+      live = false
+    }
+  }, [cycleId])
   const es = locale === "es",
     [data, setData] = useState<Awaited<
       ReturnType<typeof api.discovery>
@@ -64,14 +88,28 @@ export function DiscoverySection({ locale }: { locale: Locale }) {
               ? es
                 ? "Sin Cycle activo. La exploración real todavía no ha comenzado."
                 : "No active Cycle. Real discovery has not started."
-              : data.state === "WORK_PENDING"
+              : stopReason
                 ? es
-                  ? "Hay búsquedas o planificación pendientes."
-                  : "Search or planning work is pending."
-                : es
-                  ? "Esperando la siguiente oportunidad autorizada de exploración."
-                  : "Waiting for the next authorized discovery opportunity."}
+                  ? "Exploración pausada para revisión. La evidencia y las candidatas se conservan."
+                  : "Discovery paused for review. Evidence and candidates are preserved."
+                : reviewFailed
+                  ? es
+                    ? "No se pudo verificar si la exploración está pausada."
+                    : "Discovery pause status could not be verified."
+                  : data.state === "WORK_PENDING"
+                    ? es
+                      ? "Hay búsquedas o planificación pendientes."
+                      : "Search or planning work is pending."
+                    : es
+                      ? "Esperando la siguiente oportunidad autorizada de exploración."
+                      : "Waiting for the next authorized discovery opportunity."}
       </p>
+      {stopReason && (
+        <details>
+          <summary>{es ? "Motivo de la pausa" : "Pause reason"}</summary>
+          <p>{stopReason}</p>
+        </details>
+      )}
       <p>
         {es
           ? "Una candidata no es todavía una oportunidad calificada. Conservamos organizaciones e incógnitas antes de decidir qué merece investigación."
