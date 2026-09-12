@@ -35,6 +35,16 @@ export function DiscoverySection({ locale }: { locale: Locale }) {
         : es
           ? "Identidad por resolver"
           : "Identity unresolved"
+  const date = (value?: string | null) =>
+    value
+      ? new Intl.DateTimeFormat(es ? "es-MX" : "en-US", {
+          dateStyle: "medium",
+          timeStyle: "short",
+          timeZone: "UTC",
+        }).format(new Date(value)) + " UTC"
+      : es
+        ? "Sin observación registrada"
+        : "No observation recorded"
   return (
     <section
       className="acq-panel"
@@ -89,6 +99,11 @@ export function DiscoverySection({ locale }: { locale: Locale }) {
               <dd>{data.totals.pending_work}</dd>
             </div>
           </dl>
+          <p className="acq-muted">
+            {es
+              ? "México y Estados Unidos se exploran sin cuotas. La cobertura visible no representa todo el mercado. El horario instalado y la última actividad están en Trabajo y salud."
+              : "Mexico and the United States are explored without quotas. Visible coverage is not the whole market. The installed schedule and latest activity are in Work / Health."}
+          </p>
           <h3>
             {es
               ? "Antes de convertirse en Account"
@@ -123,9 +138,24 @@ export function DiscoverySection({ locale }: { locale: Locale }) {
                       ? es
                         ? "Admitida a investigación; esto no implica calificación."
                         : "Admitted to research; this does not imply qualification."
-                      : es
-                        ? "Conservada antes de admisión. La evidencia pendiente no es un rechazo."
-                        : "Retained before admission. Missing evidence is not rejection."}
+                      : c.screen_state === "SUPPORTED_DISMISSAL"
+                        ? es
+                          ? "Descartada con evidencia; la decisión se conserva y puede reconsiderarse con evidencia nueva."
+                          : "Dismissed with evidence; the decision is retained and may be reconsidered with new evidence."
+                        : c.screen_state === "INVESTIGATE"
+                          ? es
+                            ? "Merece investigación; aún no está admitida ni calificada."
+                            : "Warrants research; not yet admitted or qualified."
+                          : es
+                            ? "Conservada antes de admisión. La evidencia pendiente no es un rechazo."
+                            : "Retained before admission. Missing evidence is not rejection."}
+                  </p>
+                  <p className="acq-muted">
+                    {es ? "Avistamientos" : "Sightings"}: {c.sightings} ·{" "}
+                    {es ? "Primera observación" : "First seen"}:{" "}
+                    {date(c.first_seen)} ·{" "}
+                    {es ? "Última observación" : "Last seen"}:{" "}
+                    {date(c.last_seen)}
                   </p>
                   <details>
                     <summary>
@@ -166,6 +196,7 @@ export function DiscoverySection({ locale }: { locale: Locale }) {
                   </p>
                   <p>{p.reason}</p>
                   <p>{p.coverage_gap}</p>
+                  <p className="acq-muted">{date(p.created_at)}</p>
                 </li>
               ))}
             </ul>
@@ -194,6 +225,17 @@ export function DiscoverySection({ locale }: { locale: Locale }) {
                         ? "Sin ejecución registrada"
                         : "No execution recorded"
                       : s.health}
+                  {s.next_run_at && (
+                    <p className="acq-muted">
+                      {es
+                        ? "Disponible para una nueva búsqueda desde"
+                        : "Eligible for a new search from"}
+                      : {date(s.next_run_at)}.{" "}
+                      {es
+                        ? "Sujeto a autoridad, presupuesto y disponibilidad del Mac."
+                        : "Subject to authority, budget and Mac availability."}
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>

@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react"
 import { it, expect, vi, afterEach } from "vitest"
 import { DiscoverySection } from "@/components/acquisition/discovery"
 import { acquisitionApi as api } from "@/lib/acquisition-api"
+import axe from "axe-core"
 afterEach(() => vi.restoreAllMocks())
 const empty: Awaited<ReturnType<typeof api.discovery>> = {
   schemaVersion: "1",
@@ -37,6 +38,12 @@ it.each(["es", "en"] as const)(
     expect(
       screen.queryByRole("button", { name: /activar|activate/i }),
     ).not.toBeInTheDocument()
+    const accessibility = await axe.run(document.body, {
+      runOnly: { type: "tag", values: ["wcag2a", "wcag2aa"] },
+      // jsdom has no rendering engine; contrast is checked in visual QA.
+      rules: { "color-contrast": { enabled: false } },
+    })
+    expect(accessibility.violations).toEqual([])
   },
 )
 it("pre-Account ambiguity is retained, not presented as qualification or a false rejection", async () => {
@@ -81,4 +88,32 @@ it("failed read is not an empty/healthy Discovery projection", async () => {
   expect(
     screen.queryByText("No active Cycle. Real discovery has not started."),
   ).not.toBeInTheDocument()
+})
+it("supported dismissal is not mislabeled as missing-evidence retention", async () => {
+  vi.spyOn(api, "discovery").mockResolvedValue({
+    ...empty,
+    candidates: [
+      {
+        id: "synthetic-dismissal",
+        name: "SYNTHETIC Scope Example",
+        domain: null,
+        identity_state: "RESOLVED",
+        screen_state: "SUPPORTED_DISMISSAL",
+        reasons: ["SUPPORTED_SCOPE_INCOMPATIBILITY"],
+        missing: [],
+        market_contexts: ["US"],
+        sources: ["synthetic-source"],
+        sightings: 1,
+        admissions: 0,
+        first_seen: "2026-09-12T12:00:00Z",
+        last_seen: "2026-09-12T12:00:00Z",
+      },
+    ],
+  })
+  render(<DiscoverySection locale="en" />)
+  expect(await screen.findByText(/Dismissed with evidence/)).toBeVisible()
+  expect(
+    screen.queryByText(/Retained before admission/),
+  ).not.toBeInTheDocument()
+  expect(screen.getByText(/Sightings: 1/)).toHaveTextContent("UTC")
 })

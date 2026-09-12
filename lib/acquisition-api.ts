@@ -382,6 +382,8 @@ export const acquisitionApi = {
             available: z.boolean(),
             health: z.string(),
             markets: z.array(z.string()),
+            next_run_at: z.string().nullable().optional(),
+            cadence_hours: z.number().optional(),
           }),
         ),
         candidates: z.array(
@@ -397,6 +399,8 @@ export const acquisitionApi = {
             sources: z.array(z.string()).nullable(),
             sightings: z.coerce.number(),
             admissions: z.coerce.number(),
+            first_seen: z.string().optional(),
+            last_seen: z.string().optional(),
           }),
         ),
         planning: z.array(
@@ -406,6 +410,7 @@ export const acquisitionApi = {
             hypothesis: z.string().nullable(),
             reason: z.string().nullable(),
             coverage_gap: z.string().nullable(),
+            created_at: z.string().optional(),
           }),
         ),
         missions: z.array(
