@@ -195,6 +195,120 @@ export function DiscoverySection({
                     {es ? "Última observación" : "Last seen"}:{" "}
                     {date(c.last_seen)}
                   </p>
+                  {data.journeys
+                    ?.filter((j) => j.candidate_id === c.id)
+                    .map((j) => (
+                      <details key={j.candidate_id}>
+                        <summary>
+                          {es
+                            ? "Recorrido de investigación"
+                            : "Discovery journey"}
+                        </summary>
+                        <h5>
+                          {es
+                            ? "Origen y motivo de búsqueda"
+                            : "Origin and search rationale"}
+                        </h5>
+                        {j.origins.map((o, i) => (
+                          <div key={i}>
+                            <p>
+                              {o.source} · {o.jobTitle ?? o.sourceEntity}
+                            </p>
+                            <p>{o.hypothesis}</p>
+                            <p>{o.reason}</p>
+                            <details>
+                              <summary>
+                                {es
+                                  ? "Búsqueda e intentos originales"
+                                  : "Original search and attempts"}
+                              </summary>
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  overflowWrap: "anywhere",
+                                }}
+                              >
+                                {JSON.stringify(
+                                  {
+                                    search: o.search,
+                                    attempts: o.attempts,
+                                    requests: o.requests,
+                                    status: o.runStatus,
+                                  },
+                                  null,
+                                  2,
+                                )}
+                              </pre>
+                            </details>
+                          </div>
+                        ))}
+                        <h5>
+                          {es
+                            ? "Investigación adicional"
+                            : "Further investigation"}
+                        </h5>
+                        {!j.investigations.length && (
+                          <p>
+                            {es
+                              ? "No hay investigación adicional registrada."
+                              : "No further investigation recorded."}
+                          </p>
+                        )}
+                        {j.investigations.map((v, i) => (
+                          <div key={i}>
+                            <p>{v.summary}</p>
+                            <p>
+                              <strong>
+                                {es ? "Siguiente acción:" : "Next action:"}
+                              </strong>{" "}
+                              {v.nextAction}
+                            </p>
+                            <ul>
+                              {v.limitations.map((l, k) => (
+                                <li key={k}>{l}</li>
+                              ))}
+                            </ul>
+                            <details>
+                              <summary>
+                                {es
+                                  ? "Fuentes, intentos y procedencia"
+                                  : "Sources, attempts and provenance"}
+                              </summary>
+                              <p>
+                                {v.actorType} · {v.actorId} ·{" "}
+                                {date(v.recordedAt)}
+                              </p>
+                              <p>
+                                {es
+                                  ? "Observaciones registradas por Management; no equivalen a verificación automática de identidad."
+                                  : "Management-recorded observations are not automatic identity verification."}
+                              </p>
+                              <ul>
+                                {v.attempts.map((a, k) => (
+                                  <li key={k}>
+                                    <p>
+                                      {a.mechanism} · {a.outcome} ·{" "}
+                                      {date(a.observedAt)}
+                                    </p>
+                                    {a.uri?.startsWith("https://") && (
+                                      <a
+                                        href={a.uri}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                      >
+                                        {a.uri}
+                                      </a>
+                                    )}
+                                    <p>{a.query}</p>
+                                    <p>{a.finding}</p>
+                                  </li>
+                                ))}
+                              </ul>
+                            </details>
+                          </div>
+                        ))}
+                      </details>
+                    ))}
                   <details>
                     <summary>
                       {es

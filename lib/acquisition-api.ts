@@ -366,6 +366,47 @@ export const acquisitionApi = {
       z.object({
         schemaVersion: version,
         state: z.enum(["NO_ACTIVE_CYCLE", "WORK_PENDING", "WAITING"]),
+        journeys: z
+          .array(
+            z.object({
+              candidate_id: z.string(),
+              origins: z.array(
+                z.object({
+                  source: z.string(),
+                  search: z.unknown(),
+                  hypothesis: z.string().nullable(),
+                  reason: z.string().nullable(),
+                  sourceEntity: z.string(),
+                  jobTitle: z.string().nullable(),
+                  attempts: z.unknown(),
+                  requests: z.coerce.number(),
+                  runStatus: z.string(),
+                }),
+              ),
+              investigations: z.array(
+                z.object({
+                  summary: z.string(),
+                  nextAction: z.string(),
+                  actorType: z.string(),
+                  actorId: z.string(),
+                  recordedAt: z.string(),
+                  attempts: z.array(
+                    z.object({
+                      mechanism: z.string(),
+                      uri: z.string().optional(),
+                      query: z.string().optional(),
+                      observedAt: z.string(),
+                      finding: z.string(),
+                      outcome: z.string(),
+                    }),
+                  ),
+                  limitations: z.array(z.string()),
+                }),
+              ),
+              decisions: z.array(z.unknown()),
+            }),
+          )
+          .optional(),
         totals: z.object({
           observations: z.coerce.number(),
           candidates: z.coerce.number(),

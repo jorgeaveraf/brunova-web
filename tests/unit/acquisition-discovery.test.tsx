@@ -35,6 +35,63 @@ const empty: Awaited<ReturnType<typeof api.discovery>> = {
   missions: [],
   displayLimits: { missions: 50, candidates: 50, planning: 20 },
 }
+it("shows source reasoning and recorded investigation without promoting identity", async () => {
+  vi.spyOn(api, "discovery").mockResolvedValue({
+    ...empty,
+    candidates: [
+      {
+        id: "test",
+        name: "SYNTHETIC Atlas",
+        domain: null,
+        identity_state: "UNRESOLVED",
+        screen_state: "HOLD",
+        reasons: [],
+        missing: [],
+        market_contexts: ["MX"],
+        sources: [],
+        sightings: 1,
+        admissions: 0,
+      },
+    ],
+    journeys: [
+      {
+        candidate_id: "test",
+        origins: [
+          {
+            source: "synthetic",
+            search: { term: "bounded" },
+            hypothesis: "Synthetic change hypothesis",
+            reason: "Synthetic source rationale",
+            sourceEntity: "synthetic:1",
+            jobTitle: null,
+            attempts: [],
+            requests: 1,
+            runStatus: "SUCCESS",
+          },
+        ],
+        decisions: [],
+        investigations: [
+          {
+            summary: "Synthetic identity needs corroboration",
+            nextAction: "Inspect primary identity evidence",
+            actorType: "PANCRACIO_GATEWAY",
+            actorId: "pancracio:gateway",
+            recordedAt: "2026-09-13T00:00:00Z",
+            attempts: [],
+            limitations: ["Not verified"],
+          },
+        ],
+      },
+    ],
+  })
+  render(<DiscoverySection locale="en" />)
+  fireEvent.click(await screen.findByText("Discovery journey"))
+  expect(
+    screen.getByText("Synthetic identity needs corroboration"),
+  ).toBeVisible()
+  expect(screen.getByText("Inspect primary identity evidence")).toBeVisible()
+  expect(screen.getByText(/Identity unresolved/)).toBeVisible()
+})
 it.each(["es", "en"] as const)(
   "%s Discovery is useful before an Account exists and cannot activate",
   async (locale) => {
