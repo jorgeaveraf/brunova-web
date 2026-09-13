@@ -204,6 +204,61 @@ export function DiscoverySection({
                             ? "Recorrido de investigación"
                             : "Discovery journey"}
                         </summary>
+                        {(j.executions ?? []).map((execution) => (
+                          <section key={execution.workItemId}>
+                            <h5>
+                              {es
+                                ? "Investigación ejecutada por el Engine"
+                                : "Engine investigation work"}
+                            </h5>
+                            <p>{execution.direction}</p>
+                            <p>
+                              {execution.status === "COMPLETED"
+                                ? es
+                                  ? "Trabajo completado"
+                                  : "Work completed"
+                                : es
+                                  ? "Trabajo pendiente o en revisión"
+                                  : "Work pending or under review"}{" "}
+                              · {execution.requests ?? 0}{" "}
+                              {es ? "lecturas intentadas" : "attempted reads"}
+                            </p>
+                            <p>
+                              {execution.accountId
+                                ? es
+                                  ? "Admitida como Account"
+                                  : "Admitted as Account"
+                                : es
+                                  ? "Sin admisión: consulta la decisión y evidencia."
+                                  : "Not admitted: inspect decision and evidence."}
+                            </p>
+                            <details>
+                              <summary>
+                                {es
+                                  ? "Evidencia, reconciliación y decisión"
+                                  : "Evidence, reconciliation and decision"}
+                              </summary>
+                              <pre
+                                style={{
+                                  whiteSpace: "pre-wrap",
+                                  overflowWrap: "anywhere",
+                                }}
+                              >
+                                {JSON.stringify(
+                                  {
+                                    workItem: execution.workItemId,
+                                    actor: execution.actorType,
+                                    evidence: execution.evidence,
+                                    decision: execution.decision,
+                                    admission: execution.admission,
+                                  },
+                                  null,
+                                  2,
+                                )}
+                              </pre>
+                            </details>
+                          </section>
+                        ))}
                         <h5>
                           {es
                             ? "Origen y motivo de búsqueda"

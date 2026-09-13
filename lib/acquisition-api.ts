@@ -370,6 +370,21 @@ export const acquisitionApi = {
           .array(
             z.object({
               candidate_id: z.string(),
+              executions: z
+                .array(
+                  z.object({
+                    workItemId: z.string(),
+                    status: z.string(),
+                    direction: z.string(),
+                    actorType: z.string(),
+                    requests: z.number().nullable(),
+                    decision: z.unknown(),
+                    evidence: z.unknown(),
+                    admission: z.string().nullable(),
+                    accountId: z.string().nullable(),
+                  }),
+                )
+                .optional(),
               origins: z.array(
                 z.object({
                   source: z.string(),
