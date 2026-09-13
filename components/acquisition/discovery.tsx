@@ -204,6 +204,14 @@ export function DiscoverySection({
                             ? "Recorrido de investigación"
                             : "Discovery journey"}
                         </summary>
+                        <p>
+                          {es ? "Estado actual: " : "Current state: "}
+                          {identity(c.identity_state)}.
+                          {c.admissions === 0 &&
+                            (es
+                              ? " Sin admisión a Account ni investigación posterior. Revisión de Management antes de decidir otro paso; no se ha descartado por falta de evidencia."
+                              : " No Account admission or downstream research. Management review precedes another step; missing evidence is not dismissal.")}
+                        </p>
                         {(j.executions ?? []).map((execution) => (
                           <section key={execution.workItemId}>
                             <h5>
@@ -299,8 +307,8 @@ export function DiscoverySection({
                         ))}
                         <h5>
                           {es
-                            ? "Investigación adicional"
-                            : "Further investigation"}
+                            ? "Registros históricos de Management"
+                            : "Historical Management records"}
                         </h5>
                         {!j.investigations.length && (
                           <p>
@@ -311,10 +319,13 @@ export function DiscoverySection({
                         )}
                         {j.investigations.map((v, i) => (
                           <div key={i}>
+                            <p className="acq-muted">{date(v.recordedAt)}</p>
                             <p>{v.summary}</p>
                             <p>
                               <strong>
-                                {es ? "Siguiente acción:" : "Next action:"}
+                                {es
+                                  ? "Acción propuesta entonces:"
+                                  : "Action proposed at that time:"}
                               </strong>{" "}
                               {v.nextAction}
                             </p>
@@ -362,6 +373,21 @@ export function DiscoverySection({
                             </details>
                           </div>
                         ))}
+                        <details>
+                          <summary>
+                            {es
+                              ? "Historial de decisiones y política"
+                              : "Decision and policy history"}
+                          </summary>
+                          <pre
+                            style={{
+                              whiteSpace: "pre-wrap",
+                              overflowWrap: "anywhere",
+                            }}
+                          >
+                            {JSON.stringify(j.decisions, null, 2)}
+                          </pre>
+                        </details>
                       </details>
                     ))}
                   <details>

@@ -90,7 +90,9 @@ it("shows source reasoning and recorded investigation without promoting identity
     screen.getByText("Synthetic identity needs corroboration"),
   ).toBeVisible()
   expect(screen.getByText("Inspect primary identity evidence")).toBeVisible()
-  expect(screen.getByText(/Identity unresolved/)).toBeVisible()
+  expect(screen.getByText(/Current state: Identity unresolved/)).toBeVisible()
+  expect(screen.getByText("Historical Management records")).toBeVisible()
+  expect(screen.getByText("Action proposed at that time:")).toBeVisible()
 })
 it.each(["es", "en"] as const)(
   "%s Discovery is useful before an Account exists and cannot activate",
