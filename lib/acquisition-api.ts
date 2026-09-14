@@ -391,6 +391,12 @@ export const acquisitionApi = {
               account_id: z.string().nullable(),
               market_context: z.string().nullable(),
               source: z.string(),
+              found_because: z.string().nullable().optional(),
+              investigation_summary: z.string().nullable().optional(),
+              reviewed_next_action: z.string().nullable().optional(),
+              screen_state: z.string().optional(),
+              research_outcome: z.string().nullable().optional(),
+              origin_mode: z.string().optional(),
             }),
           )
           .optional(),
@@ -490,6 +496,9 @@ export const acquisitionApi = {
         planning: z.array(
           z.object({
             id: z.string(),
+            actor_type: z.string().optional(),
+            direction_actor_type: z.string().nullable().optional(),
+            management_direction: z.string().nullable().optional(),
             status: z.string().nullable(),
             hypothesis: z.string().nullable(),
             reason: z.string().nullable(),

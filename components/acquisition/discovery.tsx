@@ -164,6 +164,10 @@ export function DiscoverySection({
                             ? "Candidata conservada"
                             : "Retained candidate"}{" "}
                         · {c.market_context ?? "—"} · {c.source}
+                        {c.found_because && <p>{es ? "Señal de búsqueda, aún por corroborar: " : "Search lead, still requiring corroboration: "}{c.found_because}</p>}
+                        {c.investigation_summary && <p>{c.investigation_summary}</p>}
+                        <p>{c.reviewed_next_action ?? (es ? "Siguiente paso: revisión acotada de identidad y señal; no se ha autorizado outreach." : "Next: bounded identity and signal review; outreach is not authorized.")}</p>
+                        <p className="acq-muted">{c.research_outcome ?? (es ? "Sin resultado de investigación de Account" : "No Account research outcome")}</p>
                       </li>
                     ))}
                 </ul>
@@ -481,6 +485,14 @@ export function DiscoverySection({
                   </p>
                   <p>{p.reason}</p>
                   <p>{p.coverage_gap}</p>
+                  {p.management_direction && (
+                    <details>
+                      <summary>{es ? "Dirección y autoridad" : "Direction and authority"}</summary>
+                      <p>{p.management_direction}</p>
+                      <p>{es ? "Dirección solicitada por: " : "Direction requested by: "}{p.direction_actor_type === "PANCRACIO_GATEWAY" ? "Pancracio" : "Management"}</p>
+                      <p>{es ? "Ejecución bajo el objetivo permanente autorizado del Cycle; no implica que el Human haya redactado esta dirección." : "Execution uses the authorized standing Cycle objective; this does not imply the Human authored this direction."}</p>
+                    </details>
+                  )}
                   <p className="acq-muted">{date(p.created_at)}</p>
                 </li>
               ))}
