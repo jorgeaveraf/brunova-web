@@ -163,7 +163,7 @@ export function DiscoverySection({
                           : es
                             ? "Candidata conservada"
                             : "Retained candidate"}{" "}
-                        · {c.market ?? "—"} · {c.source}
+                        · {c.market_context ?? "—"} · {c.source}
                       </li>
                     ))}
                 </ul>

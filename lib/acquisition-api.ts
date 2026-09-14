@@ -389,9 +389,7 @@ export const acquisitionApi = {
               identity_state: z.string(),
               admission_state: z.string().nullable(),
               account_id: z.string().nullable(),
-              market_context: z.string().optional(),
-              market_contexts: z.array(z.string()).optional(),
-              market: z.string().nullable(),
+              market_context: z.string().nullable(),
               source: z.string(),
             }),
           )
