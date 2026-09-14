@@ -163,7 +163,7 @@ export function DiscoverySection({
                           : es
                             ? "Candidata conservada"
                             : "Retained candidate"}{" "}
-                        · {c.market_context ?? "—"} · {c.source}
+                        · {es ? "Mercado de la búsqueda" : "Search market"}: {c.market_context ?? "—"} · {c.source}
                         {c.found_because && <p>{es ? "Señal de búsqueda, aún por corroborar: " : "Search lead, still requiring corroboration: "}{c.found_because}</p>}
                         {c.investigation_summary && <p>{c.investigation_summary}</p>}
                         <p>{c.reviewed_next_action ?? (es ? "Siguiente paso: revisión acotada de identidad y señal; no se ha autorizado outreach." : "Next: bounded identity and signal review; outreach is not authorized.")}</p>
@@ -195,8 +195,8 @@ export function DiscoverySection({
           </dl>
           <p className="acq-muted">
             {es
-              ? "México y Estados Unidos se exploran sin cuotas. La cobertura visible no representa todo el mercado. El horario instalado y la última actividad están en Trabajo y salud."
-              : "Mexico and the United States are explored without quotas. Visible coverage is not the whole market. The installed schedule and latest activity are in Work / Health."}
+              ? "México y Estados Unidos se exploran sin cuotas. El mercado de la búsqueda no confirma el domicilio de la organización. La cobertura visible no representa todo el mercado. El horario instalado y la última actividad están en Trabajo y salud."
+              : "Mexico and the United States are explored without quotas. Search market does not establish an organization's domicile. Visible coverage is not the whole market. The installed schedule and latest activity are in Work / Health."}
           </p>
           <h3>
             {es
@@ -224,7 +224,7 @@ export function DiscoverySection({
                       (es
                         ? "Dominio no confirmado"
                         : "Domain unconfirmed")}{" "}
-                    · {(c.market_contexts ?? []).join(" / ")} ·{" "}
+                    · {es ? "Mercados de búsqueda" : "Search markets"}: {(c.market_contexts ?? []).join(" / ")} ·{" "}
                     {identity(c.identity_state)}
                   </p>
                   <p>

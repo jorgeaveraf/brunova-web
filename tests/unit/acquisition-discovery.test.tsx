@@ -85,6 +85,7 @@ it("shows source reasoning and recorded investigation without promoting identity
     ],
   })
   render(<DiscoverySection locale="en" />)
+  expect(await screen.findByText(/Search market does not establish/)).toBeVisible()
   fireEvent.click(await screen.findByText("Discovery journey"))
   expect(
     screen.getByText("Synthetic identity needs corroboration"),
