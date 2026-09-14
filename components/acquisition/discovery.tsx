@@ -117,6 +117,58 @@ export function DiscoverySection({
       </p>
       {data && (
         <>
+          {(data.reviewBatches ?? [])
+            .filter((b) => !cycleId || b.cycle_id === cycleId)
+            .map((b) => (
+              <section
+                key={b.id}
+                aria-label={es ? "Revisión del lote" : "Batch review"}
+              >
+                <h3>{es ? "Lote de exploración" : "Discovery batch"}</h3>
+                <p>
+                  {b.state === "OPEN"
+                    ? es
+                      ? "En exploración acotada"
+                      : "Bounded discovery in progress"
+                    : es
+                      ? "Requiere revisión de Management"
+                      : "Management review required"}
+                </p>
+                <p>
+                  {es ? "Candidatas nuevas" : "New candidates"}:{" "}
+                  {b.new_candidates} / {b.maximum_new}.{" "}
+                  {es
+                    ? "Candidatas anteriores conservadas"
+                    : "Previous candidates retained"}
+                  : {b.retained_baseline_count}.
+                </p>
+                <p>{b.direction}</p>
+                {b.stop_reason && <p>{b.stop_reason}</p>}
+                <p className="acq-muted">
+                  {es
+                    ? "El límite del lote no es una cuota de calificación. Una admisión a Account inicia investigación, no outreach. El siguiente lote requiere otra decisión explícita."
+                    : "The batch ceiling is not a qualification quota. Account admission starts research, not outreach. Another batch requires a new explicit decision."}
+                </p>
+                <ul>
+                  {(data.batchCandidates ?? [])
+                    .filter((c) => c.batch_id === b.id)
+                    .map((c) => (
+                      <li key={c.candidate_id}>
+                        <strong>{c.name}</strong> · {identity(c.identity_state)}{" "}
+                        ·{" "}
+                        {c.account_id
+                          ? es
+                            ? "Account en investigación"
+                            : "Account under research"
+                          : es
+                            ? "Candidata conservada"
+                            : "Retained candidate"}{" "}
+                        · {c.market ?? "—"} · {c.source}
+                      </li>
+                    ))}
+                </ul>
+              </section>
+            ))}
           <dl>
             <div>
               <dt>{es ? "Observaciones" : "Observations"}</dt>

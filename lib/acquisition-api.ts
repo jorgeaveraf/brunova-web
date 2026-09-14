@@ -366,6 +366,36 @@ export const acquisitionApi = {
       z.object({
         schemaVersion: version,
         state: z.enum(["NO_ACTIVE_CYCLE", "WORK_PENDING", "WAITING"]),
+        reviewBatches: z
+          .array(
+            z.object({
+              id: z.string(),
+              cycle_id: z.string(),
+              state: z.string(),
+              maximum_new: z.number(),
+              new_candidates: z.coerce.number(),
+              retained_baseline_count: z.number(),
+              direction: z.string().nullable(),
+              stop_reason: z.string().nullable(),
+            }),
+          )
+          .optional(),
+        batchCandidates: z
+          .array(
+            z.object({
+              batch_id: z.string(),
+              candidate_id: z.string(),
+              name: z.string(),
+              identity_state: z.string(),
+              admission_state: z.string().nullable(),
+              account_id: z.string().nullable(),
+              market_context: z.string().optional(),
+              market_contexts: z.array(z.string()).optional(),
+              market: z.string().nullable(),
+              source: z.string(),
+            }),
+          )
+          .optional(),
         journeys: z
           .array(
             z.object({
