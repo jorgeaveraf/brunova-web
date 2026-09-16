@@ -400,6 +400,66 @@ export const acquisitionApi = {
             }),
           )
           .optional(),
+        authenticatedResearch: z
+          .array(
+            z.object({
+              id: z.string(),
+              cycle_id: z.string(),
+              uri: z.string(),
+              profile: z.literal("Jorge"),
+              surface: z.string(),
+              status: z.string(),
+              receipt: z.record(z.string(), z.unknown()).nullable(),
+              created_at: z.string(),
+              completed_at: z.string().nullable(),
+            }),
+          )
+          .optional(),
+        commercialCalibration: z
+          .array(
+            z.object({
+              calibration_id: z.string(),
+              cycle_id: z.string(),
+              candidate_id: z.string(),
+              name: z.string().nullable(),
+              current_engine_state: z.string(),
+              internal_need: z.literal("UNKNOWN"),
+              strict_result: z.string(),
+              conversation_worthiness: z.string(),
+              reason: z.string(),
+              material_falsifier: z.string(),
+              outreach_learning_goal: z.string(),
+              market: z.string(),
+            }).passthrough(),
+          )
+          .optional(),
+        workAllocation: z
+          .array(
+            z.object({
+              id: z.string(),
+              cycle_id: z.string(),
+              rationale: z.string(),
+              status: z.string(),
+              created_at: z.string(),
+              expires_at: z.string(),
+              inventory_snapshot: z.record(z.string(), z.unknown()),
+              items: z.array(
+                z.object({
+                  position: z.number(),
+                  workClass: z.string(),
+                  candidateId: z.string().nullable(),
+                  accountId: z.string().nullable(),
+                  dimension: z.string().nullable(),
+                  expectedInformationGain: z.string(),
+                  reason: z.string(),
+                  stopCondition: z.string(),
+                  budget: z.object({ maxRequests: z.number(), maxMinutes: z.number() }),
+                  status: z.string(),
+                }),
+              ),
+            }),
+          )
+          .optional(),
         journeys: z
           .array(
             z.object({

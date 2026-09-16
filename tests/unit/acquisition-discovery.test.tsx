@@ -35,6 +35,27 @@ const empty: Awaited<ReturnType<typeof api.discovery>> = {
   missions: [],
   displayLimits: { missions: 50, candidates: 50, planning: 20 },
 }
+it("shows expiring Today/Next work as evidence dimensions awaiting Management", async () => {
+  vi.spyOn(api, "discovery").mockResolvedValue({
+    ...empty,
+    workAllocation: [{
+      id: "plan-1", cycle_id: "cycle-1", status: "AWAITING_MANAGEMENT",
+      rationale: "Resolve the smallest material uncertainty before broader discovery.",
+      created_at: "2026-09-16T12:00:00Z", expires_at: "2026-09-17T12:00:00Z",
+      inventory_snapshot: { candidateCount: 1, broadDiscoveryPaused: true },
+      items: [{ position: 1, workClass: "SOCIAL_ENRICH", candidateId: "candidate-1", accountId: null,
+        dimension: "SOCIAL", expectedInformationGain: "Whether executive attribution supports current attention.",
+        reason: "This evidence can change whether a conversation is worth testing.",
+        stopCondition: "Stop after one current attributed source.", budget: { maxRequests: 1, maxMinutes: 10 }, status: "PROPOSED" }],
+    }],
+  })
+  render(<DiscoverySection locale="en" />)
+  expect(await screen.findByText("Today and next work")).toBeVisible()
+  expect(screen.getByText("Awaiting Management")).toBeVisible()
+  expect(screen.getByText(/evidence dimensions, not additive points/)).toBeVisible()
+  expect(screen.getByText(/What could change the decision/)).toBeVisible()
+  expect(screen.getByText(/Exhaustion condition/)).toBeVisible()
+})
 it("shows source reasoning and recorded investigation without promoting identity", async () => {
   vi.spyOn(api, "discovery").mockResolvedValue({
     ...empty,

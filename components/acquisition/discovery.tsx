@@ -69,6 +69,16 @@ export function DiscoverySection({
       : es
         ? "Sin observación registrada"
         : "No observation recorded"
+  const plans = (data?.workAllocation ?? []).filter(
+    (plan) => !cycleId || plan.cycle_id === cycleId,
+  )
+  const currentPlan = plans.find((plan) => plan.status === "AWAITING_MANAGEMENT") ?? plans[0]
+  const calibration = (data?.commercialCalibration ?? []).filter(
+    (review) => !cycleId || review.cycle_id === cycleId,
+  )
+  const authenticated = (data?.authenticatedResearch ?? []).filter(
+    (run) => !cycleId || run.cycle_id === cycleId,
+  )[0]
   return (
     <section
       className="acq-panel"
@@ -117,6 +127,77 @@ export function DiscoverySection({
       </p>
       {data && (
         <>
+          {currentPlan && (
+            <section aria-label={es ? "Trabajo de hoy y siguiente" : "Today and next work"}>
+              <h3>{es ? "Trabajo de hoy y siguiente" : "Today and next work"}</h3>
+              <p>
+                <strong>
+                  {currentPlan.status === "AWAITING_MANAGEMENT"
+                    ? es
+                      ? "Esperando a Management"
+                      : "Awaiting Management"
+                    : es
+                      ? "Plan expirado o reemplazado"
+                      : "Plan expired or superseded"}
+                </strong>{" "}
+                · {es ? "vence" : "expires"}: {date(currentPlan.expires_at)}
+              </p>
+              <p>{currentPlan.rationale}</p>
+              <p className="acq-muted">
+                {es
+                  ? "Discovery amplio permanece pausado porque ya existe inventario por resolver. Compañía, empleo y social son dimensiones de evidencia, no puntos que se suman. Ningún elemento concede ejecución autónoma."
+                  : "Broad Discovery remains paused because existing inventory still has resolvable uncertainty. Company, Job and Social are evidence dimensions, not additive points. No item grants autonomous execution."}
+              </p>
+              <ol>
+                {currentPlan.items.map((item) => (
+                  <li key={`${currentPlan.id}-${item.position}`}>
+                    <h4>{item.workClass.replaceAll("_", " ")}</h4>
+                    <p>
+                      {es ? "Dimensión" : "Dimension"}: {item.dimension ?? "—"} · {es ? "objetivo" : "target"}: {item.candidateId ?? item.accountId ?? "—"}
+                    </p>
+                    <p><strong>{es ? "Por qué ahora:" : "Why now:"}</strong> {item.reason}</p>
+                    <p><strong>{es ? "Qué podría cambiar la decisión:" : "What could change the decision:"}</strong> {item.expectedInformationGain}</p>
+                    <p><strong>{es ? "Criterio de agotamiento:" : "Exhaustion condition:"}</strong> {item.stopCondition}</p>
+                    <p className="acq-muted">
+                      {es ? "Presupuesto" : "Budget"}: {item.budget.maxRequests} {es ? "lecturas" : "reads"} / {item.budget.maxMinutes} min
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+          {calibration.length > 0 && (
+            <details>
+              <summary>{es ? "Calibración comercial de candidatas" : "Candidate commercial calibration"}</summary>
+              <p>
+                {es
+                  ? "El estado estricto del Engine y el valor de conversar se muestran por separado. Una conversación serviría para aprender; no confirma necesidad interna ni autoriza outreach."
+                  : "Strict Engine state and conversation-worthiness are shown separately. A conversation would be for learning; it does not confirm internal need or authorize outreach."}
+              </p>
+              <ul>
+                {calibration.map((review) => (
+                  <li key={`${review.calibration_id}-${review.candidate_id}`}>
+                    <strong>{review.name ?? review.candidate_id}</strong> · {review.market} · {review.conversation_worthiness}
+                    <p>{review.current_engine_state} · {review.strict_result} · internal need: UNKNOWN</p>
+                    <p>{review.reason}</p>
+                    <p><strong>{es ? "Falsificador:" : "Falsifier:"}</strong> {review.material_falsifier}</p>
+                    <p><strong>{es ? "Aprendizaje buscado:" : "Learning goal:"}</strong> {review.outreach_learning_goal}</p>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+          {authenticated && (
+            <details>
+              <summary>{es ? "Prueba de investigación autenticada" : "Authenticated research proof"}</summary>
+              <p>{authenticated.surface} · {authenticated.profile} · {authenticated.status}</p>
+              <p className="acq-muted">
+                {es
+                  ? "Prueba de capacidad de lectura solamente; no es evidencia sobre una candidata y no realizó acciones sociales."
+                  : "Read-capability proof only; it is not candidate evidence and performed no social actions."}
+              </p>
+            </details>
+          )}
           {(data.reviewBatches ?? [])
             .filter((b) => !cycleId || b.cycle_id === cycleId)
             .map((b) => (
