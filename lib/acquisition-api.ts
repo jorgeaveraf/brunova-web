@@ -460,6 +460,37 @@ export const acquisitionApi = {
             }),
           )
           .optional(),
+        conversationPolicy: z
+          .object({
+            version: z.number(), cycle_id: z.string(), base_policy_version: z.string(),
+            base_policy_hash: z.string(), definition: z.record(z.string(), z.unknown()),
+            definition_hash: z.string(), approved_at: z.string(), executable: z.boolean(),
+            outreach_authorized: z.boolean(), account_admission_changed: z.boolean(),
+          })
+          .nullable()
+          .optional(),
+        workExecution: z
+          .array(
+            z.object({
+              plan_id: z.string(), cycle_id: z.string(), status: z.string(), created_at: z.string(),
+              expires_at: z.string(), approved_at: z.string().nullable(), semantic_policy_version: z.number().nullable(),
+              items: z.array(z.object({
+                position: z.number(), candidateId: z.string().nullable(), workClass: z.string(), proposedDimension: z.string().nullable(),
+                selectedDimension: z.string().nullable(), companyValue: z.string().nullable(), jobValue: z.string().nullable(), socialValue: z.string().nullable(),
+                reason: z.string().nullable(), expectedInformationGain: z.string().nullable(), stopCondition: z.string().nullable(),
+                budget: z.object({ maxRequests: z.number(), maxMinutes: z.number() }).nullable(),
+                executionRequest: z.record(z.string(), z.unknown()).nullable(),
+                outcome: z.object({
+                  workItemId: z.string(), strictBefore: z.string(), worthinessBefore: z.string(), hypothesisBefore: z.string(), unknownBefore: z.string(),
+                  actualToolsSources: z.array(z.unknown()), actualRequests: z.number(), actualMinutes: z.number(), evidenceSummary: z.string(),
+                  falsifiers: z.string(), strictAfter: z.string(), worthinessAfter: z.string(), hypothesisChange: z.string(), unknownAfter: z.string(),
+                  nextAction: z.string(), selectedDimensionInformative: z.boolean(), changedDecision: z.boolean(), budgetJustified: z.boolean(),
+                  betterDimension: z.string().nullable(), enrichmentVsDiscovery: z.string(), remainingUnknownInternal: z.boolean(), recordedAt: z.string(),
+                }).nullable(),
+              }).passthrough()),
+            }),
+          )
+          .optional(),
         journeys: z
           .array(
             z.object({

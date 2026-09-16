@@ -73,6 +73,9 @@ export function DiscoverySection({
     (plan) => !cycleId || plan.cycle_id === cycleId,
   )
   const currentPlan = plans.find((plan) => plan.status === "AWAITING_MANAGEMENT") ?? plans[0]
+  const currentExecution = (data?.workExecution ?? []).find(
+    (execution) => execution.plan_id === currentPlan?.id,
+  )
   const calibration = (data?.commercialCalibration ?? []).filter(
     (review) => !cycleId || review.cycle_id === cycleId,
   )
@@ -136,6 +139,14 @@ export function DiscoverySection({
                     ? es
                       ? "Esperando a Management"
                       : "Awaiting Management"
+                    : currentPlan.status === "APPROVED"
+                      ? es
+                        ? "Aprobado / en ejecución"
+                        : "Approved / executing"
+                      : currentPlan.status === "COMPLETED"
+                        ? es
+                          ? "Ejecutado y reconsiderado"
+                          : "Executed and reconsidered"
                     : es
                       ? "Plan expirado o reemplazado"
                       : "Plan expired or superseded"}
@@ -149,22 +160,36 @@ export function DiscoverySection({
                   : "Broad Discovery remains paused because existing inventory still has resolvable uncertainty. Company, Job and Social are evidence dimensions, not additive points. No item grants autonomous execution."}
               </p>
               <ol>
-                {currentPlan.items.map((item) => (
-                  <li key={`${currentPlan.id}-${item.position}`}>
+                {currentPlan.items.map((item) => {
+                  const execution = currentExecution?.items.find((value) => value.position === item.position)
+                  return <li key={`${currentPlan.id}-${item.position}`}>
                     <h4>{item.workClass.replaceAll("_", " ")}</h4>
                     <p>
-                      {es ? "Dimensión" : "Dimension"}: {item.dimension ?? "—"} · {es ? "objetivo" : "target"}: {item.candidateId ?? item.accountId ?? "—"}
+                      {es ? "Dimensión elegida" : "Selected dimension"}: {execution?.selectedDimension ?? item.dimension ?? "—"} · {es ? "objetivo" : "target"}: {item.candidateId ?? item.accountId ?? "—"}
                     </p>
-                    <p><strong>{es ? "Por qué ahora:" : "Why now:"}</strong> {item.reason}</p>
-                    <p><strong>{es ? "Qué podría cambiar la decisión:" : "What could change the decision:"}</strong> {item.expectedInformationGain}</p>
-                    <p><strong>{es ? "Criterio de agotamiento:" : "Exhaustion condition:"}</strong> {item.stopCondition}</p>
+                    <p><strong>{es ? "Por qué ahora:" : "Why now:"}</strong> {execution?.reason ?? item.reason}</p>
+                    <p><strong>{es ? "Qué podría cambiar la decisión:" : "What could change the decision:"}</strong> {execution?.expectedInformationGain ?? item.expectedInformationGain}</p>
+                    <p><strong>{es ? "Criterio de agotamiento:" : "Exhaustion condition:"}</strong> {execution?.stopCondition ?? item.stopCondition}</p>
                     <p className="acq-muted">
-                      {es ? "Presupuesto" : "Budget"}: {item.budget.maxRequests} {es ? "lecturas" : "reads"} / {item.budget.maxMinutes} min
+                      {es ? "Presupuesto" : "Budget"}: {execution?.budget?.maxRequests ?? item.budget.maxRequests} {es ? "lecturas" : "reads"} / {execution?.budget?.maxMinutes ?? item.budget.maxMinutes} min
                     </p>
+                    {execution?.outcome && <>
+                      <p><strong>{es ? "Aprendimos:" : "Learned:"}</strong> {execution.outcome.evidenceSummary}</p>
+                      <p><strong>{es ? "Cambio:" : "Change:"}</strong> {execution.outcome.worthinessBefore} → {execution.outcome.worthinessAfter} · {execution.outcome.hypothesisChange}</p>
+                      <p><strong>{es ? "Sigue desconocido:" : "Still unknown:"}</strong> {execution.outcome.unknownAfter}</p>
+                      <p><strong>{es ? "Siguiente acción legítima:" : "Next legitimate action:"}</strong> {execution.outcome.nextAction}</p>
+                    </>}
                   </li>
-                ))}
+                })}
               </ol>
             </section>
+          )}
+          {data.conversationPolicy && (
+            <p className="acq-muted">
+              {es
+                ? `Conversation-worthiness v${data.conversationPolicy.version} está integrada junto a Cycle v${data.conversationPolicy.base_policy_version}; no cambia admisión ni autoriza outreach.`
+                : `Conversation-worthiness v${data.conversationPolicy.version} is integrated beside Cycle v${data.conversationPolicy.base_policy_version}; it changes neither admission nor outreach authority.`}
+            </p>
           )}
           {calibration.length > 0 && (
             <details>
