@@ -323,6 +323,7 @@ export function DiscoverySection({
                   string,
                   unknown
                 >
+                const message = target.messages[0] as Record<string, unknown>
                 return (
                   <article key={target.candidateId} className="acq-panel">
                     <h4>{target.company}</h4>
@@ -335,6 +336,29 @@ export function DiscoverySection({
                             : "Exact Person pending"),
                       )}{" "}
                       · {String(person.role ?? "—")}
+                    </p>
+                    <p>
+                      <strong>
+                        {es ? "TIPO DE PERSONA" : "PERSON STATUS"}:
+                      </strong>{" "}
+                      {String(person.ownerVsRouting ?? "ROUTING / UNRESOLVED")}{" "}
+                      ·{" "}
+                      {String(
+                        person.whySupported ?? person.problemOwnerFit ?? "—",
+                      )}
+                    </p>
+                    <p>
+                      <strong>{es ? "CONTACTO" : "CONTACT"}:</strong>{" "}
+                      {target.contactPoints.length
+                        ? target.contactPoints
+                            .map((point) => {
+                              const contact = point as Record<string, unknown>
+                              return `${String(contact.channel ?? "—")}: ${String(contact.displayTarget ?? contact.exactTarget ?? contact.state ?? "—")}`
+                            })
+                            .join(" · ")
+                        : es
+                          ? "Sin ContactPoint verificado"
+                          : "No verified ContactPoint"}
                     </p>
                     <p>
                       <strong>{es ? "POR QUÉ" : "WHY THEM"}:</strong>{" "}
@@ -358,8 +382,18 @@ export function DiscoverySection({
                       )}
                     </p>
                     <p>
+                      <strong>{es ? "ASUNTO" : "SUBJECT"}:</strong>{" "}
+                      {String(message.subject ?? "—")}
+                    </p>
+                    <p>
                       <strong>{es ? "MENSAJE" : "MESSAGE"}:</strong>{" "}
-                      {String(target.messages[0]?.text ?? "—")}
+                      {String(message.text ?? "—")}
+                    </p>
+                    <p>
+                      <strong>
+                        {es ? "POR QUÉ ESTE COPY" : "WHY THIS COPY"}:
+                      </strong>{" "}
+                      {String(message.whyCopy ?? "—")}
                     </p>
                     <p>
                       <strong>
@@ -385,7 +419,11 @@ export function DiscoverySection({
                     </p>
                     <p className="acq-muted">
                       {target.strictState} · {target.conversationWorthiness} ·
-                      internal need UNKNOWN · {target.authorizationState}
+                      internal need UNKNOWN · {target.authorizationState} ·{" "}
+                      {String(
+                        (target.safety as Record<string, unknown>).readiness ??
+                          "HOLD",
+                      )}
                     </p>
                     {session && (
                       <div className="acq-actions">

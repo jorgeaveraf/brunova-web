@@ -557,6 +557,32 @@ export const acquisitionApi = {
             }),
           )
           .optional(),
+        targetResolution: z
+          .array(
+            z.object({
+              id: z.string(),
+              cycle_id: z.string(),
+              source_wave_id: z.string(),
+              rationale: z.string(),
+              fourth_slot_empty: z.literal(true),
+              broad_discovery_paused: z.literal(true),
+              outreach_authority: z.literal("NONE"),
+              created_at: z.string(),
+              items: z.array(z.record(z.string(), z.unknown())),
+            }),
+          )
+          .optional(),
+        copyReviews: z
+          .array(
+            z.object({
+              id: z.string(),
+              wave_id: z.string(),
+              review: z.record(z.string(), z.unknown()),
+              effects_authorized: z.literal(false),
+              created_at: z.string(),
+            }),
+          )
+          .optional(),
         learningWaves: z
           .array(
             z.object({
