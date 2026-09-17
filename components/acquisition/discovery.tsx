@@ -413,7 +413,9 @@ export function DiscoverySection({
                         {es ? "RIESGOS / INCÓGNITAS" : "RISKS / UNKNOWNS"}:
                       </strong>{" "}
                       {String(
-                        (target.safety as Record<string, unknown>).unknowns ??
+                        (target.safety as Record<string, unknown>)
+                          .resolutionStopReason ??
+                          (target.safety as Record<string, unknown>).unknowns ??
                           target.falsifier,
                       )}
                     </p>
