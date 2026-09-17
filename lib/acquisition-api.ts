@@ -583,6 +583,18 @@ export const acquisitionApi = {
             }),
           )
           .optional(),
+        firstExploratoryEffect: z
+          .array(
+            z.object({
+              company: z.string(), decision: z.string(), message_version: z.number().nullable(),
+              subject: z.string().nullable(), text: z.string().nullable(), message_hash: z.string().nullable(),
+              authorization_id: z.string().nullable(), intent_id: z.string().nullable(), work_item_id: z.string().nullable(),
+              effect_status: z.string().nullable(), attempt_id: z.string().nullable(), attempted_at: z.string().nullable(),
+              provider_observation: z.unknown().nullable(), contact_strategy_state: z.string().nullable(),
+              next_review_at: z.string().nullable(), follow_up_authority: z.string().nullable(), logical_attempts: z.number().nullable(),
+            }),
+          )
+          .optional(),
         learningWaves: z
           .array(
             z.object({

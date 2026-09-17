@@ -91,6 +91,9 @@ export function DiscoverySection({
   const learningWave = (data?.learningWaves ?? []).find(
     (w) => !cycleId || w.cycle_id === cycleId,
   )
+  const scaniaEffect = (data?.firstExploratoryEffect ?? []).find(
+    (effect) => effect.company === "Scania México",
+  )
   const reviewTarget = async (
     position: number,
     decision: "APPROVE_FOR_FUTURE_7EB2" | "ADJUST" | "REMOVE" | "HOLD",
@@ -303,7 +306,11 @@ export function DiscoverySection({
               </h3>
               <p>
                 <strong>
-                  {es
+                  {scaniaEffect?.effect_status
+                    ? es
+                      ? `7E-B.2 · intento 1 ${scaniaEffect.effect_status}`
+                      : `7E-B.2 · Attempt 1 ${scaniaEffect.effect_status}`
+                    : es
                     ? "Sólo diseño · sin efectos"
                     : "Design only · no effects"}
                 </strong>{" "}
@@ -311,6 +318,19 @@ export function DiscoverySection({
                 {es ? "conversaciones propuestas" : "proposed conversations"} ·{" "}
                 {es ? "autoridad" : "authority"}: NONE
               </p>
+              {scaniaEffect?.effect_status && (
+                <article className="acq-panel" aria-label="Scania Attempt 1">
+                  <h4>Scania México · Attempt 1</h4>
+                  <p><strong>{es ? "Quién" : "Who"}:</strong> Alejandro Mondragón · President / CEO · routing Person</p>
+                  <p><strong>{es ? "Canal" : "Channel"}:</strong> Email</p>
+                  <p><strong>{es ? "Estado" : "State"}:</strong> {scaniaEffect.effect_status} · {scaniaEffect.contact_strategy_state ?? "—"}</p>
+                  <p><strong>{es ? "Mensaje exacto" : "Exact message"}:</strong> {scaniaEffect.subject}<br />{scaniaEffect.text}</p>
+                  <p><strong>{es ? "Enviado" : "Sent"}:</strong> {date(scaniaEffect.attempted_at)}</p>
+                  <p><strong>{es ? "Próxima revisión elegible" : "Next review eligibility"}:</strong> {date(scaniaEffect.next_review_at)}</p>
+                  <p><strong>{es ? "Follow-up autorizado" : "Authorized follow-up"}:</strong> {scaniaEffect.follow_up_authority ?? "NONE"}</p>
+                  <p className="acq-muted">{es ? "Esperar a Scania no detiene al Engine; siete días sólo habilitan reconsideración." : "Waiting for Scania does not stop the Engine; seven days only enables reconsideration."}</p>
+                </article>
+              )}
               <p className="acq-muted">
                 {es
                   ? "Una CandidateOrganization no es un Account. Los canales se muestran por disponibilidad y justificación; ninguno queda autorizado por aparecer aquí."
