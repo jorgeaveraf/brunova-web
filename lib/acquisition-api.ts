@@ -417,20 +417,22 @@ export const acquisitionApi = {
           .optional(),
         commercialCalibration: z
           .array(
-            z.object({
-              calibration_id: z.string(),
-              cycle_id: z.string(),
-              candidate_id: z.string(),
-              name: z.string().nullable(),
-              current_engine_state: z.string(),
-              internal_need: z.literal("UNKNOWN"),
-              strict_result: z.string(),
-              conversation_worthiness: z.string(),
-              reason: z.string(),
-              material_falsifier: z.string(),
-              outreach_learning_goal: z.string(),
-              market: z.string(),
-            }).passthrough(),
+            z
+              .object({
+                calibration_id: z.string(),
+                cycle_id: z.string(),
+                candidate_id: z.string(),
+                name: z.string().nullable(),
+                current_engine_state: z.string(),
+                internal_need: z.literal("UNKNOWN"),
+                strict_result: z.string(),
+                conversation_worthiness: z.string(),
+                reason: z.string(),
+                material_falsifier: z.string(),
+                outreach_learning_goal: z.string(),
+                market: z.string(),
+              })
+              .passthrough(),
           )
           .optional(),
         workAllocation: z
@@ -453,7 +455,10 @@ export const acquisitionApi = {
                   expectedInformationGain: z.string(),
                   reason: z.string(),
                   stopCondition: z.string(),
-                  budget: z.object({ maxRequests: z.number(), maxMinutes: z.number() }),
+                  budget: z.object({
+                    maxRequests: z.number(),
+                    maxMinutes: z.number(),
+                  }),
                   status: z.string(),
                 }),
               ),
@@ -462,32 +467,139 @@ export const acquisitionApi = {
           .optional(),
         conversationPolicy: z
           .object({
-            version: z.number(), cycle_id: z.string(), base_policy_version: z.string(),
-            base_policy_hash: z.string(), definition: z.record(z.string(), z.unknown()),
-            definition_hash: z.string(), approved_at: z.string(), executable: z.boolean(),
-            outreach_authorized: z.boolean(), account_admission_changed: z.boolean(),
+            version: z.number(),
+            cycle_id: z.string(),
+            base_policy_version: z.string(),
+            base_policy_hash: z.string(),
+            definition: z.record(z.string(), z.unknown()),
+            definition_hash: z.string(),
+            approved_at: z.string(),
+            executable: z.boolean(),
+            outreach_authorized: z.boolean(),
+            account_admission_changed: z.boolean(),
           })
           .nullable()
           .optional(),
         workExecution: z
           .array(
             z.object({
-              plan_id: z.string(), cycle_id: z.string(), status: z.string(), created_at: z.string(),
-              expires_at: z.string(), approved_at: z.string().nullable(), semantic_policy_version: z.number().nullable(),
-              items: z.array(z.object({
-                position: z.number(), candidateId: z.string().nullable(), workClass: z.string(), proposedDimension: z.string().nullable(),
-                selectedDimension: z.string().nullable(), companyValue: z.string().nullable(), jobValue: z.string().nullable(), socialValue: z.string().nullable(),
-                reason: z.string().nullable(), expectedInformationGain: z.string().nullable(), stopCondition: z.string().nullable(),
-                budget: z.object({ maxRequests: z.number(), maxMinutes: z.number() }).nullable(),
-                executionRequest: z.record(z.string(), z.unknown()).nullable(),
-                outcome: z.object({
-                  workItemId: z.string(), strictBefore: z.string(), worthinessBefore: z.string(), hypothesisBefore: z.string(), unknownBefore: z.string(),
-                  actualToolsSources: z.array(z.unknown()), actualRequests: z.number(), actualMinutes: z.number(), evidenceSummary: z.string(),
-                  falsifiers: z.string(), strictAfter: z.string(), worthinessAfter: z.string(), hypothesisChange: z.string(), unknownAfter: z.string(),
-                  nextAction: z.string(), selectedDimensionInformative: z.boolean(), changedDecision: z.boolean(), budgetJustified: z.boolean(),
-                  betterDimension: z.string().nullable(), enrichmentVsDiscovery: z.string(), remainingUnknownInternal: z.boolean(), recordedAt: z.string(),
-                }).nullable(),
-              }).passthrough()),
+              plan_id: z.string(),
+              cycle_id: z.string(),
+              status: z.string(),
+              created_at: z.string(),
+              expires_at: z.string(),
+              approved_at: z.string().nullable(),
+              semantic_policy_version: z.number().nullable(),
+              items: z.array(
+                z
+                  .object({
+                    position: z.number(),
+                    candidateId: z.string().nullable(),
+                    workClass: z.string(),
+                    proposedDimension: z.string().nullable(),
+                    selectedDimension: z.string().nullable(),
+                    companyValue: z.string().nullable(),
+                    jobValue: z.string().nullable(),
+                    socialValue: z.string().nullable(),
+                    reason: z.string().nullable(),
+                    expectedInformationGain: z.string().nullable(),
+                    stopCondition: z.string().nullable(),
+                    budget: z
+                      .object({
+                        maxRequests: z.number(),
+                        maxMinutes: z.number(),
+                      })
+                      .nullable(),
+                    executionRequest: z
+                      .record(z.string(), z.unknown())
+                      .nullable(),
+                    outcome: z
+                      .object({
+                        workItemId: z.string(),
+                        strictBefore: z.string(),
+                        worthinessBefore: z.string(),
+                        hypothesisBefore: z.string(),
+                        unknownBefore: z.string(),
+                        actualToolsSources: z.array(z.unknown()),
+                        actualRequests: z.number(),
+                        actualMinutes: z.number(),
+                        evidenceSummary: z.string(),
+                        falsifiers: z.string(),
+                        strictAfter: z.string(),
+                        worthinessAfter: z.string(),
+                        hypothesisChange: z.string(),
+                        unknownAfter: z.string(),
+                        nextAction: z.string(),
+                        selectedDimensionInformative: z.boolean(),
+                        changedDecision: z.boolean(),
+                        budgetJustified: z.boolean(),
+                        betterDimension: z.string().nullable(),
+                        enrichmentVsDiscovery: z.string(),
+                        remainingUnknownInternal: z.boolean(),
+                        recordedAt: z.string(),
+                      })
+                      .nullable(),
+                  })
+                  .passthrough(),
+              ),
+            }),
+          )
+          .optional(),
+        channelCapabilities: z
+          .array(
+            z.object({
+              version: z.number(),
+              channel: z.string(),
+              capabilities: z.record(z.string(), z.unknown()),
+              limitations: z.string(),
+              evidence: z.array(z.unknown()),
+              assessed_at: z.string(),
+            }),
+          )
+          .optional(),
+        learningWaves: z
+          .array(
+            z.object({
+              id: z.string(),
+              cycle_id: z.string(),
+              version: z.number(),
+              target_class: z.literal("EXPLORATORY_CANDIDATE_LEARNING"),
+              semantic_policy_version: z.number(),
+              status: z.string(),
+              outreach_authority: z.literal("NONE"),
+              executable: z.literal(false),
+              created_at: z.string(),
+              all_candidates: z.array(z.unknown()),
+              targets: z.array(
+                z.object({
+                  position: z.number(),
+                  candidateId: z.string(),
+                  company: z.string(),
+                  strictState: z.string(),
+                  conversationWorthiness: z.string(),
+                  evidenceSnapshot: z.record(z.string(), z.unknown()),
+                  why: z.string(),
+                  learningGoal: z.string(),
+                  hypothesis: z.string(),
+                  falsifier: z.string(),
+                  yesLearning: z.string(),
+                  noLearning: z.string(),
+                  noResponseLimits: z.string(),
+                  internalNeed: z.literal("UNKNOWN"),
+                  organizationIdentityEvidence: z.unknown(),
+                  person: z.record(z.string(), z.unknown()),
+                  contactPoints: z.array(z.unknown()),
+                  channels: z.array(z.unknown()),
+                  contactStrategy: z.record(z.string(), z.unknown()),
+                  messages: z.array(z.record(z.string(), z.unknown())),
+                  safety: z.record(z.string(), z.unknown()),
+                  attemptBudget: z.number(),
+                  authorizationState: z.literal("NOT_AUTHORIZED"),
+                  effectState: z.literal("NO_EFFECT_INTENT"),
+                  humanReviews: z.array(z.unknown()),
+                }),
+              ),
+              reviews: z.array(z.unknown()),
             }),
           )
           .optional(),
@@ -695,6 +807,37 @@ export const acquisitionApi = {
         method: "POST",
         headers: { "content-type": "application/json", "x-csrf-token": csrf },
         body: JSON.stringify({ commandId, request: body }),
+      },
+    ),
+  reviewExploratoryTarget: (
+    commandId: string,
+    waveId: string,
+    position: number,
+    decision: "APPROVE_FOR_FUTURE_7EB2" | "ADJUST" | "REMOVE" | "HOLD",
+    csrf: string,
+  ) =>
+    request(
+      "/commands/discovery",
+      z.object({
+        status: z.string(),
+        waveId: z.string(),
+        position: z.number(),
+        decision: z.string(),
+        effectCreated: z.literal(false),
+        wakeRequired: z.literal(false),
+      }),
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-csrf-token": csrf },
+        body: JSON.stringify({
+          commandId,
+          request: {
+            operation: "REVIEW_EXPLORATORY_TARGET",
+            waveId,
+            position,
+            decision,
+          },
+        }),
       },
     ),
   cycleReview: (cycle: string) =>

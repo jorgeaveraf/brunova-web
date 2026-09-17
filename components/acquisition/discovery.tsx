@@ -2,13 +2,16 @@
 import { useEffect, useState } from "react"
 import { acquisitionApi as api } from "@/lib/acquisition-api"
 import type { Locale } from "@/lib/i18n"
+import type { PortalSession } from "@/lib/acquisition-api"
 
 export function DiscoverySection({
   locale,
   cycleId,
+  session,
 }: {
   locale: Locale
   cycleId?: string
+  session?: PortalSession
 }) {
   const [stopReason, setStopReason] = useState<string | null>(null)
   const [reviewFailed, setReviewFailed] = useState(false)
@@ -33,6 +36,8 @@ export function DiscoverySection({
       ReturnType<typeof api.discovery>
     > | null>(null),
     [failed, setFailed] = useState(false)
+  const [reviewing, setReviewing] = useState<string | null>(null),
+    [reviewNotice, setReviewNotice] = useState<string | null>(null)
   useEffect(() => {
     let live = true
     api
@@ -72,7 +77,8 @@ export function DiscoverySection({
   const plans = (data?.workAllocation ?? []).filter(
     (plan) => !cycleId || plan.cycle_id === cycleId,
   )
-  const currentPlan = plans.find((plan) => plan.status === "AWAITING_MANAGEMENT") ?? plans[0]
+  const currentPlan =
+    plans.find((plan) => plan.status === "AWAITING_MANAGEMENT") ?? plans[0]
   const currentExecution = (data?.workExecution ?? []).find(
     (execution) => execution.plan_id === currentPlan?.id,
   )
@@ -82,6 +88,40 @@ export function DiscoverySection({
   const authenticated = (data?.authenticatedResearch ?? []).filter(
     (run) => !cycleId || run.cycle_id === cycleId,
   )[0]
+  const learningWave = (data?.learningWaves ?? []).find(
+    (w) => !cycleId || w.cycle_id === cycleId,
+  )
+  const reviewTarget = async (
+    position: number,
+    decision: "APPROVE_FOR_FUTURE_7EB2" | "ADJUST" | "REMOVE" | "HOLD",
+  ) => {
+    if (!learningWave || !session) return
+    const key = `${position}:${decision}`
+    setReviewing(key)
+    setReviewNotice(null)
+    try {
+      await api.reviewExploratoryTarget(
+        `wave-human-v${learningWave.version}-${position}-${decision.toLowerCase()}`,
+        learningWave.id,
+        position,
+        decision,
+        session.csrfToken,
+      )
+      setReviewNotice(
+        es
+          ? "Decisión guardada. No se ejecutó ningún contacto."
+          : "Decision saved. No contact was executed.",
+      )
+    } catch {
+      setReviewNotice(
+        es
+          ? "No se pudo guardar la decisión."
+          : "The decision could not be saved.",
+      )
+    } finally {
+      setReviewing(null)
+    }
+  }
   return (
     <section
       className="acq-panel"
@@ -131,8 +171,14 @@ export function DiscoverySection({
       {data && (
         <>
           {currentPlan && (
-            <section aria-label={es ? "Trabajo de hoy y siguiente" : "Today and next work"}>
-              <h3>{es ? "Trabajo de hoy y siguiente" : "Today and next work"}</h3>
+            <section
+              aria-label={
+                es ? "Trabajo de hoy y siguiente" : "Today and next work"
+              }
+            >
+              <h3>
+                {es ? "Trabajo de hoy y siguiente" : "Today and next work"}
+              </h3>
               <p>
                 <strong>
                   {currentPlan.status === "AWAITING_MANAGEMENT"
@@ -147,9 +193,9 @@ export function DiscoverySection({
                         ? es
                           ? "Ejecutado y reconsiderado"
                           : "Executed and reconsidered"
-                    : es
-                      ? "Plan expirado o reemplazado"
-                      : "Plan expired or superseded"}
+                        : es
+                          ? "Plan expirado o reemplazado"
+                          : "Plan expired or superseded"}
                 </strong>{" "}
                 · {es ? "vence" : "expires"}: {date(currentPlan.expires_at)}
               </p>
@@ -161,25 +207,78 @@ export function DiscoverySection({
               </p>
               <ol>
                 {currentPlan.items.map((item) => {
-                  const execution = currentExecution?.items.find((value) => value.position === item.position)
-                  return <li key={`${currentPlan.id}-${item.position}`}>
-                    <h4>{item.workClass.replaceAll("_", " ")}</h4>
-                    <p>
-                      {es ? "Dimensión elegida" : "Selected dimension"}: {execution?.selectedDimension ?? item.dimension ?? "—"} · {es ? "objetivo" : "target"}: {item.candidateId ?? item.accountId ?? "—"}
-                    </p>
-                    <p><strong>{es ? "Por qué ahora:" : "Why now:"}</strong> {execution?.reason ?? item.reason}</p>
-                    <p><strong>{es ? "Qué podría cambiar la decisión:" : "What could change the decision:"}</strong> {execution?.expectedInformationGain ?? item.expectedInformationGain}</p>
-                    <p><strong>{es ? "Criterio de agotamiento:" : "Exhaustion condition:"}</strong> {execution?.stopCondition ?? item.stopCondition}</p>
-                    <p className="acq-muted">
-                      {es ? "Presupuesto" : "Budget"}: {execution?.budget?.maxRequests ?? item.budget.maxRequests} {es ? "lecturas" : "reads"} / {execution?.budget?.maxMinutes ?? item.budget.maxMinutes} min
-                    </p>
-                    {execution?.outcome && <>
-                      <p><strong>{es ? "Aprendimos:" : "Learned:"}</strong> {execution.outcome.evidenceSummary}</p>
-                      <p><strong>{es ? "Cambio:" : "Change:"}</strong> {execution.outcome.worthinessBefore} → {execution.outcome.worthinessAfter} · {execution.outcome.hypothesisChange}</p>
-                      <p><strong>{es ? "Sigue desconocido:" : "Still unknown:"}</strong> {execution.outcome.unknownAfter}</p>
-                      <p><strong>{es ? "Siguiente acción legítima:" : "Next legitimate action:"}</strong> {execution.outcome.nextAction}</p>
-                    </>}
-                  </li>
+                  const execution = currentExecution?.items.find(
+                    (value) => value.position === item.position,
+                  )
+                  return (
+                    <li key={`${currentPlan.id}-${item.position}`}>
+                      <h4>{item.workClass.replaceAll("_", " ")}</h4>
+                      <p>
+                        {es ? "Dimensión elegida" : "Selected dimension"}:{" "}
+                        {execution?.selectedDimension ?? item.dimension ?? "—"}{" "}
+                        · {es ? "objetivo" : "target"}:{" "}
+                        {item.candidateId ?? item.accountId ?? "—"}
+                      </p>
+                      <p>
+                        <strong>{es ? "Por qué ahora:" : "Why now:"}</strong>{" "}
+                        {execution?.reason ?? item.reason}
+                      </p>
+                      <p>
+                        <strong>
+                          {es
+                            ? "Qué podría cambiar la decisión:"
+                            : "What could change the decision:"}
+                        </strong>{" "}
+                        {execution?.expectedInformationGain ??
+                          item.expectedInformationGain}
+                      </p>
+                      <p>
+                        <strong>
+                          {es
+                            ? "Criterio de agotamiento:"
+                            : "Exhaustion condition:"}
+                        </strong>{" "}
+                        {execution?.stopCondition ?? item.stopCondition}
+                      </p>
+                      <p className="acq-muted">
+                        {es ? "Presupuesto" : "Budget"}:{" "}
+                        {execution?.budget?.maxRequests ??
+                          item.budget.maxRequests}{" "}
+                        {es ? "lecturas" : "reads"} /{" "}
+                        {execution?.budget?.maxMinutes ??
+                          item.budget.maxMinutes}{" "}
+                        min
+                      </p>
+                      {execution?.outcome && (
+                        <>
+                          <p>
+                            <strong>{es ? "Aprendimos:" : "Learned:"}</strong>{" "}
+                            {execution.outcome.evidenceSummary}
+                          </p>
+                          <p>
+                            <strong>{es ? "Cambio:" : "Change:"}</strong>{" "}
+                            {execution.outcome.worthinessBefore} →{" "}
+                            {execution.outcome.worthinessAfter} ·{" "}
+                            {execution.outcome.hypothesisChange}
+                          </p>
+                          <p>
+                            <strong>
+                              {es ? "Sigue desconocido:" : "Still unknown:"}
+                            </strong>{" "}
+                            {execution.outcome.unknownAfter}
+                          </p>
+                          <p>
+                            <strong>
+                              {es
+                                ? "Siguiente acción legítima:"
+                                : "Next legitimate action:"}
+                            </strong>{" "}
+                            {execution.outcome.nextAction}
+                          </p>
+                        </>
+                      )}
+                    </li>
+                  )
                 })}
               </ol>
             </section>
@@ -191,9 +290,155 @@ export function DiscoverySection({
                 : `Conversation-worthiness v${data.conversationPolicy.version} is integrated beside Cycle v${data.conversationPolicy.base_policy_version}; it changes neither admission nor outreach authority.`}
             </p>
           )}
+          {learningWave && (
+            <section
+              aria-label={
+                es ? "Ola exploratoria propuesta" : "Proposed exploratory wave"
+              }
+            >
+              <h3>
+                {es
+                  ? "Primera ola de aprendizaje propuesta"
+                  : "Proposed first learning wave"}
+              </h3>
+              <p>
+                <strong>
+                  {es
+                    ? "Sólo diseño · sin efectos"
+                    : "Design only · no effects"}
+                </strong>{" "}
+                · {learningWave.targets.length}{" "}
+                {es ? "conversaciones propuestas" : "proposed conversations"} ·{" "}
+                {es ? "autoridad" : "authority"}: NONE
+              </p>
+              <p className="acq-muted">
+                {es
+                  ? "Una CandidateOrganization no es un Account. Los canales se muestran por disponibilidad y justificación; ninguno queda autorizado por aparecer aquí."
+                  : "A CandidateOrganization is not an Account. Channels are shown by availability and justification; appearing here authorizes none of them."}
+              </p>
+              {learningWave.targets.map((target) => {
+                const person = target.person as Record<string, unknown>,
+                  strategy = target.contactStrategy as Record<string, unknown>
+                const first = (strategy.attempt1 ?? {}) as Record<
+                  string,
+                  unknown
+                >
+                return (
+                  <article key={target.candidateId} className="acq-panel">
+                    <h4>{target.company}</h4>
+                    <p>
+                      <strong>{es ? "QUIÉN" : "WHO"}:</strong>{" "}
+                      {String(
+                        person.name ??
+                          (es
+                            ? "Persona exacta pendiente"
+                            : "Exact Person pending"),
+                      )}{" "}
+                      · {String(person.role ?? "—")}
+                    </p>
+                    <p>
+                      <strong>{es ? "POR QUÉ" : "WHY THEM"}:</strong>{" "}
+                      {target.why}
+                    </p>
+                    <p>
+                      <strong>
+                        {es ? "QUÉ QUEREMOS APRENDER" : "WHAT WE WANT TO LEARN"}
+                        :
+                      </strong>{" "}
+                      {target.learningGoal}
+                    </p>
+                    <p>
+                      <strong>{es ? "CANAL" : "CHANNEL"}:</strong>{" "}
+                      {String(first.channel ?? "HOLD")} ·{" "}
+                      {String(
+                        first.why ??
+                          (es
+                            ? "Sin ContactPoint ejecutable"
+                            : "No executable ContactPoint"),
+                      )}
+                    </p>
+                    <p>
+                      <strong>{es ? "MENSAJE" : "MESSAGE"}:</strong>{" "}
+                      {String(target.messages[0]?.text ?? "—")}
+                    </p>
+                    <p>
+                      <strong>
+                        {es ? "SI NO RESPONDE" : "AFTER NO RESPONSE"}:
+                      </strong>{" "}
+                      {target.noResponseLimits}
+                    </p>
+                    <p>
+                      <strong>{es ? "LÍMITE" : "LIMIT"}:</strong>{" "}
+                      {target.attemptBudget}{" "}
+                      {es
+                        ? "intentos máximos entre todos los canales; cada intento posterior requiere reconsideración."
+                        : "maximum attempts across all channels; every later attempt requires reconsideration."}
+                    </p>
+                    <p>
+                      <strong>
+                        {es ? "RIESGOS / INCÓGNITAS" : "RISKS / UNKNOWNS"}:
+                      </strong>{" "}
+                      {String(
+                        (target.safety as Record<string, unknown>).unknowns ??
+                          target.falsifier,
+                      )}
+                    </p>
+                    <p className="acq-muted">
+                      {target.strictState} · {target.conversationWorthiness} ·
+                      internal need UNKNOWN · {target.authorizationState}
+                    </p>
+                    {session && (
+                      <div className="acq-actions">
+                        <button
+                          disabled={!!reviewing}
+                          onClick={() =>
+                            reviewTarget(
+                              target.position,
+                              "APPROVE_FOR_FUTURE_7EB2",
+                            )
+                          }
+                        >
+                          {es
+                            ? "Aprobar para futura 7E-B.2"
+                            : "Approve for future 7E-B.2"}
+                        </button>
+                        <button
+                          disabled={!!reviewing}
+                          onClick={() =>
+                            reviewTarget(target.position, "ADJUST")
+                          }
+                        >
+                          {es ? "Solicitar ajuste" : "Request adjustment"}
+                        </button>
+                        <button
+                          disabled={!!reviewing}
+                          onClick={() => reviewTarget(target.position, "HOLD")}
+                        >
+                          {es ? "Mantener en espera" : "Hold"}
+                        </button>
+                        <button
+                          disabled={!!reviewing}
+                          onClick={() =>
+                            reviewTarget(target.position, "REMOVE")
+                          }
+                        >
+                          {es ? "Quitar" : "Remove"}
+                        </button>
+                      </div>
+                    )}
+                  </article>
+                )
+              })}
+              <p role="status">{reviewNotice}</p>
+            </section>
+          )}
           {calibration.length > 0 && (
             <details>
-              <summary>{es ? "Calibración comercial de candidatas" : "Candidate commercial calibration"}</summary>
+              <summary>
+                {es
+                  ? "Calibración comercial de candidatas"
+                  : "Candidate commercial calibration"}
+              </summary>
               <p>
                 {es
                   ? "El estado estricto del Engine y el valor de conversar se muestran por separado. Una conversación serviría para aprender; no confirma necesidad interna ni autoriza outreach."
@@ -202,11 +447,23 @@ export function DiscoverySection({
               <ul>
                 {calibration.map((review) => (
                   <li key={`${review.calibration_id}-${review.candidate_id}`}>
-                    <strong>{review.name ?? review.candidate_id}</strong> · {review.market} · {review.conversation_worthiness}
-                    <p>{review.current_engine_state} · {review.strict_result} · internal need: UNKNOWN</p>
+                    <strong>{review.name ?? review.candidate_id}</strong> ·{" "}
+                    {review.market} · {review.conversation_worthiness}
+                    <p>
+                      {review.current_engine_state} · {review.strict_result} ·
+                      internal need: UNKNOWN
+                    </p>
                     <p>{review.reason}</p>
-                    <p><strong>{es ? "Falsificador:" : "Falsifier:"}</strong> {review.material_falsifier}</p>
-                    <p><strong>{es ? "Aprendizaje buscado:" : "Learning goal:"}</strong> {review.outreach_learning_goal}</p>
+                    <p>
+                      <strong>{es ? "Falsificador:" : "Falsifier:"}</strong>{" "}
+                      {review.material_falsifier}
+                    </p>
+                    <p>
+                      <strong>
+                        {es ? "Aprendizaje buscado:" : "Learning goal:"}
+                      </strong>{" "}
+                      {review.outreach_learning_goal}
+                    </p>
                   </li>
                 ))}
               </ul>
@@ -214,8 +471,15 @@ export function DiscoverySection({
           )}
           {authenticated && (
             <details>
-              <summary>{es ? "Prueba de investigación autenticada" : "Authenticated research proof"}</summary>
-              <p>{authenticated.surface} · {authenticated.profile} · {authenticated.status}</p>
+              <summary>
+                {es
+                  ? "Prueba de investigación autenticada"
+                  : "Authenticated research proof"}
+              </summary>
+              <p>
+                {authenticated.surface} · {authenticated.profile} ·{" "}
+                {authenticated.status}
+              </p>
               <p className="acq-muted">
                 {es
                   ? "Prueba de capacidad de lectura solamente; no es evidencia sobre una candidata y no realizó acciones sociales."
@@ -269,11 +533,31 @@ export function DiscoverySection({
                           : es
                             ? "Candidata conservada"
                             : "Retained candidate"}{" "}
-                        · {es ? "Mercado de la búsqueda" : "Search market"}: {c.market_context ?? "—"} · {c.source}
-                        {c.found_because && <p>{es ? "Señal de búsqueda, aún por corroborar: " : "Search lead, still requiring corroboration: "}{c.found_because}</p>}
-                        {c.investigation_summary && <p>{c.investigation_summary}</p>}
-                        <p>{c.reviewed_next_action ?? (es ? "Siguiente paso: revisión acotada de identidad y señal; no se ha autorizado outreach." : "Next: bounded identity and signal review; outreach is not authorized.")}</p>
-                        <p className="acq-muted">{c.research_outcome ?? (es ? "Sin resultado de investigación de Account" : "No Account research outcome")}</p>
+                        · {es ? "Mercado de la búsqueda" : "Search market"}:{" "}
+                        {c.market_context ?? "—"} · {c.source}
+                        {c.found_because && (
+                          <p>
+                            {es
+                              ? "Señal de búsqueda, aún por corroborar: "
+                              : "Search lead, still requiring corroboration: "}
+                            {c.found_because}
+                          </p>
+                        )}
+                        {c.investigation_summary && (
+                          <p>{c.investigation_summary}</p>
+                        )}
+                        <p>
+                          {c.reviewed_next_action ??
+                            (es
+                              ? "Siguiente paso: revisión acotada de identidad y señal; no se ha autorizado outreach."
+                              : "Next: bounded identity and signal review; outreach is not authorized.")}
+                        </p>
+                        <p className="acq-muted">
+                          {c.research_outcome ??
+                            (es
+                              ? "Sin resultado de investigación de Account"
+                              : "No Account research outcome")}
+                        </p>
                       </li>
                     ))}
                 </ul>
@@ -330,7 +614,8 @@ export function DiscoverySection({
                       (es
                         ? "Dominio no confirmado"
                         : "Domain unconfirmed")}{" "}
-                    · {es ? "Mercados de búsqueda" : "Search markets"}: {(c.market_contexts ?? []).join(" / ")} ·{" "}
+                    · {es ? "Mercados de búsqueda" : "Search markets"}:{" "}
+                    {(c.market_contexts ?? []).join(" / ")} ·{" "}
                     {identity(c.identity_state)}
                   </p>
                   <p>
@@ -593,10 +878,25 @@ export function DiscoverySection({
                   <p>{p.coverage_gap}</p>
                   {p.management_direction && (
                     <details>
-                      <summary>{es ? "Dirección y autoridad" : "Direction and authority"}</summary>
+                      <summary>
+                        {es
+                          ? "Dirección y autoridad"
+                          : "Direction and authority"}
+                      </summary>
                       <p>{p.management_direction}</p>
-                      <p>{es ? "Dirección solicitada por: " : "Direction requested by: "}{p.direction_actor_type === "PANCRACIO_GATEWAY" ? "Pancracio" : "Management"}</p>
-                      <p>{es ? "Ejecución bajo el objetivo permanente autorizado del Cycle; no implica que el Human haya redactado esta dirección." : "Execution uses the authorized standing Cycle objective; this does not imply the Human authored this direction."}</p>
+                      <p>
+                        {es
+                          ? "Dirección solicitada por: "
+                          : "Direction requested by: "}
+                        {p.direction_actor_type === "PANCRACIO_GATEWAY"
+                          ? "Pancracio"
+                          : "Management"}
+                      </p>
+                      <p>
+                        {es
+                          ? "Ejecución bajo el objetivo permanente autorizado del Cycle; no implica que el Human haya redactado esta dirección."
+                          : "Execution uses the authorized standing Cycle objective; this does not imply the Human authored this direction."}
+                      </p>
                     </details>
                   )}
                   <p className="acq-muted">{date(p.created_at)}</p>

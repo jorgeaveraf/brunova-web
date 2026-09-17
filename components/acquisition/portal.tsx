@@ -422,7 +422,12 @@ export function AcquisitionPortal({
         />
       )}
       {tab === "Discovery" && (
-        <DiscoverySection key={cycleId} locale={locale} cycleId={cycleId} />
+        <DiscoverySection
+          key={cycleId}
+          locale={locale}
+          cycleId={cycleId}
+          session={session}
+        />
       )}
       {tab === "Work / Health" && (
         <EngineActivity key={projectionRevision} locale={locale} />
