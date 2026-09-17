@@ -93,7 +93,7 @@ export function DiscoverySection({
   )
   const scaniaEffect = (data?.firstExploratoryEffect ?? []).find(
     (effect) => effect.company === "Scania México",
-  )
+  ) ?? learningWave?.first_effect
   const reviewTarget = async (
     position: number,
     decision: "APPROVE_FOR_FUTURE_7EB2" | "ADJUST" | "REMOVE" | "HOLD",
