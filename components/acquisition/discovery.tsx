@@ -91,9 +91,23 @@ export function DiscoverySection({
   const learningWave = (data?.learningWaves ?? []).find(
     (w) => !cycleId || w.cycle_id === cycleId,
   )
-  const scaniaEffect = (data?.firstExploratoryEffect ?? []).find(
-    (effect) => effect.company === "Scania México",
-  ) ?? learningWave?.first_effect
+  const scaniaEffect =
+    (data?.firstExploratoryEffect ?? []).find(
+      (effect) => effect.company === "Scania México",
+    ) ?? learningWave?.first_effect
+  const embeddedPostEffect = learningWave?.post_effect_reconciliation as
+    | {
+        scania_message_learning?: Record<string, unknown> | null
+        operating_model?: Record<string, unknown> | null
+      }
+    | null
+    | undefined
+  const postEffect =
+    (data?.postEffectReconciliation ?? []).find(
+      (item) => !cycleId || item.cycle_id === cycleId,
+    ) ?? embeddedPostEffect
+  const scaniaLearning = postEffect?.scania_message_learning
+  const operatingModel = postEffect?.operating_model
   const reviewTarget = async (
     position: number,
     decision: "APPROVE_FOR_FUTURE_7EB2" | "ADJUST" | "REMOVE" | "HOLD",
@@ -311,8 +325,8 @@ export function DiscoverySection({
                       ? `7E-B.2 · intento 1 ${scaniaEffect.effect_status}`
                       : `7E-B.2 · Attempt 1 ${scaniaEffect.effect_status}`
                     : es
-                    ? "Sólo diseño · sin efectos"
-                    : "Design only · no effects"}
+                      ? "Sólo diseño · sin efectos"
+                      : "Design only · no effects"}
                 </strong>{" "}
                 · {learningWave.targets.length}{" "}
                 {es ? "conversaciones propuestas" : "proposed conversations"} ·{" "}
@@ -321,14 +335,125 @@ export function DiscoverySection({
               {scaniaEffect?.effect_status && (
                 <article className="acq-panel" aria-label="Scania Attempt 1">
                   <h4>Scania México · Attempt 1</h4>
-                  <p><strong>{es ? "Quién" : "Who"}:</strong> Alejandro Mondragón · President / CEO · routing Person</p>
-                  <p><strong>{es ? "Canal" : "Channel"}:</strong> Email</p>
-                  <p><strong>{es ? "Estado" : "State"}:</strong> {scaniaEffect.effect_status} · {scaniaEffect.contact_strategy_state ?? "—"}</p>
-                  <p><strong>{es ? "Mensaje exacto" : "Exact message"}:</strong> {scaniaEffect.subject}<br />{scaniaEffect.text}</p>
-                  <p><strong>{es ? "Enviado" : "Sent"}:</strong> {date(scaniaEffect.attempted_at)}</p>
-                  <p><strong>{es ? "Próxima revisión elegible" : "Next review eligibility"}:</strong> {date(scaniaEffect.next_review_at)}</p>
-                  <p><strong>{es ? "Follow-up autorizado" : "Authorized follow-up"}:</strong> {scaniaEffect.follow_up_authority ?? "NONE"}</p>
-                  <p className="acq-muted">{es ? "Esperar a Scania no detiene al Engine; siete días sólo habilitan reconsideración." : "Waiting for Scania does not stop the Engine; seven days only enables reconsideration."}</p>
+                  <p>
+                    <strong>{es ? "Quién" : "Who"}:</strong> Alejandro Mondragón
+                    · President / CEO · routing Person
+                  </p>
+                  <p>
+                    <strong>{es ? "Canal" : "Channel"}:</strong> Email
+                  </p>
+                  <p>
+                    <strong>{es ? "Estado" : "State"}:</strong>{" "}
+                    {scaniaEffect.effect_status} ·{" "}
+                    {scaniaEffect.contact_strategy_state ?? "—"}
+                  </p>
+                  <p>
+                    <strong>{es ? "Mensaje exacto" : "Exact message"}:</strong>{" "}
+                    {scaniaEffect.subject}
+                    <br />
+                    {scaniaEffect.text}
+                  </p>
+                  <p>
+                    <strong>{es ? "Enviado" : "Sent"}:</strong>{" "}
+                    {date(scaniaEffect.attempted_at)}
+                  </p>
+                  <p>
+                    <strong>
+                      {es
+                        ? "Próxima revisión elegible"
+                        : "Next review eligibility"}
+                      :
+                    </strong>{" "}
+                    {date(scaniaEffect.next_review_at)}
+                  </p>
+                  <p>
+                    <strong>
+                      {es ? "Follow-up autorizado" : "Authorized follow-up"}:
+                    </strong>{" "}
+                    {scaniaEffect.follow_up_authority ?? "NONE"}
+                  </p>
+                  <p className="acq-muted">
+                    {es
+                      ? "Esperar a Scania no detiene al Engine; siete días sólo habilitan reconsideración."
+                      : "Waiting for Scania does not stop the Engine; seven days only enables reconsideration."}
+                  </p>
+                </article>
+              )}
+              {scaniaLearning && (
+                <article
+                  className="acq-panel"
+                  aria-label={
+                    es
+                      ? "Aprendizaje posterior al primer mensaje"
+                      : "Post-first-message learning"
+                  }
+                >
+                  <h4>
+                    {es
+                      ? "Qué aprendimos antes de una respuesta"
+                      : "What we learned before a response"}
+                  </h4>
+                  <p>
+                    <strong>
+                      {es ? "Seguridad epistémica" : "Epistemic quality"}:
+                    </strong>{" "}
+                    {String(scaniaLearning.epistemic_quality)}
+                  </p>
+                  <p>
+                    <strong>
+                      {es
+                        ? "Especificidad del contexto"
+                        : "Context specificity"}
+                      :
+                    </strong>{" "}
+                    {String(scaniaLearning.context_specificity)}
+                  </p>
+                  <p>
+                    <strong>
+                      {es ? "Claims sin respaldo" : "Unsupported claims"}:
+                    </strong>{" "}
+                    {String(scaniaLearning.unsupported_claims)}
+                  </p>
+                  <p>
+                    <strong>
+                      {es
+                        ? "Comprensión del valor"
+                        : "Recipient value comprehension"}
+                      :
+                    </strong>{" "}
+                    {String(scaniaLearning.recipient_value_comprehension)}
+                  </p>
+                  <p>{String(scaniaLearning.learning)}</p>
+                  <p className="acq-muted">
+                    {es
+                      ? "El mensaje v3 permanece inmutable y válido bajo la política que lo autorizó. Este aprendizaje gobierna mensajes futuros."
+                      : "Message v3 remains immutable and valid under the policy that authorized it. This learning governs future messages."}
+                  </p>
+                </article>
+              )}
+              {operatingModel && (
+                <article
+                  className="acq-panel"
+                  aria-label={
+                    es ? "Capacidad diaria futura" : "Future daily capacity"
+                  }
+                >
+                  <h4>
+                    {es
+                      ? "17:00–19:00: capacidad, no cuota"
+                      : "17:00–19:00: capacity, not a quota"}
+                  </h4>
+                  <p>{String(operatingModel.allocator_question)}</p>
+                  <p>
+                    {es
+                      ? "Scania puede esperar mientras el Engine asigna capacidad a otro trabajo autorizado. Discovery repone inventario cuando el trabajo downstream de mayor valor ya no consume la capacidad disponible."
+                      : "Scania can wait while the Engine allocates capacity to other authorized work. Discovery replenishes inventory when higher-value downstream work no longer uses available capacity."}
+                  </p>
+                  <p className="acq-muted">
+                    {es
+                      ? "7E-C.1 sigue NOT STARTED. Dos horas disponibles no significan buscar N empresas ni mantener la Mac ocupada."
+                      : "7E-C.1 remains NOT STARTED. Two available hours do not mean finding N companies or keeping the Mac busy."}
+                  </p>
                 </article>
               )}
               <p className="acq-muted">

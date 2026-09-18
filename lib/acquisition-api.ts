@@ -586,12 +586,44 @@ export const acquisitionApi = {
         firstExploratoryEffect: z
           .array(
             z.object({
-              company: z.string(), decision: z.string(), message_version: z.number().nullable(),
-              subject: z.string().nullable(), text: z.string().nullable(), message_hash: z.string().nullable(),
-              authorization_id: z.string().nullable(), intent_id: z.string().nullable(), work_item_id: z.string().nullable(),
-              effect_status: z.string().nullable(), attempt_id: z.string().nullable(), attempted_at: z.string().nullable(),
-              provider_observation: z.unknown().nullable(), contact_strategy_state: z.string().nullable(),
-              next_review_at: z.string().nullable(), follow_up_authority: z.string().nullable(), logical_attempts: z.number().nullable(),
+              company: z.string(),
+              decision: z.string(),
+              message_version: z.number().nullable(),
+              subject: z.string().nullable(),
+              text: z.string().nullable(),
+              message_hash: z.string().nullable(),
+              authorization_id: z.string().nullable(),
+              intent_id: z.string().nullable(),
+              work_item_id: z.string().nullable(),
+              effect_status: z.string().nullable(),
+              attempt_id: z.string().nullable(),
+              attempted_at: z.string().nullable(),
+              provider_observation: z.unknown().nullable(),
+              contact_strategy_state: z.string().nullable(),
+              next_review_at: z.string().nullable(),
+              follow_up_authority: z.string().nullable(),
+              logical_attempts: z.number().nullable(),
+            }),
+          )
+          .optional(),
+        postEffectReconciliation: z
+          .array(
+            z.object({
+              cycle_id: z.string(),
+              scania_message_learning: z
+                .record(z.string(), z.unknown())
+                .nullable(),
+              capability_claim_map: z
+                .record(z.string(), z.unknown())
+                .nullable(),
+              message_quality_policy: z
+                .record(z.string(), z.unknown())
+                .nullable(),
+              n8n_expected_contracts: z.array(z.unknown()).nullable(),
+              n8n_health: z.array(z.unknown()),
+              operating_model: z.record(z.string(), z.unknown()).nullable(),
+              operational_learnings: z.array(z.unknown()).nullable(),
+              roadmap: z.record(z.string(), z.unknown()).nullable(),
             }),
           )
           .optional(),
@@ -638,12 +670,32 @@ export const acquisitionApi = {
                 }),
               ),
               reviews: z.array(z.unknown()),
-              first_effect: z.object({
-                company: z.string(), decision: z.string(), message_version: z.number().nullable(), subject: z.string().nullable(), text: z.string().nullable(),
-                message_hash: z.string().nullable(), authorization_id: z.string().nullable(), intent_id: z.string().nullable(), work_item_id: z.string().nullable(),
-                effect_status: z.string().nullable(), attempt_id: z.string().nullable(), attempted_at: z.string().nullable(), provider_observation: z.unknown().nullable(),
-                contact_strategy_state: z.string().nullable(), next_review_at: z.string().nullable(), follow_up_authority: z.string().nullable(), logical_attempts: z.number().nullable(),
-              }).nullable().optional(),
+              first_effect: z
+                .object({
+                  company: z.string(),
+                  decision: z.string(),
+                  message_version: z.number().nullable(),
+                  subject: z.string().nullable(),
+                  text: z.string().nullable(),
+                  message_hash: z.string().nullable(),
+                  authorization_id: z.string().nullable(),
+                  intent_id: z.string().nullable(),
+                  work_item_id: z.string().nullable(),
+                  effect_status: z.string().nullable(),
+                  attempt_id: z.string().nullable(),
+                  attempted_at: z.string().nullable(),
+                  provider_observation: z.unknown().nullable(),
+                  contact_strategy_state: z.string().nullable(),
+                  next_review_at: z.string().nullable(),
+                  follow_up_authority: z.string().nullable(),
+                  logical_attempts: z.number().nullable(),
+                })
+                .nullable()
+                .optional(),
+              post_effect_reconciliation: z
+                .record(z.string(), z.unknown())
+                .nullable()
+                .optional(),
             }),
           )
           .optional(),
