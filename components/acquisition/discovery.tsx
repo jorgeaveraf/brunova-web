@@ -108,6 +108,13 @@ export function DiscoverySection({
     ) ?? embeddedPostEffect
   const scaniaLearning = postEffect?.scania_message_learning
   const operatingModel = postEffect?.operating_model
+  const routineSessions = (data?.routineOperatingSessions ?? []).filter(
+    (item) => !cycleId || item.cycle_id === cycleId,
+  )
+  const routineSession = routineSessions[0]
+  const routineSources = (data?.routineSourceEconomics ?? []).filter(
+    (item) => item.session_id === routineSession?.id,
+  )
   const reviewTarget = async (
     position: number,
     decision: "APPROVE_FOR_FUTURE_7EB2" | "ADJUST" | "REMOVE" | "HOLD",
@@ -187,6 +194,70 @@ export function DiscoverySection({
       </p>
       {data && (
         <>
+          {routineSession && (
+            <section aria-label={es ? "Operación de hoy" : "Today's operation"}>
+              <h3>{es ? "Operación de hoy" : "Today's operation"}</h3>
+              <p>
+                <strong>{routineSession.status.replaceAll("_", " ")}</strong>{" "}
+                · 17:00–19:00 America/Mexico_City ·{" "}
+                {es ? "efectos a prospectos" : "prospect effects"}: 0
+              </p>
+              <p className="acq-muted">
+                {es
+                  ? "La sesión asigna capacidad unidad por unidad: planear, ejecutar, observar y volver a decidir. La recurrencia queda detenida para revisión Humana después de este primer día."
+                  : "The session allocates capacity one unit at a time: plan, execute, observe, and decide again. Recurrence is held for Human review after this first day."}
+              </p>
+              <dl>
+                <dt>{es ? "Capacidad y presupuestos" : "Capacity and budgets"}</dt>
+                <dd>
+                  {String(routineSession.capacity.minutesUsed ?? 0)}/
+                  {String(routineSession.capacity.timeCapacityMinutes ?? 0)} min ·{" "}
+                  {String(routineSession.capacity.unitsUsed ?? 0)}/
+                  {String(routineSession.capacity.workUnitBudget ?? 0)} {es ? "unidades" : "units"} ·{" "}
+                  {String(routineSession.capacity.requestsUsed ?? 0)}/
+                  {String(routineSession.capacity.sourceRequestBudget ?? 0)} {es ? "lecturas" : "reads"}
+                </dd>
+                <dt>{es ? "Recurrencia" : "Recurrence"}</dt>
+                <dd>{routineSession.recurrence_state.replaceAll("_", " ")}</dd>
+                {routineSession.early_stop_reason && (
+                  <>
+                    <dt>{es ? "Cierre anticipado" : "Early close"}</dt>
+                    <dd>{routineSession.early_stop_reason.replaceAll("_", " ")}</dd>
+                  </>
+                )}
+              </dl>
+              <ol>
+                {routineSession.decisions.map((decision, index) => {
+                  const outcome = decision.outcome as Record<string, unknown> | null
+                  return (
+                    <li key={`${routineSession.local_date}-${index}`}>
+                      <h4>
+                        {String(decision.workClass ?? decision.decision).replaceAll("_", " ")}
+                        {decision.candidate ? ` · ${String(decision.candidate)}` : ""}
+                      </h4>
+                      <p><strong>{es ? "Por qué:" : "Why:"}</strong> {String(decision.why)}</p>
+                      <p><strong>{es ? "Resultado esperado:" : "Expected result:"}</strong> {String(decision.expectedResult)}</p>
+                      {outcome && <p><strong>{es ? "Aprendizaje real:" : "Actual learning:"}</strong> {String(outcome.actual_learning)} · {String(outcome.quality)}</p>}
+                    </li>
+                  )
+                })}
+              </ol>
+              {routineSources.length > 0 && (
+                <p className="acq-muted">
+                  {es ? "Fuentes usadas:" : "Sources used:"}{" "}
+                  {routineSources.map((source) => `${String(source.source)} (${String(source.requests)} ${es ? "lecturas" : "reads"})`).join(" · ")}
+                </p>
+              )}
+              {routineSession.report && (
+                <article className="acq-panel">
+                  <h4>{es ? "Reporte diario" : "Daily report"}</h4>
+                  <p>{String(routineSession.report.summary)}</p>
+                  <p><strong>{es ? "Aprendizaje:" : "Learning:"}</strong> {String(routineSession.report.learning)}</p>
+                  <p><strong>{es ? "Siguiente capacidad:" : "Next capacity:"}</strong> {String(routineSession.report.nextCapacity)}</p>
+                </article>
+              )}
+            </section>
+          )}
           {currentPlan && (
             <section
               aria-label={
@@ -219,8 +290,8 @@ export function DiscoverySection({
               <p>{currentPlan.rationale}</p>
               <p className="acq-muted">
                 {es
-                  ? "Discovery amplio permanece pausado porque ya existe inventario por resolver. Compañía, empleo y social son dimensiones de evidencia, no puntos que se suman. Ningún elemento concede ejecución autónoma."
-                  : "Broad Discovery remains paused because existing inventory still has resolvable uncertainty. Company, Job and Social are evidence dimensions, not additive points. No item grants autonomous execution."}
+                  ? "Discovery compite como reposición continua contra trabajo downstream de mayor valor. Compañía, empleo y social son dimensiones de evidencia, no puntos que se suman."
+                  : "Discovery competes as continuous replenishment against higher-value downstream work. Company, Job and Social are evidence dimensions, not additive points."}
               </p>
               <ol>
                 {currentPlan.items.map((item) => {
@@ -451,8 +522,8 @@ export function DiscoverySection({
                   </p>
                   <p className="acq-muted">
                     {es
-                      ? "7E-C.1 sigue NOT STARTED. Dos horas disponibles no significan buscar N empresas ni mantener la Mac ocupada."
-                      : "7E-C.1 remains NOT STARTED. Two available hours do not mean finding N companies or keeping the Mac busy."}
+                      ? "7E-C.1 está autorizado para su primer día real. Dos horas disponibles no significan buscar N empresas ni mantener la Mac ocupada."
+                      : "7E-C.1 is authorized for its first real day. Two available hours do not mean finding N companies or keeping the Mac busy."}
                   </p>
                 </article>
               )}

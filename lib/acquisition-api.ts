@@ -627,6 +627,34 @@ export const acquisitionApi = {
             }),
           )
           .optional(),
+        routineOperatingSessions: z
+          .array(
+            z
+              .object({
+                id: z.string(),
+                cycle_id: z.string(),
+                local_date: z.string(),
+                timezone: z.string(),
+                window_opens_at: z.string(),
+                window_closes_at: z.string(),
+                status: z.string(),
+                started_at: z.string().nullable(),
+                closed_at: z.string().nullable(),
+                opened_late: z.boolean(),
+                early_stop_reason: z.string().nullable(),
+                close_reason: z.string().nullable(),
+                decisions: z.array(z.record(z.string(), z.unknown())),
+                report: z.record(z.string(), z.unknown()).nullable(),
+                capacity: z.record(z.string(), z.unknown()),
+                recurrence_state: z.string(),
+                prospect_effects_authorized: z.literal(false),
+              })
+              .passthrough(),
+          )
+          .optional(),
+        routineSourceEconomics: z
+          .array(z.record(z.string(), z.unknown()))
+          .optional(),
         learningWaves: z
           .array(
             z.object({
