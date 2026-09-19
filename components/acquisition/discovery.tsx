@@ -3,6 +3,10 @@ import { useEffect, useState } from "react"
 import { acquisitionApi as api } from "@/lib/acquisition-api"
 import type { Locale } from "@/lib/i18n"
 import type { PortalSession } from "@/lib/acquisition-api"
+import {
+  AllocationCalibration,
+  AllocationComparison,
+} from "./allocation-comparison"
 
 export function DiscoverySection({
   locale,
@@ -194,12 +198,40 @@ export function DiscoverySection({
       </p>
       {data && (
         <>
+          {(data.allocationCalibrations ?? [])
+            .filter((item) => !cycleId || item.cycle_id === cycleId)
+            .map((item) => (
+              <AllocationCalibration
+                key={item.id}
+                body={item.body}
+                locale={locale}
+              />
+            ))}
+          {(data.planningDispositions ?? []).filter(
+            (item) => !cycleId || item.cycle_id === cycleId,
+          ).length > 0 && (
+            <details>
+              <summary>
+                {es ? "Resultados de planificación" : "Planning outcomes"}
+              </summary>
+              <ul>
+                {(data.planningDispositions ?? [])
+                  .filter((item) => !cycleId || item.cycle_id === cycleId)
+                  .map((item) => (
+                    <li key={item.work_id}>
+                      {item.reason} · {item.mission_count}{" "}
+                      {es ? "misiones admitidas" : "admitted missions"}
+                    </li>
+                  ))}
+              </ul>
+            </details>
+          )}
           {routineSession && (
             <section aria-label={es ? "Operación de hoy" : "Today's operation"}>
               <h3>{es ? "Operación de hoy" : "Today's operation"}</h3>
               <p>
-                <strong>{routineSession.status.replaceAll("_", " ")}</strong>{" "}
-                · 17:00–19:00 America/Mexico_City ·{" "}
+                <strong>{routineSession.status.replaceAll("_", " ")}</strong> ·
+                17:00–19:00 America/Mexico_City ·{" "}
                 {es ? "efectos a prospectos" : "prospect effects"}: 0
               </p>
               <p className="acq-muted">
@@ -208,36 +240,79 @@ export function DiscoverySection({
                   : "The session allocates capacity one unit at a time: plan, execute, observe, and decide again. Recurrence is held for Human review after this first day."}
               </p>
               <dl>
-                <dt>{es ? "Capacidad y presupuestos" : "Capacity and budgets"}</dt>
+                <dt>
+                  {es ? "Capacidad y presupuestos" : "Capacity and budgets"}
+                </dt>
                 <dd>
                   {String(routineSession.capacity.minutesUsed ?? 0)}/
-                  {String(routineSession.capacity.timeCapacityMinutes ?? 0)} min ·{" "}
-                  {String(routineSession.capacity.unitsUsed ?? 0)}/
-                  {String(routineSession.capacity.workUnitBudget ?? 0)} {es ? "unidades" : "units"} ·{" "}
+                  {String(routineSession.capacity.timeCapacityMinutes ?? 0)} min
+                  · {String(routineSession.capacity.unitsUsed ?? 0)}/
+                  {String(routineSession.capacity.workUnitBudget ?? 0)}{" "}
+                  {es ? "unidades" : "units"} ·{" "}
                   {String(routineSession.capacity.requestsUsed ?? 0)}/
-                  {String(routineSession.capacity.sourceRequestBudget ?? 0)} {es ? "lecturas" : "reads"}
+                  {String(routineSession.capacity.sourceRequestBudget ?? 0)}{" "}
+                  {es ? "lecturas" : "reads"}
                 </dd>
                 <dt>{es ? "Recurrencia" : "Recurrence"}</dt>
                 <dd>{routineSession.recurrence_state.replaceAll("_", " ")}</dd>
                 {routineSession.early_stop_reason && (
                   <>
                     <dt>{es ? "Cierre anticipado" : "Early close"}</dt>
-                    <dd>{routineSession.early_stop_reason.replaceAll("_", " ")}</dd>
+                    <dd>
+                      {routineSession.early_stop_reason.replaceAll("_", " ")}
+                    </dd>
                   </>
                 )}
               </dl>
               <ol>
                 {routineSession.decisions.map((decision, index) => {
-                  const outcome = decision.outcome as Record<string, unknown> | null
+                  const outcome = decision.outcome as Record<
+                    string,
+                    unknown
+                  > | null
                   return (
                     <li key={`${routineSession.local_date}-${index}`}>
                       <h4>
-                        {String(decision.workClass ?? decision.decision).replaceAll("_", " ")}
-                        {decision.candidate ? ` · ${String(decision.candidate)}` : ""}
+                        {String(
+                          decision.workClass ?? decision.decision,
+                        ).replaceAll("_", " ")}
+                        {decision.candidate
+                          ? ` · ${String(decision.candidate)}`
+                          : ""}
                       </h4>
-                      <p><strong>{es ? "Por qué:" : "Why:"}</strong> {String(decision.why)}</p>
-                      <p><strong>{es ? "Resultado esperado:" : "Expected result:"}</strong> {String(decision.expectedResult)}</p>
-                      {outcome && <p><strong>{es ? "Aprendizaje real:" : "Actual learning:"}</strong> {String(outcome.actual_learning)} · {String(outcome.quality)}</p>}
+                      <p>
+                        <strong>{es ? "Por qué:" : "Why:"}</strong>{" "}
+                        {String(decision.why)}
+                      </p>
+                      <p>
+                        <strong>
+                          {es ? "Resultado esperado:" : "Expected result:"}
+                        </strong>{" "}
+                        {String(decision.expectedResult)}
+                      </p>
+                      {(data.allocationComparisons ?? [])
+                        .filter(
+                          (item) =>
+                            item.session_id === routineSession.id &&
+                            item.sequence === Number(decision.sequence),
+                        )
+                        .map((item) => (
+                          <AllocationComparison
+                            key={item.sequence}
+                            locale={locale}
+                            alternatives={item.alternatives}
+                            selected={item.selected_alternative_id}
+                          />
+                        ))}
+                      {outcome && (
+                        <p>
+                          <strong>
+                            {es ? "Aprendizaje real:" : "Actual learning:"}
+                          </strong>{" "}
+                          {String(outcome.actual_learning)} ·{" "}
+                          {String(outcome.quality)}
+                        </p>
+                      )}
                     </li>
                   )
                 })}
@@ -245,15 +320,28 @@ export function DiscoverySection({
               {routineSources.length > 0 && (
                 <p className="acq-muted">
                   {es ? "Fuentes usadas:" : "Sources used:"}{" "}
-                  {routineSources.map((source) => `${String(source.source)} (${String(source.requests)} ${es ? "lecturas" : "reads"})`).join(" · ")}
+                  {routineSources
+                    .map(
+                      (source) =>
+                        `${String(source.source)} (${String(source.requests)} ${es ? "lecturas" : "reads"})`,
+                    )
+                    .join(" · ")}
                 </p>
               )}
               {routineSession.report && (
                 <article className="acq-panel">
                   <h4>{es ? "Reporte diario" : "Daily report"}</h4>
                   <p>{String(routineSession.report.summary)}</p>
-                  <p><strong>{es ? "Aprendizaje:" : "Learning:"}</strong> {String(routineSession.report.learning)}</p>
-                  <p><strong>{es ? "Siguiente capacidad:" : "Next capacity:"}</strong> {String(routineSession.report.nextCapacity)}</p>
+                  <p>
+                    <strong>{es ? "Aprendizaje:" : "Learning:"}</strong>{" "}
+                    {String(routineSession.report.learning)}
+                  </p>
+                  <p>
+                    <strong>
+                      {es ? "Siguiente capacidad:" : "Next capacity:"}
+                    </strong>{" "}
+                    {String(routineSession.report.nextCapacity)}
+                  </p>
                 </article>
               )}
             </section>

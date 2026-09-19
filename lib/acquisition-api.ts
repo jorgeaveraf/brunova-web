@@ -655,6 +655,37 @@ export const acquisitionApi = {
         routineSourceEconomics: z
           .array(z.record(z.string(), z.unknown()))
           .optional(),
+        allocationComparisons: z
+          .array(
+            z.object({
+              session_id: z.string(),
+              sequence: z.number(),
+              selected_alternative_id: z.string(),
+              alternatives: z.array(z.record(z.string(), z.unknown())),
+            }),
+          )
+          .optional(),
+        allocationCalibrations: z
+          .array(
+            z.object({
+              id: z.string(),
+              cycle_id: z.string(),
+              executable: z.literal(false),
+              body: z.record(z.string(), z.unknown()),
+            }),
+          )
+          .optional(),
+        planningDispositions: z
+          .array(
+            z.object({
+              work_id: z.string(),
+              cycle_id: z.string(),
+              disposition: z.string(),
+              reason: z.string(),
+              mission_count: z.number(),
+            }),
+          )
+          .optional(),
         learningWaves: z
           .array(
             z.object({
