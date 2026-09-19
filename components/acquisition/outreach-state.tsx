@@ -71,7 +71,17 @@ export function OutreachState({ locale }: { locale: Locale }) {
             <strong>
               {es ? "Seguimiento autorizado" : "Follow-up authority"}:
             </strong>{" "}
-            {c.followUpAuthority ?? "NONE"}
+            {c.followUpAuthority === "NONE"
+              ? es
+                ? "No"
+                : "No"
+              : c.followUpAuthority
+                ? es
+                  ? "Sólo con autorización exacta"
+                  : "Only with exact authorization"
+                : es
+                  ? "Sin confirmar"
+                  : "Unconfirmed"}
           </p>
           {c.exactEffect?.subject && (
             <p>

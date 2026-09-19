@@ -59,7 +59,7 @@ export function DiscoveryHealth({ locale }: { locale: Locale }) {
               ? "cerrada y detenida para revisión"
               : "closed and held for review"
             : session.status.replaceAll("_", " ")}
-          . {es ? "Efectos a prospectos" : "Prospect effects"}: 0.
+          . {es ? "Nuevos efectos autorizados" : "New effects authorized"}: {session.prospect_effects_authorized ? (es ? "Sí" : "Yes") : "0"}.
         </p>
       )}
       <details>

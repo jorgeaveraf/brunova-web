@@ -190,7 +190,7 @@ export function CandidateInventory({
                           timeZone: "America/Mexico_City",
                         }).format(new Date(candidate.nextReviewAt))
                       : "—"}{" "}
-                    · Follow-up: {candidate.followUpAuthority ?? "NONE"}
+                    · {es ? "Seguimiento" : "Follow-up"}: {candidate.followUpAuthority === "NONE" ? (es ? "sin autorización" : "not authorized") : candidate.followUpAuthority ? (es ? "requiere autorización exacta" : "requires exact authorization") : (es ? "sin estado confirmado" : "state unconfirmed")}
                   </p>
                 )}
                 <details>
