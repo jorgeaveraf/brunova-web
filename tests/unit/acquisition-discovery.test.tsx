@@ -69,7 +69,7 @@ it("shows expiring Today/Next work as evidence dimensions awaiting Management", 
   })
   render(<DiscoverySection locale="en" />)
   fireEvent.click(await screen.findByText("Technical history and calibrations"))
-  expect(await screen.findByText("Today and next work")).toBeVisible()
+  expect(await screen.findByText("Preserved work plan")).toBeVisible()
   expect(screen.getByText("Awaiting Management")).toBeVisible()
   expect(
     screen.getByText(/evidence dimensions, not additive points/),

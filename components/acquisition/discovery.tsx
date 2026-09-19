@@ -199,6 +199,23 @@ export function DiscoverySection({
       </p>
       {data && (
         <>
+          <section className="acq-panel">
+            <h3>{es ? "Qué ha producido la búsqueda" : "What discovery has produced"}</h3>
+            <p>
+              {es ? "Observaciones" : "Observations"}: {data.totals.observations} ·{" "}
+              {es ? "candidatas" : "candidates"}: {data.totals.candidates} ·{" "}
+              {es ? "identidades respaldadas" : "supported identities"}: {data.totals.resolved}.
+            </p>
+            {routineSources.length > 0 && (
+              <p>
+                {es ? "Última ventana, uso de fuentes" : "Latest window, source use"}: {routineSources.map((source) =>
+                  `${String(source.source)} · ${String(source.requests)} ${es ? "consultas" : "requests"} · ${String(source.candidate_contributions)} ${es ? "candidatas aportadas" : "candidates contributed"}`,
+                ).join("; ")}. {es
+                  ? "Una fuente puede devolver resultados sin mejorar la comprensión ni justificar contacto."
+                  : "A source may return results without improving understanding or justifying outreach."}
+              </p>
+            )}
+          </section>
           <CandidateInventory data={data} locale={locale} compact />
           <details>
             <summary>
@@ -236,18 +253,18 @@ export function DiscoverySection({
             )}
             {routineSession && (
               <section
-                aria-label={es ? "Operación de hoy" : "Today's operation"}
+                aria-label={es ? "Última ventana" : "Latest window"}
               >
-                <h3>{es ? "Operación de hoy" : "Today's operation"}</h3>
+                <h3>{es ? "Última ventana" : "Latest window"}</h3>
                 <p>
                   <strong>{routineSession.status.replaceAll("_", " ")}</strong>{" "}
                   · 17:00–19:00 America/Mexico_City ·{" "}
-                  {es ? "efectos a prospectos" : "prospect effects"}: 0
+                  {es ? "nuevos efectos autorizados" : "new effects authorized"}: {routineSession.prospect_effects_authorized ? (es ? "sí" : "yes") : "no"}
                 </p>
                 <p className="acq-muted">
                   {es
-                    ? "La sesión asigna capacidad unidad por unidad: planear, ejecutar, observar y volver a decidir. La recurrencia queda detenida para revisión Humana después de este primer día."
-                    : "The session allocates capacity one unit at a time: plan, execute, observe, and decide again. Recurrence is held for Human review after this first day."}
+                    ? "La sesión asigna capacidad unidad por unidad: planear, ejecutar, observar y volver a decidir. La recurrencia permanece detenida para revisión humana."
+                    : "The session allocates capacity one unit at a time: plan, execute, observe, and decide again. Recurrence remains held for Human review."}
                 </p>
                 <dl>
                   <dt>
@@ -342,8 +359,13 @@ export function DiscoverySection({
                 )}
                 {routineSession.report && (
                   <article className="acq-panel">
-                    <h4>{es ? "Reporte diario" : "Daily report"}</h4>
+                    <h4>{es ? "Reporte de esa ventana" : "Report from that window"}</h4>
                     <p>{String(routineSession.report.summary)}</p>
+                    <p className="acq-muted">
+                      {es
+                        ? "El texto del reporte fue generado antes del cierre; el estado vigente de la ventana es el mostrado arriba."
+                        : "The report text was generated before close; the current window state is shown above."}
+                    </p>
                     <p>
                       <strong>{es ? "Aprendizaje:" : "Learning:"}</strong>{" "}
                       {String(routineSession.report.learning)}
@@ -361,11 +383,11 @@ export function DiscoverySection({
             {currentPlan && (
               <section
                 aria-label={
-                  es ? "Trabajo de hoy y siguiente" : "Today and next work"
+                  es ? "Plan de trabajo conservado" : "Preserved work plan"
                 }
               >
                 <h3>
-                  {es ? "Trabajo de hoy y siguiente" : "Today and next work"}
+                  {es ? "Plan de trabajo conservado" : "Preserved work plan"}
                 </h3>
                 <p>
                   <strong>
