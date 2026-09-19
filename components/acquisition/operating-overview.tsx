@@ -8,6 +8,12 @@ import {
 import type { Locale } from "@/lib/i18n"
 import { readinessText } from "@/lib/acquisition-readiness"
 import { EngineActivity } from "./engine-activity"
+import { CandidateInventory } from "./candidate-inventory"
+import {
+  candidateManagementTruth,
+  marketContextCounts,
+  type DiscoveryTruth,
+} from "@/lib/acquisition-management-truth"
 
 export function OperatingOverview({
   cycleId,
@@ -20,13 +26,16 @@ export function OperatingOverview({
 }) {
   const es = locale === "es",
     [review, setReview] = useState<CycleReview | null>(null),
+    [discovery, setDiscovery] = useState<DiscoveryTruth | null>(null),
     [failed, setFailed] = useState(false)
   useEffect(() => {
     let live = true
-    api
-      .cycleReview(cycleId)
-      .then((r) => {
-        if (live) setReview(r.review)
+    Promise.all([api.cycleReview(cycleId), api.discovery()])
+      .then(([r, d]) => {
+        if (live) {
+          setReview(r.review)
+          setDiscovery(d)
+        }
       })
       .catch(() => {
         if (live) setFailed(true)
@@ -43,8 +52,12 @@ export function OperatingOverview({
           : "Progress could not be verified. Refresh before deciding."}
       </p>
     )
-  if (!review)
+  if (!review || !discovery)
     return <p>{es ? "Consultando progreso…" : "Loading progress…"}</p>
+  const candidates = candidateManagementTruth(discovery)
+  const markets = marketContextCounts(discovery)
+  const contacted = candidates.filter((c) => c.contacted)
+  const latestSession = discovery.routineOperatingSessions?.[0]
   const wave = review.waves.at(-1),
     halt =
       !!review.control?.technical_halt || review.control?.state === "STOPPED",
@@ -75,11 +88,25 @@ export function OperatingOverview({
                   ? es
                     ? "La composición está lista para revisión; aún no autoriza contacto."
                     : "The composition is ready for review; it does not authorize outreach yet."
-                  : es
-                    ? "El Engine procesa trabajo interno autorizado. La próxima wave requiere aprobación exacta."
-                    : "The Engine processes authorized internal work. The next wave requires exact approval."}
+                  : latestSession?.recurrence_state === "HELD_REVIEW"
+                    ? es
+                      ? "La ventana terminó y la recurrencia está detenida para revisión humana. Las candidatas y la evidencia se conservan."
+                      : "The window ended and recurrence is held for Human review. Candidates and evidence remain available."
+                    : es
+                      ? "El Engine procesa trabajo interno autorizado. La próxima wave requiere aprobación exacta."
+                      : "The Engine processes authorized internal work. The next wave requires exact approval."}
         </p>
-        <button onClick={() => onNavigate(halt ? "Work / Health" : "Waves")}>
+        <button
+          onClick={() =>
+            onNavigate(
+              halt
+                ? "Work / Health"
+                : latestSession?.recurrence_state === "HELD_REVIEW"
+                  ? "Discovery"
+                  : "Waves",
+            )
+          }
+        >
           {halt
             ? es
               ? "Inspeccionar problema"
@@ -88,13 +115,17 @@ export function OperatingOverview({
               ? es
                 ? "Revisar resultados"
                 : "Review results"
-              : waveReady
+              : latestSession?.recurrence_state === "HELD_REVIEW"
                 ? es
-                  ? "Revisar wave"
-                  : "Review wave"
-                : es
-                  ? "Ver preparación de wave"
-                  : "View wave preparation"}
+                  ? "Revisar exploración"
+                  : "Review discovery"
+                : waveReady
+                  ? es
+                    ? "Revisar wave"
+                    : "Review wave"
+                  : es
+                    ? "Ver preparación de wave"
+                    : "View wave preparation"}
         </button>
       </section>
       <section
@@ -102,11 +133,16 @@ export function OperatingOverview({
         aria-label={es ? "Progreso del Cycle" : "Cycle progress"}
       >
         <div>
-          <span>Discovery</span>
+          <span>
+            {es ? "Candidatas descubiertas" : "Discovered candidates"}
+          </span>
+          <strong>{discovery.totals.candidates}</strong>
+        </div>
+        <div>
+          <span>{es ? "Accounts admitidos" : "Admitted Accounts"}</span>
           <strong>
-            {review.discovery?.admitted ??
-              review.markets.reduce((n, m) => n + m.discovered, 0)}{" "}
-            / {review.discovery?.maximum ?? "—"}
+            {review.discovery?.admitted ?? discovery.totals.admitted} /{" "}
+            {review.discovery?.maximum ?? "—"}
           </strong>
         </div>
         {[
@@ -132,25 +168,28 @@ export function OperatingOverview({
       <section className="acq-panel">
         <h2>{es ? "Exploración de mercado" : "Market exploration"}</h2>
         <dl>
-          {review.markets.map((m) => (
-            <div key={m.country ?? "unknown"}>
-              <dt>
-                {m.country === "MX"
-                  ? es
-                    ? "México"
-                    : "Mexico"
-                  : m.country === "US"
-                    ? es
-                      ? "Estados Unidos"
-                      : "United States"
-                    : (m.country ?? (es ? "Sin contexto" : "Unknown"))}
-              </dt>
-              <dd>
-                {m.discovered} {es ? "investigadas inicialmente" : "discovered"}{" "}
-                · {m.qualified} {es ? "calificadas" : "qualified"}
-              </dd>
-            </div>
-          ))}
+          <div>
+            <dt>
+              {es ? "México · contexto de búsqueda" : "Mexico · search context"}
+            </dt>
+            <dd>
+              {markets.MX} {es ? "candidatas" : "candidates"}
+            </dd>
+          </div>
+          <div>
+            <dt>
+              {es
+                ? "Estados Unidos · contexto de búsqueda"
+                : "United States · search context"}
+            </dt>
+            <dd>
+              {markets.US} {es ? "candidatas" : "candidates"}
+            </dd>
+          </div>
+          <div>
+            <dt>{es ? "Mixto o incierto" : "Mixed or uncertain"}</dt>
+            <dd>{markets.ambiguous}</dd>
+          </div>
         </dl>
         <p>
           {es
@@ -158,15 +197,30 @@ export function OperatingOverview({
             : "Little evidence from a market means limited exploration, not lack of opportunity. There are no country quotas."}
         </p>
       </section>
+      {contacted.length > 0 && (
+        <section className="acq-panel">
+          <h2>{es ? "Contacto y espera" : "Contact and waiting"}</h2>
+          {contacted.map((c) => (
+            <p key={c.id}>
+              <strong>{c.name}</strong> ·{" "}
+              {es
+                ? "contactada; esperando respuesta"
+                : "contacted; waiting for reply"}{" "}
+              · {es ? "seguimiento autorizado" : "follow-up authorized"}:{" "}
+              {c.followUpAuthority ?? "NONE"}
+            </p>
+          ))}
+        </section>
+      )}
       <EngineActivity locale={locale} />
       <section className="acq-panel">
         <h2>{es ? "Aprendizaje y resultados" : "Learning and outcomes"}</h2>
         <p>
-          {review.attempts === 0
+          {review.attempts === 0 && contacted.length === 0
             ? es
               ? "Todavía no hay resultados de contacto. La evidencia de investigación y sus límites permanecen disponibles en Oportunidades."
               : "There are no outreach outcomes yet. Research evidence and its limits remain available in Opportunities."
-            : `${es ? "Respuestas" : "Responses"}: ${Object.values(review.responses).reduce((n, v) => n + v, 0)} · ${es ? "Handoffs" : "Handoffs"}: ${review.funnel?.handoffs ?? 0}`}
+            : `${es ? "Contactos exploratorios registrados" : "Recorded exploratory contacts"}: ${contacted.length} · ${es ? "Respuestas" : "Responses"}: ${Object.values(review.responses).reduce((n, v) => n + v, 0)} · ${es ? "Handoffs" : "Handoffs"}: ${review.funnel?.handoffs ?? 0}`}
         </p>
         <p>
           {es
@@ -189,12 +243,22 @@ export function OpportunityPool({
 }) {
   const es = locale === "es",
     [items, setItems] = useState<CyclePoolItem[]>([]),
+    [discovery, setDiscovery] = useState<DiscoveryTruth | null>(null),
+    [discoveryFailed, setDiscoveryFailed] = useState(false),
     [failed, setFailed] = useState(false),
     [more, setMore] = useState(false),
     [pending, setPending] = useState(false)
   useEffect(() => {
     let live = true
     if (!cycleId) return
+    api
+      .discovery()
+      .then((d) => {
+        if (live) setDiscovery(d)
+      })
+      .catch(() => {
+        if (live) setDiscoveryFailed(true)
+      })
     api
       .cyclePool(cycleId)
       .then((r) => {
@@ -230,6 +294,15 @@ export function OpportunityPool({
           ? "No seleccionada no significa rechazada. La evidencia y las oportunidades se conservan fuera de la wave."
           : "Not selected does not mean rejected. Evidence and opportunities remain available outside the wave."}
       </p>
+      {discovery && <CandidateInventory data={discovery} locale={locale} />}
+      {discoveryFailed && (
+        <p role="alert">
+          {es
+            ? "No se pudo verificar el inventario de candidatas; el pool de Accounts no es toda la oportunidad."
+            : "Candidate inventory could not be verified; the Account pool is not the whole opportunity."}
+        </p>
+      )}
+      <h3>{es ? "Accounts admitidos" : "Admitted Accounts"}</h3>
       {failed && (
         <p role="alert">
           {es
@@ -325,6 +398,7 @@ export function CycleAttention({
   onNavigate: (tab: string) => void
 }) {
   const [review, setReview] = useState<CycleReview | null>(null),
+    [discovery, setDiscovery] = useState<DiscoveryTruth | null>(null),
     [failed, setFailed] = useState(false)
   useEffect(() => {
     let live = true
@@ -336,12 +410,19 @@ export function CycleAttention({
       .catch(() => {
         if (live) setFailed(true)
       })
+    api
+      .discovery()
+      .then((d) => {
+        if (live) setDiscovery(d)
+      })
+      .catch(() => {})
     return () => {
       live = false
     }
   }, [cycleId])
   const es = locale === "es",
     wave = review?.waves.at(-1),
+    held = discovery?.routineOperatingSessions?.[0]?.status === "HELD_REVIEW",
     halt =
       review?.control?.technical_halt || review?.control?.state === "STOPPED"
   if (failed)
@@ -354,7 +435,11 @@ export function CycleAttention({
     )
   if (!review)
     return <p>{es ? "Consultando decisiones…" : "Loading decisions…"}</p>
-  if (!halt && !["PLANNED", "REVIEW_REQUIRED"].includes(wave?.state ?? ""))
+  if (
+    !halt &&
+    !held &&
+    !["PLANNED", "REVIEW_REQUIRED"].includes(wave?.state ?? "")
+  )
     return null
   return (
     <section className="acq-panel">
@@ -363,25 +448,33 @@ export function CycleAttention({
           ? es
             ? "Cycle pausado"
             : "Cycle paused"
-          : wave?.state === "REVIEW_REQUIRED"
+          : held
             ? es
-              ? "Revisar resultados de wave"
-              : "Review wave outcomes"
-            : es
-              ? "Revisar preparación de wave"
-              : "Review wave preparation"}
+              ? "Revisar ventana de operación"
+              : "Review operating window"
+            : wave?.state === "REVIEW_REQUIRED"
+              ? es
+                ? "Revisar resultados de wave"
+                : "Review wave outcomes"
+              : es
+                ? "Revisar preparación de wave"
+                : "Review wave preparation"}
       </h2>
       <p>
         {halt
           ? es
             ? "Una condición técnica o de Management impide continuar."
             : "A technical or Management condition prevents progression."
-          : es
-            ? "La composición y su evidencia necesitan una decisión de Management; el scheduler no aprueba waves."
-            : "Composition and evidence require a Management decision; the scheduler does not approve waves."}
+          : held
+            ? es
+              ? "La recurrencia está detenida. Management debe evaluar la asignación y la calidad de información antes de otra ventana."
+              : "Recurrence is held. Management must assess allocation and information quality before another window."
+            : es
+              ? "La composición y su evidencia necesitan una decisión de Management; el scheduler no aprueba waves."
+              : "Composition and evidence require a Management decision; the scheduler does not approve waves."}
       </p>
       {review.control?.technical_halt && <p>{review.control.technical_halt}</p>}
-      <button onClick={() => onNavigate("Waves")}>
+      <button onClick={() => onNavigate(held ? "Discovery" : "Waves")}>
         {es ? "Inspeccionar decisión" : "Inspect decision"}
       </button>
     </section>

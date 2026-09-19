@@ -2,11 +2,13 @@
 import { useEffect, useState } from "react"
 import { acquisitionApi as api } from "@/lib/acquisition-api"
 import type { Locale } from "@/lib/i18n"
+import type { DiscoveryTruth } from "@/lib/acquisition-management-truth"
 export function EngineActivity({ locale }: { locale: Locale }) {
   const es = locale === "es",
     [state, setState] = useState<Awaited<
       ReturnType<typeof api.operatingModel>
     > | null>(null),
+    [discovery, setDiscovery] = useState<DiscoveryTruth | null>(null),
     [failed, setFailed] = useState(false)
   useEffect(() => {
     let stopped = false
@@ -18,11 +20,19 @@ export function EngineActivity({ locale }: { locale: Locale }) {
       .catch(() => {
         if (!stopped) setFailed(true)
       })
+    api
+      .discovery()
+      .then((d) => {
+        if (!stopped) setDiscovery(d)
+      })
+      .catch(() => {})
     return () => {
       stopped = true
     }
   }, [])
-  const listener = state?.activity.find((v) => v.mode === "listener"),
+  const held =
+      discovery?.routineOperatingSessions?.[0]?.status === "HELD_REVIEW",
+    listener = state?.activity.find((v) => v.mode === "listener"),
     run = state?.activity.find((v) => v.mode === "recovery"),
     schedule = listener?.schedule ?? run?.schedule
   return (
@@ -42,13 +52,22 @@ export function EngineActivity({ locale }: { locale: Locale }) {
       ) : state ? (
         <>
           <p>
-            {es ? "Horario instalado" : "Installed schedule"}:{" "}
+            {es ? "Horario configurado" : "Configured schedule"}:{" "}
             {schedule
               ? `${String(schedule.hour).padStart(2, "0")}:${String(schedule.minute).padStart(2, "0")} · ${schedule.timeZone}`
               : es
                 ? "Sin observación disponible"
                 : "No observation available"}
           </p>
+          {held && (
+            <p>
+              <strong>
+                {es
+                  ? "Recurrencia detenida para revisión humana; el horario no implica una nueva ventana autorizada."
+                  : "Recurrence held for Human review; a configured schedule does not authorize another window."}
+              </strong>
+            </p>
+          )}
           <p>
             {es
               ? "Última ejecución del proceso diario"

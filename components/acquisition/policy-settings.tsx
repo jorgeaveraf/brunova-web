@@ -138,9 +138,13 @@ export function PolicySettings({
     <section className="acq-panel">
       <h2>{es ? "Configuración del Cycle" : "Cycle settings"}</h2>
       <p>
-        {es
-          ? "Reglas aprobadas, no permisos de ejecución. Activar el Cycle es una decisión posterior."
-          : "Approved rules, not execution permission. Cycle activation is a later decision."}
+        {cycleId
+          ? es
+            ? "Este Cycle ya conserva su política aprobada. Su snapshot no puede editarse; una propuesta futura no altera la ejecución actual."
+            : "This Cycle already holds its approved policy. Its snapshot cannot be edited; a future proposal does not alter current execution."
+          : es
+            ? "Reglas aprobadas, no permisos de ejecución. Activar el Cycle es una decisión posterior."
+            : "Approved rules, not execution permission. Cycle activation is a later decision."}
       </p>
       {notice && <p role="status">{notice}</p>}
       <button

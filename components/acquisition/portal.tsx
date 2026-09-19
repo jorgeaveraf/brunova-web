@@ -7,6 +7,7 @@ import { PolicySettings } from "./policy-settings"
 import { EngineActivity } from "./engine-activity"
 import { ActivationPreflight } from "./activation-preflight"
 import { DiscoverySection } from "./discovery"
+import { OutreachState } from "./outreach-state"
 import {
   OperatingOverview,
   OpportunityPool,
@@ -449,6 +450,12 @@ export function AcquisitionPortal({
           cycleId={cycleId}
           locale={locale}
           onInspect={(id) => void inspect(id, null)}
+        />
+      )}
+      {tab === "Waves" && (
+        <OutreachState
+          key={`${cycleId}:${projectionRevision}`}
+          locale={locale}
         />
       )}
       {tab === "Waves" && (

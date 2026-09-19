@@ -38,21 +38,42 @@ const empty: Awaited<ReturnType<typeof api.discovery>> = {
 it("shows expiring Today/Next work as evidence dimensions awaiting Management", async () => {
   vi.spyOn(api, "discovery").mockResolvedValue({
     ...empty,
-    workAllocation: [{
-      id: "plan-1", cycle_id: "cycle-1", status: "AWAITING_MANAGEMENT",
-      rationale: "Resolve the smallest material uncertainty before broader discovery.",
-      created_at: "2026-09-16T12:00:00Z", expires_at: "2026-09-17T12:00:00Z",
-      inventory_snapshot: { candidateCount: 1, broadDiscoveryPaused: true },
-      items: [{ position: 1, workClass: "SOCIAL_ENRICH", candidateId: "candidate-1", accountId: null,
-        dimension: "SOCIAL", expectedInformationGain: "Whether executive attribution supports current attention.",
-        reason: "This evidence can change whether a conversation is worth testing.",
-        stopCondition: "Stop after one current attributed source.", budget: { maxRequests: 1, maxMinutes: 10 }, status: "PROPOSED" }],
-    }],
+    workAllocation: [
+      {
+        id: "plan-1",
+        cycle_id: "cycle-1",
+        status: "AWAITING_MANAGEMENT",
+        rationale:
+          "Resolve the smallest material uncertainty before broader discovery.",
+        created_at: "2026-09-16T12:00:00Z",
+        expires_at: "2026-09-17T12:00:00Z",
+        inventory_snapshot: { candidateCount: 1, broadDiscoveryPaused: true },
+        items: [
+          {
+            position: 1,
+            workClass: "SOCIAL_ENRICH",
+            candidateId: "candidate-1",
+            accountId: null,
+            dimension: "SOCIAL",
+            expectedInformationGain:
+              "Whether executive attribution supports current attention.",
+            reason:
+              "This evidence can change whether a conversation is worth testing.",
+            stopCondition: "Stop after one current attributed source.",
+            budget: { maxRequests: 1, maxMinutes: 10 },
+            status: "PROPOSED",
+          },
+        ],
+      },
+    ],
   })
   render(<DiscoverySection locale="en" />)
+  fireEvent.click(await screen.findByText("Technical history and calibrations"))
   expect(await screen.findByText("Today and next work")).toBeVisible()
   expect(screen.getByText("Awaiting Management")).toBeVisible()
-  expect(screen.getByText(/evidence dimensions, not additive points/)).toBeVisible()
+  expect(
+    screen.getByText(/evidence dimensions, not additive points/),
+  ).toBeVisible()
   expect(screen.getByText(/What could change the decision/)).toBeVisible()
   expect(screen.getByText(/Exhaustion condition/)).toBeVisible()
 })
@@ -106,10 +127,13 @@ it("shows source reasoning and recorded investigation without promoting identity
     ],
   })
   render(<DiscoverySection locale="en" />)
-  expect(await screen.findByText(/Search market does not establish/)).toBeVisible()
+  fireEvent.click(await screen.findByText("Technical history and calibrations"))
+  expect(
+    await screen.findByText(/Search market does not establish/),
+  ).toBeVisible()
   fireEvent.click(await screen.findByText("Discovery journey"))
   expect(
-    screen.getByText("Synthetic identity needs corroboration"),
+    screen.getAllByText("Synthetic identity needs corroboration")[0],
   ).toBeVisible()
   expect(screen.getByText("Inspect primary identity evidence")).toBeVisible()
   expect(screen.getByText(/Current state: Identity unresolved/)).toBeVisible()
@@ -167,7 +191,10 @@ it("pre-Account ambiguity is retained, not presented as qualification or a false
     ],
   })
   render(<DiscoverySection locale="es" />)
-  expect(await screen.findByText("SYNTHETIC Taller Norte")).toBeVisible()
+  fireEvent.click(await screen.findByText("Historial técnico y calibraciones"))
+  expect(
+    (await screen.findAllByText("SYNTHETIC Taller Norte"))[0],
+  ).toBeVisible()
   expect(screen.getByText(/Conservada antes de admisión/)).toBeVisible()
   fireEvent.click(screen.getByText("Evidencia pendiente y procedencia"))
   expect(screen.getByText("FIRST_PARTY_IDENTITY")).toBeVisible()
@@ -204,6 +231,7 @@ it("supported dismissal is not mislabeled as missing-evidence retention", async 
     ],
   })
   render(<DiscoverySection locale="en" />)
+  fireEvent.click(await screen.findByText("Technical history and calibrations"))
   expect(await screen.findByText(/Dismissed with evidence/)).toBeVisible()
   expect(
     screen.queryByText(/Retained before admission/),

@@ -120,6 +120,25 @@ beforeAll(() => {
   }
 })
 beforeEach(() => {
+  vi.spyOn(api, "discovery").mockResolvedValue({
+    schemaVersion: "1",
+    state: "WAITING",
+    displayLimits: { missions: 50, candidates: 50, planning: 20 },
+    totals: {
+      observations: 0,
+      candidates: 0,
+      resolved: 0,
+      ambiguous: 0,
+      unresolved: 0,
+      held: 0,
+      admitted: 0,
+      pending_work: 0,
+    },
+    sources: [],
+    missions: [],
+    planning: [],
+    candidates: [],
+  })
   vi.spyOn(api, "cyclePool").mockResolvedValue({
     schemaVersion: "1",
     items: [],
