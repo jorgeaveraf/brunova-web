@@ -58,6 +58,10 @@ export function OperatingOverview({
   const markets = marketContextCounts(discovery)
   const contacted = candidates.filter((c) => c.contacted)
   const latestSession = discovery.routineOperatingSessions?.[0]
+  const recordedLearning =
+    typeof latestSession?.report?.learning === "string"
+      ? latestSession.report.learning
+      : ""
   const wave = review.waves.at(-1),
     halt =
       !!review.control?.technical_halt || review.control?.state === "STOPPED",
@@ -218,7 +222,15 @@ export function OperatingOverview({
                 ? "contactada; esperando respuesta"
                 : "contacted; waiting for reply"}{" "}
               · {es ? "seguimiento autorizado" : "follow-up authorized"}:{" "}
-              {c.followUpAuthority ?? "NONE"}
+              {c.followUpAuthority === "NONE"
+                ? "No"
+                : c.followUpAuthority
+                  ? es
+                    ? "sólo con autorización exacta"
+                    : "only with exact authorization"
+                  : es
+                    ? "sin confirmar"
+                    : "unconfirmed"}
             </p>
           ))}
         </section>
@@ -226,6 +238,19 @@ export function OperatingOverview({
       <EngineActivity locale={locale} />
       <section className="acq-panel">
         <h2>{es ? "Aprendizaje y resultados" : "Learning and outcomes"}</h2>
+        {recordedLearning && (
+          <p>
+            <strong>
+              {es
+                ? "Último aprendizaje registrado (idioma original)"
+                : "Latest recorded learning"}
+              :
+            </strong>{" "}
+            {recordedLearning.length > 420
+              ? `${recordedLearning.slice(0, 420).replace(/\s+\S*$/, "")}…`
+              : recordedLearning}
+          </p>
+        )}
         <p>
           {review.attempts === 0 && contacted.length === 0
             ? es
