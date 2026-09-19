@@ -8,6 +8,10 @@ type Journey = NonNullable<DiscoveryTruth["journeys"]>[number]
 
 const text = (value: unknown): string =>
   typeof value === "string" && value.trim() ? value : ""
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
 
 /** A presentation projection over one authoritative Engine read. It never
  * promotes a Candidate to Account or treats a search market as domicile. */
@@ -42,6 +46,19 @@ export function candidateManagementTruth(data: DiscoveryTruth) {
     const batch = (data.batchCandidates ?? []).find(
       (item) => item.candidate_id === candidate.id,
     )
+    const latestRoutine = (data.routineOperatingSessions ?? [])
+      .flatMap((session) => session.decisions)
+      .filter(
+        (decision) =>
+          decision.candidateId === candidate.id &&
+          record(decision.outcome).recorded_at,
+      )
+      .sort((a, b) =>
+        text(record(b.outcome).recorded_at).localeCompare(
+          text(record(a.outcome).recorded_at),
+        ),
+      )[0]
+    const routineOutcome = record(latestRoutine?.outcome)
     const effect = data.firstExploratoryEffect?.find(
       (item) =>
         item.company === candidate.name && item.effect_status === "SUCCEEDED",
@@ -56,12 +73,20 @@ export function candidateManagementTruth(data: DiscoveryTruth) {
     for (const origin of journey?.origins ?? [])
       if (origin.source === "remotive-hiring") sourceCoverage.add("JOB")
     const latestOutcome = lastPerformed?.outcome
+    const routineIsLatest =
+      !!routineOutcome.recorded_at &&
+      text(routineOutcome.recorded_at) >= text(latestOutcome?.recordedAt)
     const observation =
-      latestOutcome?.recordedAt ??
-      latestInvestigation?.recordedAt ??
-      candidate.last_seen ??
-      candidate.first_seen ??
-      null
+      [
+        text(routineOutcome.recorded_at),
+        latestOutcome?.recordedAt,
+        latestInvestigation?.recordedAt,
+        candidate.last_seen,
+        candidate.first_seen,
+      ]
+        .filter((date): date is string => !!date)
+        .sort()
+        .at(-1) ?? null
     return {
       id: candidate.id,
       name: candidate.name ?? "Unknown organization",
@@ -76,21 +101,20 @@ export function candidateManagementTruth(data: DiscoveryTruth) {
       sources: candidate.sources ?? [],
       sightings: candidate.sightings,
       known:
+        (routineIsLatest && text(routineOutcome.actual_learning)) ||
         text(latestOutcome?.evidenceSummary) ||
         text(latestInvestigation?.summary) ||
         text(batch?.found_because),
-      unknown:
-        text(latestOutcome?.unknownAfter) ||
-        (candidate.missing.length
-          ? "Identity, intervention evidence or problem ownership still needs corroboration."
-          : "No explicit unresolved question recorded."),
+      unknown: text(latestOutcome?.unknownAfter),
       nextAction:
+        (routineIsLatest && text(routineOutcome.next_recommendation)) ||
         text(latestOutcome?.nextAction) ||
         text(latestInvestigation?.nextAction) ||
         text(batch?.reviewed_next_action),
       lastAction: observation,
       worthiness:
         text(latestOutcome?.worthinessAfter) || text(batch?.research_outcome),
+      lastWorkQuality: routineIsLatest ? text(routineOutcome.quality) : "",
       target: target
         ? {
             why: target.why,
@@ -109,8 +133,12 @@ export function candidateManagementTruth(data: DiscoveryTruth) {
 
 export function marketContextCounts(data: DiscoveryTruth) {
   return {
-    MX: data.candidates.filter((c) => c.market_contexts?.includes("MX")).length,
-    US: data.candidates.filter((c) => c.market_contexts?.includes("US")).length,
+    MX: data.candidates.filter(
+      (c) => c.market_contexts?.length === 1 && c.market_contexts[0] === "MX",
+    ).length,
+    US: data.candidates.filter(
+      (c) => c.market_contexts?.length === 1 && c.market_contexts[0] === "US",
+    ).length,
     ambiguous: data.candidates.filter(
       (c) => !c.market_contexts?.length || c.market_contexts.length > 1,
     ).length,

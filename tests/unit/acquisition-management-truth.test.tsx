@@ -137,3 +137,30 @@ it("retains pre-Account candidates and binds contacted/waiting to the exact orga
   expect(screen.getByText(/2 retained candidates · 0 Accounts/)).toBeVisible()
   expect(screen.getByText(/Synthetic change signal/)).toBeVisible()
 })
+
+it("shows the latest durable routine outcome rather than an older candidate investigation", () => {
+  const withRoutine = {
+    ...fixture,
+    routineOperatingSessions: [
+      {
+        decisions: [
+          {
+            candidateId: "c1",
+            outcome: {
+              recorded_at: "2026-09-19T00:00:00Z",
+              actual_learning:
+                "Synthetic newer research reduced one uncertainty.",
+              next_recommendation: "Defer pending Management review.",
+              quality: "JUSTIFIED",
+            },
+          },
+        ],
+      },
+    ],
+  } as unknown as DiscoveryTruth
+  expect(candidateManagementTruth(withRoutine)[0]).toMatchObject({
+    known: "Synthetic newer research reduced one uncertainty.",
+    nextAction: "Defer pending Management review.",
+    lastWorkQuality: "JUSTIFIED",
+  })
+})

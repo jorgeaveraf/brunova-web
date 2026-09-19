@@ -30,8 +30,8 @@ export function EngineActivity({ locale }: { locale: Locale }) {
       stopped = true
     }
   }, [])
-  const held =
-      discovery?.routineOperatingSessions?.[0]?.status === "HELD_REVIEW",
+  const latestWindow = discovery?.routineOperatingSessions?.[0],
+    held = latestWindow?.status === "HELD_REVIEW",
     listener = state?.activity.find((v) => v.mode === "listener"),
     run = state?.activity.find((v) => v.mode === "recovery"),
     schedule = listener?.schedule ?? run?.schedule
@@ -52,7 +52,10 @@ export function EngineActivity({ locale }: { locale: Locale }) {
       ) : state ? (
         <>
           <p>
-            {es ? "Horario configurado" : "Configured schedule"}:{" "}
+            {es
+              ? "Recuperación diaria configurada"
+              : "Configured daily recovery"}
+            :{" "}
             {schedule
               ? `${String(schedule.hour).padStart(2, "0")}:${String(schedule.minute).padStart(2, "0")} · ${schedule.timeZone}`
               : es
@@ -69,24 +72,42 @@ export function EngineActivity({ locale }: { locale: Locale }) {
             </p>
           )}
           <p>
-            {es
-              ? "Última ejecución del proceso diario"
-              : "Last daily-process execution"}
+            {es ? "Última ventana de Acquisition" : "Latest Acquisition window"}
             :{" "}
-            {run
-              ? new Date(run.heartbeat_at).toLocaleString(
+            {latestWindow?.started_at
+              ? new Date(latestWindow.started_at).toLocaleString(
                   es ? "es-MX" : "en-US",
-                  { timeZone: schedule?.timeZone },
+                  { timeZone: "America/Mexico_City" },
                 )
               : es
                 ? "Sin observación disponible"
-                : "No observation available"}
-            {run && run.event !== "RUN_FINISHED"
+                : "No observation available"}{" "}
+            ·{" "}
+            {latestWindow?.status === "HELD_REVIEW"
               ? es
-                ? " · Sin finalización confirmada"
-                : " · Completion not confirmed"
-              : ""}
+                ? "cerrada; espera revisión"
+                : "closed; awaiting review"
+              : (latestWindow?.status ?? "—")}
           </p>
+          <details>
+            <summary>
+              {es ? "Recuperación técnica" : "Technical recovery"}
+            </summary>
+            <p>
+              {es ? "Última ejecución" : "Last run"}:{" "}
+              {run
+                ? new Date(run.heartbeat_at).toLocaleString(
+                    es ? "es-MX" : "en-US",
+                    { timeZone: schedule?.timeZone },
+                  )
+                : "—"}
+              {run && run.event !== "RUN_FINISHED"
+                ? es
+                  ? " · Sin finalización confirmada"
+                  : " · Completion not confirmed"
+                : ""}
+            </p>
+          </details>
           <p>
             {listener?.current
               ? es

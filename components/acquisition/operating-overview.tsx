@@ -88,7 +88,7 @@ export function OperatingOverview({
                   ? es
                     ? "La composición está lista para revisión; aún no autoriza contacto."
                     : "The composition is ready for review; it does not authorize outreach yet."
-                  : latestSession?.recurrence_state === "HELD_REVIEW"
+                  : latestSession?.status === "HELD_REVIEW"
                     ? es
                       ? "La ventana terminó y la recurrencia está detenida para revisión humana. Las candidatas y la evidencia se conservan."
                       : "The window ended and recurrence is held for Human review. Candidates and evidence remain available."
@@ -101,7 +101,7 @@ export function OperatingOverview({
             onNavigate(
               halt
                 ? "Work / Health"
-                : latestSession?.recurrence_state === "HELD_REVIEW"
+                : latestSession?.status === "HELD_REVIEW"
                   ? "Discovery"
                   : "Waves",
             )
@@ -115,7 +115,7 @@ export function OperatingOverview({
               ? es
                 ? "Revisar resultados"
                 : "Review results"
-              : latestSession?.recurrence_state === "HELD_REVIEW"
+              : latestSession?.status === "HELD_REVIEW"
                 ? es
                   ? "Revisar exploración"
                   : "Review discovery"
@@ -145,25 +145,36 @@ export function OperatingOverview({
             {review.discovery?.maximum ?? "—"}
           </strong>
         </div>
-        {[
-          ["READY_NOW", es ? "Listas ahora" : "Ready now"],
-          ["RETAINED", es ? "Retenidas" : "Retained"],
-          ["HOLD", es ? "Requieren revisión" : "Needs review"],
-          ["REJECTED", es ? "Rechazadas" : "Rejected"],
-        ].map(([key, label]) => (
-          <div key={key}>
-            <span>{label}</span>
-            <strong>{review.pool[key!] ?? 0}</strong>
-          </div>
-        ))}
         <div>
           <span>
-            {es ? "Nuevos contactos / intentos" : "New contacts / attempts"}
+            {es ? "Contactadas en exploración" : "Exploratory contacts"}
           </span>
-          <strong>
-            {review.newProspects} / {review.attempts}
-          </strong>
+          <strong>{contacted.length}</strong>
         </div>
+        {Object.values(review.pool).some((n) => n > 0) &&
+          [
+            ["READY_NOW", es ? "Listas ahora" : "Ready now"],
+            ["RETAINED", es ? "Retenidas" : "Retained"],
+            ["HOLD", es ? "Requieren revisión" : "Needs review"],
+            ["REJECTED", es ? "Rechazadas" : "Rejected"],
+          ].map(([key, label]) => (
+            <div key={key}>
+              <span>{label}</span>
+              <strong>{review.pool[key!] ?? 0}</strong>
+            </div>
+          ))}
+        {Object.values(review.pool).some((n) => n > 0) && (
+          <div>
+            <span>
+              {es
+                ? "Contactos / intentos de wave de Accounts"
+                : "Account-wave contacts / attempts"}
+            </span>
+            <strong>
+              {review.newProspects} / {review.attempts}
+            </strong>
+          </div>
+        )}
       </section>
       <section className="acq-panel">
         <h2>{es ? "Exploración de mercado" : "Market exploration"}</h2>

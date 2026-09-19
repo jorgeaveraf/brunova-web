@@ -8,6 +8,7 @@ import { EngineActivity } from "./engine-activity"
 import { ActivationPreflight } from "./activation-preflight"
 import { DiscoverySection } from "./discovery"
 import { OutreachState } from "./outreach-state"
+import { DiscoveryHealth } from "./discovery-health"
 import {
   OperatingOverview,
   OpportunityPool,
@@ -433,7 +434,10 @@ export function AcquisitionPortal({
       {tab === "Work / Health" && (
         <EngineActivity key={projectionRevision} locale={locale} />
       )}
-      {tab === "Work / Health" && (
+      {tab === "Work / Health" && cycle && (
+        <DiscoveryHealth key={projectionRevision} locale={locale} />
+      )}
+      {tab === "Work / Health" && !cycle && (
         <ActivationPreflight key={projectionRevision} locale={locale} />
       )}
       {tab === "Overview" && cycle && (

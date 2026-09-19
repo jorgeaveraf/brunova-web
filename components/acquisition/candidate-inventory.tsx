@@ -5,6 +5,11 @@ import {
   type DiscoveryTruth,
 } from "@/lib/acquisition-management-truth"
 
+const excerpt = (value: string, limit: number) =>
+  value.length <= limit
+    ? value
+    : `${value.slice(0, limit).replace(/\s+\S*$/, "")}…`
+
 export function CandidateInventory({
   data,
   locale,
@@ -95,43 +100,70 @@ export function CandidateInventory({
                 )
                 .join(" · ")}
             </p>
-            {!compact && candidate.discoveryReason && (
-              <p>
-                <strong>{es ? "Por qué apareció" : "Why it appeared"}:</strong>{" "}
-                {candidate.discoveryReason}
-              </p>
-            )}
             {!compact && candidate.target?.why && (
               <p>
                 <strong>
                   {es ? "Por qué se consideró" : "Why considered"}:
                 </strong>{" "}
-                {candidate.target.why}
+                {excerpt(candidate.target.why, 220)}
               </p>
             )}
+            {!compact &&
+              !candidate.target?.why &&
+              candidate.sourceHypothesis && (
+                <p>
+                  <strong>
+                    {es
+                      ? "Señal investigada, no confirmada"
+                      : "Signal investigated, not confirmed"}
+                    :
+                  </strong>{" "}
+                  {excerpt(candidate.sourceHypothesis, 160)}
+                </p>
+              )}
             {candidate.known && (
               <p>
                 <strong>{es ? "Qué sabemos" : "What we know"}:</strong>{" "}
-                {compact ? candidate.known.slice(0, 240) : candidate.known}
+                {excerpt(candidate.known, compact ? 180 : 240)}
               </p>
             )}
-            {!compact && candidate.sourceHypothesis && (
+            {!compact && candidate.lastWorkQuality && (
               <p>
                 <strong>
                   {es
-                    ? "Hipótesis de fuente, aún no demostrada"
-                    : "Source hypothesis, not yet proved"}
+                    ? "Calidad de la última investigación"
+                    : "Latest research quality"}
                   :
                 </strong>{" "}
-                {candidate.sourceHypothesis}
+                {candidate.lastWorkQuality === "JUSTIFIED"
+                  ? es
+                    ? "Justificada"
+                    : "Justified"
+                  : candidate.lastWorkQuality === "QUESTIONABLE"
+                    ? es
+                      ? "Cuestionable"
+                      : "Questionable"
+                    : candidate.lastWorkQuality === "WASTED"
+                      ? es
+                        ? "Sin valor proporcional"
+                        : "Not proportionate"
+                      : es
+                        ? "Bloqueada"
+                        : "Blocked"}
               </p>
             )}
             {!compact && (
               <>
                 <p>
                   <strong>{es ? "Qué falta" : "What remains unknown"}:</strong>{" "}
-                  {candidate.unknown ||
-                    (es ? "Sin síntesis reciente" : "No recent synthesis")}
+                  {excerpt(candidate.unknown, 180) ||
+                    (candidate.missingCodes.length
+                      ? es
+                        ? "Falta corroborar identidad, intervención o responsable del problema."
+                        : "Identity, intervention or problem ownership still needs corroboration."
+                      : es
+                        ? "Sin incógnita explícita registrada."
+                        : "No explicit unresolved question recorded.")}
                 </p>
                 <p>
                   <strong>
@@ -140,7 +172,7 @@ export function CandidateInventory({
                       : "Next legitimate action"}
                     :
                   </strong>{" "}
-                  {candidate.nextAction ||
+                  {excerpt(candidate.nextAction, 200) ||
                     (es
                       ? "Revisar evidencia antes de progresar"
                       : "Review evidence before progression")}
@@ -163,8 +195,56 @@ export function CandidateInventory({
                 )}
                 <details>
                   <summary>
-                    {es ? "Procedencia y recorrido" : "Provenance and journey"}
+                    {es
+                      ? "Evidencia, procedencia y recorrido"
+                      : "Evidence, provenance and journey"}
                   </summary>
+                  {candidate.discoveryReason && (
+                    <p>
+                      <strong>
+                        {es
+                          ? "Motivo original de búsqueda"
+                          : "Original search rationale"}
+                        :
+                      </strong>{" "}
+                      {candidate.discoveryReason}
+                    </p>
+                  )}
+                  {candidate.sourceHypothesis && (
+                    <p>
+                      <strong>
+                        {es
+                          ? "Hipótesis de fuente, aún no demostrada"
+                          : "Source hypothesis, not yet proved"}
+                        :
+                      </strong>{" "}
+                      {candidate.sourceHypothesis}
+                    </p>
+                  )}
+                  {candidate.known.length > 240 && (
+                    <p>
+                      <strong>
+                        {es ? "Investigación completa" : "Full research"}:
+                      </strong>{" "}
+                      {candidate.known}
+                    </p>
+                  )}
+                  {candidate.unknown.length > 180 && (
+                    <p>
+                      <strong>
+                        {es ? "Incógnitas completas" : "Full unknowns"}:
+                      </strong>{" "}
+                      {candidate.unknown}
+                    </p>
+                  )}
+                  {candidate.nextAction.length > 200 && (
+                    <p>
+                      <strong>
+                        {es ? "Siguiente acción completa" : "Full next action"}:
+                      </strong>{" "}
+                      {candidate.nextAction}
+                    </p>
+                  )}
                   <p>
                     {es ? "Fuentes" : "Sources"}:{" "}
                     {candidate.sources.join(", ") || "—"} ·{" "}
