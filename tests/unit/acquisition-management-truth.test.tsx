@@ -164,3 +164,21 @@ it("shows the latest durable routine outcome rather than an older candidate inve
     lastWorkQuality: "JUSTIFIED",
   })
 })
+
+it("keeps same-name candidate records separate and does not infer contact identity", () => {
+  const collision = {
+    ...fixture,
+    candidates: [
+      fixture.candidates[0],
+      { ...fixture.candidates[0], id: "c3" },
+    ],
+  } as DiscoveryTruth
+  const truth = candidateManagementTruth(collision)
+  expect(truth).toHaveLength(2)
+  expect(truth.every((candidate) => candidate.nameCollision)).toBe(true)
+  expect(truth.every((candidate) => !candidate.contacted)).toBe(true)
+  render(<CandidateInventory data={collision} locale="en" />)
+  expect(
+    screen.getAllByText(/Records share this name; they are not merged/),
+  ).toHaveLength(2)
+})

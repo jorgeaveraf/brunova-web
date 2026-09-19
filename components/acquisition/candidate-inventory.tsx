@@ -75,6 +75,13 @@ export function CandidateInventory({
         {candidates.map((candidate) => (
           <article key={candidate.id} className="acq-panel">
             <h4>{candidate.name}</h4>
+            {candidate.nameCollision && (
+              <p>
+                {es
+                  ? "Hay registros con este mismo nombre; no se fusionan sin evidencia de identidad."
+                  : "Records share this name; they are not merged without identity evidence."}
+              </p>
+            )}
             <p>
               <strong>{status(candidate)}</strong>
             </p>

@@ -90,6 +90,7 @@ export function candidateManagementTruth(data: DiscoveryTruth) {
     return {
       id: candidate.id,
       name: candidate.name ?? "Unknown organization",
+      nameCollision: (nameCounts.get(candidate.name ?? "") ?? 0) > 1,
       searchMarkets: candidate.market_contexts ?? [],
       identity: candidate.identity_state,
       screen: candidate.screen_state,
