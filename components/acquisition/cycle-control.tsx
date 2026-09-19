@@ -236,7 +236,14 @@ export function CycleControlSection({
         </>
       )}
       {review && (
-        <>
+        <details open={review.waves.length > 0 || (review.discovery?.admitted ?? 0) > 0}>
+          <summary>
+            {es
+              ? "Waves de Accounts · controles y presupuesto"
+              : "Account waves · controls and budget"}
+            {(review.discovery?.admitted ?? 0) === 0 &&
+              (es ? " · todavía sin Accounts admitidos" : " · no admitted Accounts yet")}
+          </summary>
           <p role="status">
             {review.control?.technical_halt ||
             review.control?.state === "STOPPED"
@@ -465,8 +472,8 @@ export function CycleControlSection({
             {review.markets.map((m) => (
               <li key={m.country ?? "unknown"}>
                 {m.country ?? (es ? "País desconocido" : "Country unknown")}:{" "}
-                {m.discovered} {es ? "descubiertas;" : "discovered;"}{" "}
-                {m.qualified} {es ? "calificadas" : "qualified"}
+                {m.discovered} {es ? "Accounts admitidos;" : "admitted Accounts;"}{" "}
+                {m.qualified} {es ? "Accounts calificados" : "qualified Accounts"}
               </li>
             ))}
           </ul>
@@ -571,7 +578,7 @@ export function CycleControlSection({
                 : "Cumulative Cycle outcomes"}
             </h3>
             <p>
-              {es ? "Entregas confirmadas" : "Confirmed deliveries"}:{" "}
+              {es ? "Entregas de wave de Accounts" : "Account-wave deliveries"}:{" "}
               {review.delivery?.SUCCEEDED ?? 0}
             </p>
             <p>
@@ -686,7 +693,7 @@ export function CycleControlSection({
                 ))}
               </fieldset>
             )}
-        </>
+        </details>
       )}
       <button disabled={pending} onClick={() => void load()}>
         {es ? "Actualizar control del Cycle" : "Refresh Cycle control"}

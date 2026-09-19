@@ -190,7 +190,7 @@ it("shows review outcomes in business language before technical JSON", async () 
       locale="en"
     />,
   )
-  expect(await screen.findByText("Confirmed deliveries: 1")).toBeInTheDocument()
+  expect(await screen.findByText("Account-wave deliveries: 1")).toBeInTheDocument()
   expect(
     screen.getByText("Response requiring interpretation: 1"),
   ).toBeInTheDocument()

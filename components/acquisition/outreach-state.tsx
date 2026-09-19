@@ -66,7 +66,9 @@ export function OutreachState({ locale }: { locale: Locale }) {
               : "Retained · Contacted · Waiting for reply"}
           </p>
           <p>
-            <strong>{es ? "Intentos lógicos" : "Logical attempts"}:</strong>{" "}
+            <strong>
+              {es ? "Intentos técnicos registrados" : "Recorded technical attempts"}:
+            </strong>{" "}
             {c.exactEffect?.logical_attempts ?? "—"} ·{" "}
             <strong>
               {es ? "Seguimiento autorizado" : "Follow-up authority"}:
@@ -82,6 +84,11 @@ export function OutreachState({ locale }: { locale: Locale }) {
                 : es
                   ? "Sin confirmar"
                   : "Unconfirmed"}
+          </p>
+          <p>
+            {es
+              ? "El proveedor confirmó este mensaje; los intentos técnicos no equivalen a correos distintos."
+              : "The provider confirmed this message; technical attempts are not distinct emails."}
           </p>
           {c.exactEffect?.subject && (
             <p>
@@ -142,9 +149,9 @@ export function OutreachState({ locale }: { locale: Locale }) {
         </article>
       ))}
       <p>
-        {es ? "Trabajo exploratorio reciente" : "Recent exploratory work"}:{" "}
+        {es ? "Última ventana de exploración" : "Latest exploratory window"}:{" "}
         {current
-          ? `${current.local_date} · ${current.status.replaceAll("_", " ")} · ${current.recurrence_state.replaceAll("_", " ")}`
+          ? `${String(current.local_date).slice(0, 10)} · ${current.status === "HELD_REVIEW" ? (es ? "cerrada, en revisión humana" : "closed, awaiting Human review") : current.status.replaceAll("_", " ")}`
           : es
             ? "sin ventana reciente"
             : "no recent window"}
