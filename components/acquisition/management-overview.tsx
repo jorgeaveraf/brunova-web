@@ -162,15 +162,18 @@ export function ManagementOverview({
               <p>
                 {deferred
                   ? es
-                    ? "El allocator decidió diferir. No encontró trabajo restante que justificara otra unidad de capacidad."
-                    : "The allocator deferred. Remaining work did not justify another capacity unit."
+                    ? "El Engine decidió esperar. El trabajo restante no justificaba otra unidad de capacidad."
+                    : "The Engine deferred. Remaining work did not justify another capacity unit."
                   : es
                     ? "La ejecución registrada y sus límites están disponibles en Discovery."
                     : "Recorded execution and its limits are available in Discovery."}
               </p>
               <div className="acq-inline-facts">
                 <span>
-                  {executed} {es ? "unidades de investigación ejecutadas" : "research units executed"}
+                  {executed}{" "}
+                  {es
+                    ? "WorkItems de investigación ejecutados"
+                    : "research WorkItems executed"}
                 </span>
                 <span>
                   {requests} {es ? "consultas de fuente" : "source requests"}

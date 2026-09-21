@@ -59,67 +59,28 @@ export function OutreachState({ locale }: { locale: Locale }) {
         <article className="acq-panel" key={c.id}>
           <h3>{c.name}</h3>
           <p>
-            <strong>{es ? "Estado" : "State"}:</strong>{" "}
             {es
               ? "Conservada · Contactada · Esperando respuesta"
               : "Retained · Contacted · Waiting for reply"}
           </p>
           <p>
-            <strong>
-              {es
-                ? "Intentos técnicos registrados"
-                : "Recorded technical attempts"}
-              :
-            </strong>{" "}
-            {c.exactEffect?.logical_attempts ?? "—"} ·{" "}
-            <strong>
-              {es ? "Seguimiento autorizado" : "Follow-up authority"}:
-            </strong>{" "}
-            {c.followUpAuthority === "NONE"
-              ? es
-                ? "No"
-                : "No"
-              : c.followUpAuthority
-                ? es
-                  ? "Sólo con autorización exacta"
-                  : "Only with exact authorization"
-                : es
-                  ? "Sin confirmar"
-                  : "Unconfirmed"}
-          </p>
-          <p>
             {es
-              ? "El proveedor confirmó este mensaje; los intentos técnicos no equivalen a correos distintos."
-              : "The provider confirmed this message; technical attempts are not distinct emails."}
+              ? "Un mensaje enviado · seguimiento:"
+              : "One message sent · follow-up:"}{" "}
+            <strong>
+              {c.followUpAuthority === "NONE"
+                ? es
+                  ? "no autorizado"
+                  : "not authorized"
+                : c.followUpAuthority
+                  ? es
+                    ? "Sólo con autorización exacta"
+                    : "Only with exact authorization"
+                  : es
+                    ? "Sin confirmar"
+                    : "Unconfirmed"}
+            </strong>
           </p>
-          {c.exactEffect?.subject && (
-            <p>
-              <strong>{es ? "Último mensaje" : "Last message"}:</strong>{" "}
-              {c.exactEffect.subject}
-            </p>
-          )}
-          {c.target?.hypothesis && (
-            <p>
-              <strong>
-                {es
-                  ? "Posible intervención, no dolor confirmado"
-                  : "Possible intervention, not confirmed pain"}
-                :
-              </strong>{" "}
-              {c.target.hypothesis}
-            </p>
-          )}
-          {c.known && (
-            <p>
-              <strong>
-                {es
-                  ? "Lo que cambió con la investigación"
-                  : "What research established"}
-                :
-              </strong>{" "}
-              {c.known}
-            </p>
-          )}
           {c.nextReviewAt && (
             <p>
               <strong>
@@ -139,9 +100,33 @@ export function OutreachState({ locale }: { locale: Locale }) {
           <details>
             <summary>
               {es
-                ? "Mensaje y evidencia técnica"
-                : "Message and technical evidence"}
+                ? "Contexto, mensaje y evidencia"
+                : "Context, message and evidence"}
             </summary>
+            {c.target?.hypothesis && (
+              <p>
+                <strong>{es ? "Hipótesis" : "Hypothesis"}:</strong>{" "}
+                {c.target.hypothesis}
+              </p>
+            )}
+            {c.known && (
+              <p>
+                <strong>{es ? "Evidencia" : "Evidence"}:</strong> {c.known}
+              </p>
+            )}
+            <p>
+              {es ? "Intentos técnicos" : "Technical attempts"}:{" "}
+              {c.exactEffect?.logical_attempts ?? "—"}.{" "}
+              {es
+                ? "No equivalen a mensajes distintos."
+                : "They are not distinct messages."}
+            </p>
+            {c.exactEffect?.subject && (
+              <p>
+                <strong>{es ? "Asunto" : "Subject"}:</strong>{" "}
+                {c.exactEffect.subject}
+              </p>
+            )}
             <p>{c.exactEffect?.text}</p>
             <p>
               {es ? "Estado del efecto" : "Effect status"}:{" "}
