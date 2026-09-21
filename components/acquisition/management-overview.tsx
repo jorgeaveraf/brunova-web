@@ -172,8 +172,8 @@ export function ManagementOverview({
                 <span>
                   {executed}{" "}
                   {es
-                    ? "WorkItems de investigación ejecutados"
-                    : "research WorkItems executed"}
+                    ? "tareas de investigación ejecutadas"
+                    : "research tasks executed"}
                 </span>
                 <span>
                   {requests} {es ? "consultas de fuente" : "source requests"}

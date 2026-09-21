@@ -90,8 +90,7 @@ export function OutreachState({ locale }: { locale: Locale }) {
                 dateStyle: "medium",
                 timeStyle: "short",
                 timeZone: "America/Mexico_City",
-              }).format(new Date(c.nextReviewAt))}
-              .{" "}
+              }).format(new Date(c.nextReviewAt))}{" "}
               {es
                 ? "La fecha no autoriza otro envío."
                 : "The date does not authorize another send."}

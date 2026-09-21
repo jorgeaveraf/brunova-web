@@ -260,6 +260,11 @@ it("shows epistemic distinctions, confirms disposition and displays Engine refil
     }
   })
   render(<AcquisitionPortal session={session} locale="es" />)
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Necesita tu atención" }),
+    ).toBeEnabled(),
+  )
   if (
     screen.queryByRole("button", { name: "Necesita tu atención" }) &&
     !screen.queryByText("Aún no hay un ciclo de Adquisición.")
@@ -297,6 +302,11 @@ it("409 refreshes current state without retrying with a new version", async () =
     .spyOn(api, "disposition")
     .mockRejectedValue(new AcquisitionError(409))
   render(<AcquisitionPortal session={session} locale="es" />)
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Necesita tu atención" }),
+    ).toBeEnabled(),
+  )
   if (
     screen.queryByRole("button", { name: "Necesita tu atención" }) &&
     !screen.queryByText("Aún no hay un ciclo de Adquisición.")
@@ -334,6 +344,11 @@ it("network retry retains command ID and payload; read-only users have no decisi
     .spyOn(api, "disposition")
     .mockRejectedValue(new AcquisitionError(503))
   render(<AcquisitionPortal session={session} locale="es" />)
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Necesita tu atención" }),
+    ).toBeEnabled(),
+  )
   if (
     screen.queryByRole("button", { name: "Necesita tu atención" }) &&
     !screen.queryByText("Aún no hay un ciclo de Adquisición.")
@@ -407,6 +422,11 @@ it.each(["en", "es"] as const)(
       <AcquisitionPortal session={session} locale={locale} />,
     )
     const t = (key: Parameters<typeof text>[1]) => text(locale, key)
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: t("Necesita tu atención") }),
+      ).toBeEnabled(),
+    )
     fireEvent.click(
       screen.getByRole("button", { name: t("Necesita tu atención") }),
     )
@@ -508,12 +528,14 @@ it("navigation keeps the selected section aligned with its content without a pag
   const { container } = render(
     <AcquisitionPortal session={session} locale="en" />,
   )
+  expect(screen.getByRole("button", { name: "Settings" })).toBeDisabled()
   await screen.findByRole("heading", { name: /Cycle 1/ })
   await waitFor(() =>
     expect(
       screen.queryByText(text("en", "Actualizando estado del Engine…")),
     ).not.toBeInTheDocument(),
   )
+  expect(screen.getByRole("button", { name: "Settings" })).toBeEnabled()
   const panel = container.querySelector<HTMLElement>("#acq-active-panel")!
   const sections = [
     ["Discovery", "Market discovery"],

@@ -413,6 +413,7 @@ export function AcquisitionPortal({
             key={key}
             aria-current={tab === key ? "page" : undefined}
             aria-controls="acq-active-panel"
+            disabled={loading}
             onClick={() => setTab(key!)}
           >
             {label}
@@ -444,10 +445,16 @@ export function AcquisitionPortal({
           />
         )}
         {tab === "Work / Health" && cycle && (
-          <DiscoveryHealth key={`discovery-health:${projectionRevision}`} locale={locale} />
+          <DiscoveryHealth
+            key={`discovery-health:${projectionRevision}`}
+            locale={locale}
+          />
         )}
         {tab === "Work / Health" && !cycle && (
-          <ActivationPreflight key={`preflight:${projectionRevision}`} locale={locale} />
+          <ActivationPreflight
+            key={`preflight:${projectionRevision}`}
+            locale={locale}
+          />
         )}
         {tab === "Overview" && cycle && (
           <ManagementOverview
