@@ -23,6 +23,7 @@ export function PolicySettings({
     [reason, setReason] = useState(""),
     [pending, setPending] = useState(false),
     [notice, setNotice] = useState(""),
+    [loadFailed, setLoadFailed] = useState(false),
     [proposal, setProposal] = useState<{
       id: string
       hash: string
@@ -60,12 +61,14 @@ export function PolicySettings({
         }
       })
       .catch(() => {
-        if (!stopped)
+        if (!stopped) {
+          setLoadFailed(true)
           setNotice(
             es
               ? "No pudimos consultar la configuración. Intenta de nuevo."
               : "Settings could not be verified. Try again.",
           )
+        }
       })
     return () => {
       stopped = true
@@ -163,6 +166,7 @@ export function PolicySettings({
             setProposal(null)
             retry.current = null
             setNotice("")
+            setLoadFailed(false)
           } catch {
             setNotice(
               es
@@ -177,40 +181,120 @@ export function PolicySettings({
         {es ? "Actualizar configuración" : "Refresh settings"}
       </button>
       {!state ? (
-        <p>{es ? "Consultando configuración…" : "Loading settings…"}</p>
+        <p role={loadFailed ? "alert" : "status"}>
+          {loadFailed
+            ? es
+              ? "Configuración no verificable. Usa Actualizar configuración para reintentar."
+              : "Settings unavailable. Use Refresh settings to retry."
+            : es
+              ? "Consultando configuración…"
+              : "Loading settings…"}
+        </p>
       ) : (
         <>
-          <h3>{es ? "Mercado y discovery" : "Market and discovery"}</h3>
-          <p>
-            {es
-              ? "México y Estados Unidos, sin cuotas de calidad. Cambiar mercados requiere revisión material de política."
-              : "Mexico and United States, without qualification quotas. Changing markets requires material policy review."}
-          </p>
-          <p>
-            {es
-              ? "Empresas que pueden entrar a investigación"
-              : "Companies that may enter research"}
-            :{" "}
-            <strong>
-              {cycleId ? (snapshotMaximum ?? "—") : String(setting?.value)}
-            </strong>
-          </p>
-          {cycleId && (
-            <p>
-              {es
-                ? `La política fijada en este Cycle es su autoridad. El candidato para una futura activación tiene un máximo de ${String(setting?.value)}; no cambia este Cycle.`
-                : `This Cycle's fixed policy is authoritative. The candidate for a future activation has a maximum of ${String(setting?.value)}; it does not change this Cycle.`}
-            </p>
-          )}
-          <p>
-            {setting?.editable
-              ? es
-                ? "Puede proponerse una nueva versión antes de crear el Cycle, dentro del límite aprobado de 75."
-                : "A new version may be proposed before Cycle creation, within the approved ceiling of 75."
-              : es
-                ? "Bloqueado: un Cycle ya conserva su política. Sus reglas históricas no se modifican."
-                : "Locked: a Cycle already holds its policy snapshot. Historical rules cannot change."}
-          </p>
+          <div className="acq-settings-grid">
+            <section>
+              <span className="acq-eyebrow">{es ? "Mercado" : "Market"}</span>
+              <h3>
+                {es ? "México y Estados Unidos" : "Mexico and United States"}
+              </h3>
+              <p>
+                {es
+                  ? "Sin cuotas por país. Cambiar mercados exige revisión material de política."
+                  : "No country quotas. Changing markets requires material policy review."}
+              </p>
+              <small>
+                {es
+                  ? "No editable en este Cycle"
+                  : "Not editable in this Cycle"}
+              </small>
+            </section>
+            <section>
+              <span className="acq-eyebrow">Discovery</span>
+              <h3>
+                {cycleId
+                  ? (snapshotMaximum ?? (es ? "Verificando…" : "Checking…"))
+                  : String(setting?.value ?? "—")}{" "}
+                {es ? "empresas máximo" : "companies maximum"}
+              </h3>
+              <p>
+                {es
+                  ? "Es un techo de admisión, no una meta que deba llenarse."
+                  : "An admission ceiling, not a target to fill."}
+              </p>
+              <small>
+                {cycleId
+                  ? es
+                    ? "Snapshot actual inmutable; una versión futura no lo altera"
+                    : "Current snapshot immutable; a future version does not change it"
+                  : setting?.editable
+                    ? es
+                      ? "Propuesta gobernada disponible antes de activar"
+                      : "Governed proposal available before activation"
+                    : es
+                      ? "Bloqueado"
+                      : "Locked"}
+              </small>
+            </section>
+            <section>
+              <span className="acq-eyebrow">
+                {es ? "Calificación" : "Qualification"}
+              </span>
+              <h3>{es ? "Evidencia, no score" : "Evidence, not a score"}</h3>
+              <p>
+                {es
+                  ? "Capacidad + complejidad + señal de intervención. La incertidumbre se conserva para revisión."
+                  : "Capacity + complexity + intervention signal. Uncertainty remains available for review."}
+              </p>
+              <small>
+                {es ? "Cambio material de política" : "Material policy change"}
+              </small>
+            </section>
+            <section>
+              <span className="acq-eyebrow">
+                {es ? "Ejecución" : "Execution"}
+              </span>
+              <h3>12 {es ? "prospectos" : "prospects"} · 3 waves × 4</h3>
+              <p>
+                {es
+                  ? "Cada wave necesita aprobación exacta. Estos límites no se editan operativamente."
+                  : "Each wave needs exact approval. These limits are not operational edits."}
+              </p>
+              <small>
+                {es ? "Snapshot del Cycle bloqueado" : "Cycle snapshot locked"}
+              </small>
+            </section>
+            <section>
+              <span className="acq-eyebrow">Email</span>
+              <h3>
+                {es ? "Listo, sin envío activo" : "Ready, sending inactive"}
+              </h3>
+              <p>
+                {es
+                  ? "2 nuevos contactos y 4 intentos por día UTC; 24 intentos por Cycle. Mínimo 30 minutos; un seguimiento tras 7 días, sin respuesta y con autorización nueva."
+                  : "2 new contacts and 4 attempts per UTC day; 24 attempts per Cycle. At least 30 minutes apart; one follow-up after 7 days, without a response and with new authorization."}
+              </p>
+              <small>
+                {es
+                  ? "No editable en este Cycle"
+                  : "Not editable in this Cycle"}
+              </small>
+            </section>
+            <section>
+              <span className="acq-eyebrow">Management</span>
+              <h3>{es ? "Autonomía por wave" : "Wave-bounded autonomy"}</h3>
+              <p>
+                {es
+                  ? "Pancracio opera sólo dentro de una wave aprobada; la siguiente exige revisión y autorización nuevas."
+                  : "Pancracio operates only within an approved wave; the next requires new review and authorization."}
+              </p>
+              <small>
+                {es
+                  ? "La reorientación operativa no cambia la política"
+                  : "Operational reorientation does not change policy"}
+              </small>
+            </section>
+          </div>
           {setting?.editable &&
             session.actor.capabilities.includes("MANAGE_CYCLE") && (
               <fieldset disabled={pending}>
@@ -269,29 +353,6 @@ export function PolicySettings({
                 )}
               </fieldset>
             )}
-          <h3>{es ? "Calificación" : "Qualification"}</h3>
-          <p>
-            {es
-              ? "Capacidad + complejidad + señal de intervención. La incertidumbre se conserva para revisión; no se convierte en rechazo automático. Cambiar esta filosofía requiere revisión material."
-              : "Capacity + complexity + intervention signal. Uncertainty is retained for review, not automatically rejected. Changing this philosophy requires material review."}
-          </p>
-          <h3>{es ? "Ejecución y Email" : "Execution and Email"}</h3>
-          <p>
-            {es
-              ? "Hasta 12 prospectos, en 3 waves de hasta 4. Email: 2 nuevos contactos y 4 intentos al día UTC, 24 intentos por Cycle, separación mínima de 30 minutos. Un seguimiento, después de 7 días, sólo sin respuesta y con nueva autorización."
-              : "Up to 12 prospects, in 3 waves of up to 4. Email: 2 new contacts and 4 attempts per UTC day, 24 attempts per Cycle, at least 30 minutes apart. One follow-up after 7 days, only without a response and with new authorization."}
-          </p>
-          <p>
-            {es
-              ? "Estos límites requieren revisión de política, no una edición operativa. Email sigue listo pero deshabilitado."
-              : "These limits require policy review, not an operational edit. Email remains ready but disabled."}
-          </p>
-          <h3>{es ? "Gestión" : "Management"}</h3>
-          <p>
-            {es
-              ? "Pancracio opera dentro de una wave aprobada. La siguiente requiere revisión y autorización nuevas. La composición, retención e investigación pueden reorientarse mediante sus controles gobernados, sin cambiar la política."
-              : "Pancracio operates within an approved wave. The next requires new review and authorization. Composition, retention and research can be redirected through governed controls without changing policy."}
-          </p>
           <details>
             <summary>{es ? "Detalle técnico" : "Technical detail"}</summary>
             <p>

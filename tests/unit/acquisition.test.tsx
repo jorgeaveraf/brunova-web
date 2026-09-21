@@ -425,9 +425,7 @@ it.each(["en", "es"] as const)(
       }),
     )
     expect(
-      await screen.findByRole("heading", {
-        name: locale === "es" ? "Qué sigue" : "What happens next",
-      }),
+      await screen.findByRole("heading", { name: /Cycle 1/ }),
     ).toBeVisible()
     fireEvent.click(
       screen.getByRole("button", {
@@ -436,7 +434,10 @@ it.each(["en", "es"] as const)(
     )
     expect(
       await screen.findByRole("heading", {
-        name: locale === "es" ? "Retenidas" : "Retained",
+        name:
+          locale === "es"
+            ? "Organizaciones conservadas para consideración"
+            : "Organizations retained for consideration",
       }),
     ).toBeVisible()
     fireEvent.click(
@@ -501,6 +502,43 @@ it.each(["en", "es"] as const)(
     )
   },
 )
+
+it("navigation keeps the selected section aligned with its content without a page refresh", async () => {
+  populated()
+  const { container } = render(
+    <AcquisitionPortal session={session} locale="en" />,
+  )
+  await screen.findByRole("heading", { name: /Cycle 1/ })
+  await waitFor(() =>
+    expect(
+      screen.queryByText(text("en", "Actualizando estado del Engine…")),
+    ).not.toBeInTheDocument(),
+  )
+  const panel = container.querySelector<HTMLElement>("#acq-active-panel")!
+  const sections = [
+    ["Discovery", "Market discovery"],
+    ["Opportunities", "Organizations retained for consideration"],
+    ["Waves", "Outreach and waves"],
+    ["Needs your attention", "Needs your attention"],
+    ["Settings", "Cycle settings"],
+    ["Work / Health", "Operating state"],
+    ["Overview", "Cycle 1"],
+  ] as const
+  for (const [tab, heading] of sections) {
+    const button = screen.getByRole("button", { name: tab })
+    fireEvent.click(button)
+    expect(button).toHaveAttribute("aria-current", "page")
+    expect(
+      await within(panel).findByRole("heading", {
+        name: new RegExp(heading, "i"),
+      }),
+    ).toBeVisible()
+    if (tab !== "Discovery")
+      expect(
+        within(panel).queryByRole("heading", { name: "Market discovery" }),
+      ).not.toBeInTheDocument()
+  }
+})
 
 it.each(["en", "es"] as const)(
   "%s empty UI has no opposite-locale navigation or gate labels",

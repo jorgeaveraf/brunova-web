@@ -8,6 +8,7 @@ import {
   AllocationComparison,
 } from "./allocation-comparison"
 import { CandidateInventory } from "./candidate-inventory"
+import { readDiscovery } from "@/lib/acquisition-discovery-read"
 
 export function DiscoverySection({
   locale,
@@ -45,8 +46,7 @@ export function DiscoverySection({
     [reviewNotice, setReviewNotice] = useState<string | null>(null)
   useEffect(() => {
     let live = true
-    api
-      .discovery()
+    readDiscovery()
       .then((value) => {
         if (live) setData(value)
       })
@@ -200,17 +200,32 @@ export function DiscoverySection({
       {data && (
         <>
           <section className="acq-panel">
-            <h3>{es ? "Qué ha producido la búsqueda" : "What discovery has produced"}</h3>
+            <h3>
+              {es
+                ? "Qué ha producido la búsqueda"
+                : "What discovery has produced"}
+            </h3>
             <p>
-              {es ? "Observaciones" : "Observations"}: {data.totals.observations} ·{" "}
-              {es ? "candidatas" : "candidates"}: {data.totals.candidates} ·{" "}
-              {es ? "identidades respaldadas" : "supported identities"}: {data.totals.resolved}.
+              {es ? "Observaciones" : "Observations"}:{" "}
+              {data.totals.observations} · {es ? "candidatas" : "candidates"}:{" "}
+              {data.totals.candidates} ·{" "}
+              {es ? "identidades respaldadas" : "supported identities"}:{" "}
+              {data.totals.resolved}.
             </p>
             {routineSources.length > 0 && (
               <p>
-                {es ? "Última ventana, uso de fuentes" : "Latest window, source use"}: {routineSources.map((source) =>
-                  `${String(source.source)} · ${String(source.requests)} ${es ? "consultas" : "requests"} · ${String(source.candidate_contributions)} ${es ? "candidatas aportadas" : "candidates contributed"}`,
-                ).join("; ")}. {es
+                {es
+                  ? "Última ventana, uso de fuentes"
+                  : "Latest window, source use"}
+                :{" "}
+                {routineSources
+                  .map(
+                    (source) =>
+                      `${String(source.source)} · ${String(source.requests)} ${es ? "consultas" : "requests"} · ${String(source.candidate_contributions)} ${es ? "candidatas aportadas" : "candidates contributed"}`,
+                  )
+                  .join("; ")}
+                .{" "}
+                {es
                   ? "Una fuente puede devolver resultados sin mejorar la comprensión ni justificar contacto."
                   : "A source may return results without improving understanding or justifying outreach."}
               </p>
@@ -252,14 +267,18 @@ export function DiscoverySection({
               </details>
             )}
             {routineSession && (
-              <section
-                aria-label={es ? "Última ventana" : "Latest window"}
-              >
+              <section aria-label={es ? "Última ventana" : "Latest window"}>
                 <h3>{es ? "Última ventana" : "Latest window"}</h3>
                 <p>
                   <strong>{routineSession.status.replaceAll("_", " ")}</strong>{" "}
                   · 17:00–19:00 America/Mexico_City ·{" "}
-                  {es ? "nuevos efectos autorizados" : "new effects authorized"}: {routineSession.prospect_effects_authorized ? (es ? "sí" : "yes") : "no"}
+                  {es ? "nuevos efectos autorizados" : "new effects authorized"}
+                  :{" "}
+                  {routineSession.prospect_effects_authorized
+                    ? es
+                      ? "sí"
+                      : "yes"
+                    : "no"}
                 </p>
                 <p className="acq-muted">
                   {es
@@ -275,7 +294,7 @@ export function DiscoverySection({
                     {String(routineSession.capacity.timeCapacityMinutes ?? 0)}{" "}
                     min · {String(routineSession.capacity.unitsUsed ?? 0)}/
                     {String(routineSession.capacity.workUnitBudget ?? 0)}{" "}
-                    {es ? "unidades" : "units"} ·{" "}
+                    {es ? "slots de decisión" : "decision slots"} ·{" "}
                     {String(routineSession.capacity.requestsUsed ?? 0)}/
                     {String(routineSession.capacity.sourceRequestBudget ?? 0)}{" "}
                     {es ? "lecturas" : "reads"}
@@ -359,7 +378,11 @@ export function DiscoverySection({
                 )}
                 {routineSession.report && (
                   <article className="acq-panel">
-                    <h4>{es ? "Reporte de esa ventana" : "Report from that window"}</h4>
+                    <h4>
+                      {es
+                        ? "Reporte de esa ventana"
+                        : "Report from that window"}
+                    </h4>
                     <p>{String(routineSession.report.summary)}</p>
                     <p className="acq-muted">
                       {es

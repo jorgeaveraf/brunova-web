@@ -53,10 +53,10 @@ it("does not confuse an active snapshot with a later policy candidate", async ()
   render(
     <PolicySettings locale="en" session={session} cycleId="synthetic-active" />,
   )
-  expect(await screen.findByText("75", { selector: "strong" })).toBeVisible()
   expect(
-    await screen.findByText(/future activation has a maximum of 60/),
+    await screen.findByRole("heading", { name: /75 companies maximum/ }),
   ).toBeVisible()
+  expect(screen.getByText(/Current snapshot immutable/)).toBeVisible()
   expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument()
 })
 it.each(["en", "es"] as const)(

@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { acquisitionApi as api } from "@/lib/acquisition-api"
 import type { Locale } from "@/lib/i18n"
+import { readDiscovery } from "@/lib/acquisition-discovery-read"
 import {
   candidateManagementTruth,
   type DiscoveryTruth,
@@ -15,8 +15,7 @@ export function OutreachState({ locale }: { locale: Locale }) {
   const [failed, setFailed] = useState(false)
   useEffect(() => {
     let live = true
-    api
-      .discovery()
+    readDiscovery()
       .then((d) => {
         if (live) setData(d)
       })
@@ -67,7 +66,10 @@ export function OutreachState({ locale }: { locale: Locale }) {
           </p>
           <p>
             <strong>
-              {es ? "Intentos técnicos registrados" : "Recorded technical attempts"}:
+              {es
+                ? "Intentos técnicos registrados"
+                : "Recorded technical attempts"}
+              :
             </strong>{" "}
             {c.exactEffect?.logical_attempts ?? "—"} ·{" "}
             <strong>

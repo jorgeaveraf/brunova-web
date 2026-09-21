@@ -134,8 +134,10 @@ it("retains pre-Account candidates and binds contacted/waiting to the exact orga
   expect(
     screen.getByText("Retained · Contacted · Waiting for reply"),
   ).toBeVisible()
-  expect(screen.getByText(/2 retained candidates · 0 Accounts/)).toBeVisible()
-  expect(screen.getByText(/Synthetic change signal/)).toBeVisible()
+  expect(
+    screen.getByRole("heading", { name: "Discovered inventory" }),
+  ).toBeVisible()
+  expect(screen.getByText(/Synthetic change signal/)).toBeInTheDocument()
 })
 
 it("shows the latest durable routine outcome rather than an older candidate investigation", () => {
@@ -168,10 +170,7 @@ it("shows the latest durable routine outcome rather than an older candidate inve
 it("keeps same-name candidate records separate and does not infer contact identity", () => {
   const collision = {
     ...fixture,
-    candidates: [
-      fixture.candidates[0],
-      { ...fixture.candidates[0], id: "c3" },
-    ],
+    candidates: [fixture.candidates[0], { ...fixture.candidates[0], id: "c3" }],
   } as DiscoveryTruth
   const truth = candidateManagementTruth(collision)
   expect(truth).toHaveLength(2)
@@ -179,6 +178,11 @@ it("keeps same-name candidate records separate and does not infer contact identi
   expect(truth.every((candidate) => !candidate.contacted)).toBe(true)
   render(<CandidateInventory data={collision} locale="en" />)
   expect(
-    screen.getAllByText(/Records share this name; they are not merged/),
-  ).toHaveLength(2)
+    screen.getByRole("heading", { name: /2 unresolved records/ }),
+  ).toBeVisible()
+  expect(
+    screen.getByText(/They share a name, not a proven identity/),
+  ).toBeVisible()
+  expect(screen.getByText("Record A")).toBeVisible()
+  expect(screen.getByText("Record B")).toBeVisible()
 })

@@ -202,6 +202,7 @@ async function request<T>(
       ...init,
       credentials: "same-origin",
       cache: "no-store",
+      signal: init?.signal ?? AbortSignal.timeout(30_000),
     })
   } catch {
     throw new AcquisitionError(503)

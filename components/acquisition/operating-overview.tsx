@@ -8,7 +8,8 @@ import {
 import type { Locale } from "@/lib/i18n"
 import { readinessText } from "@/lib/acquisition-readiness"
 import { EngineActivity } from "./engine-activity"
-import { CandidateInventory } from "./candidate-inventory"
+import { CandidateOpportunities } from "./candidate-opportunities"
+import { readDiscovery } from "@/lib/acquisition-discovery-read"
 import {
   candidateManagementTruth,
   marketContextCounts,
@@ -30,7 +31,7 @@ export function OperatingOverview({
     [failed, setFailed] = useState(false)
   useEffect(() => {
     let live = true
-    Promise.all([api.cycleReview(cycleId), api.discovery()])
+    Promise.all([api.cycleReview(cycleId), readDiscovery()])
       .then(([r, d]) => {
         if (live) {
           setReview(r.review)
@@ -287,8 +288,7 @@ export function OpportunityPool({
   useEffect(() => {
     let live = true
     if (!cycleId) return
-    api
-      .discovery()
+    readDiscovery()
       .then((d) => {
         if (live) setDiscovery(d)
       })
@@ -330,7 +330,7 @@ export function OpportunityPool({
           ? "No seleccionada no significa rechazada. La evidencia y las oportunidades se conservan fuera de la wave."
           : "Not selected does not mean rejected. Evidence and opportunities remain available outside the wave."}
       </p>
-      {discovery && <CandidateInventory data={discovery} locale={locale} />}
+      {discovery && <CandidateOpportunities data={discovery} locale={locale} />}
       {discoveryFailed && (
         <p role="alert">
           {es
@@ -339,6 +339,13 @@ export function OpportunityPool({
         </p>
       )}
       <h3>{es ? "Accounts admitidos" : "Admitted Accounts"}</h3>
+      {!items.length && (
+        <p className="acq-muted">
+          {es
+            ? "Todavía no hay Accounts admitidos. El pool de candidatas de arriba se conserva."
+            : "No Accounts admitted yet. The Candidate pool above remains durable."}
+        </p>
+      )}
       {failed && (
         <p role="alert">
           {es
@@ -353,67 +360,70 @@ export function OpportunityPool({
             : "No real companies have been researched yet."}
         </p>
       )}
-      {[
-        ["READY_NOW", es ? "Listas ahora" : "Ready now"],
-        ["RETAINED", es ? "Retenidas" : "Retained"],
-        ["HOLD", es ? "Requieren revisión" : "Needs review"],
+      {items.length > 0 &&
         [
-          "REJECTED",
-          es ? "Rechazadas con evidencia" : "Evidence-supported rejection",
-        ],
-      ].map(([key, label]) => (
-        <section className="acq-panel" key={key}>
-          <h3>{label}</h3>
-          {!items.some((i) => i.pool_state === key) && (
-            <p>
-              {es
-                ? "Sin oportunidades en esta página."
-                : "No opportunities on this page."}
-            </p>
-          )}
-          <div className="acq-cards">
-            {items
-              .filter((i) => i.pool_state === key)
-              .map((i) => (
-                <article key={i.account_id}>
-                  <h4>{i.display_name}</h4>
-                  <p>
-                    {i.country ??
-                      (es ? "País sin confirmar" : "Country unconfirmed")}{" "}
-                    · {i.canonical_domain}
-                  </p>
-                  <p>
-                    {i.intervention_hypothesis ??
-                      (es
-                        ? "Hipótesis de intervención pendiente de evidencia."
-                        : "Intervention hypothesis awaiting evidence.")}
-                  </p>
-                  <p>
-                    {es ? "Responsable" : "Problem owner"}:{" "}
-                    {i.buyer_name ??
-                      i.buyer_role_hypothesis ??
-                      (es ? "Sin resolver" : "Unresolved")}
-                  </p>
-                  <p>
-                    {i.channel === "EMAIL"
-                      ? es
-                        ? "Email respaldado; sujeto a los gates de ejecución."
-                        : "Supported email; execution gates still apply."
-                      : es
-                        ? "Sin canal ejecutable confirmado."
-                        : "No confirmed executable channel."}
-                  </p>
-                  <p>{readinessText(i.readiness_reason, locale)}</p>
-                  <button onClick={() => onInspect(i.account_id)}>
-                    {es
-                      ? "Revisar evidencia y siguiente acción"
-                      : "Review evidence and next action"}
-                  </button>
-                </article>
-              ))}
-          </div>
-        </section>
-      ))}
+          ["READY_NOW", es ? "Listas ahora" : "Ready now"],
+          ["RETAINED", es ? "Retenidas" : "Retained"],
+          ["HOLD", es ? "Requieren revisión" : "Needs review"],
+          [
+            "REJECTED",
+            es ? "Rechazadas con evidencia" : "Evidence-supported rejection",
+          ],
+        ].map(([key, label]) => (
+          <section className="acq-panel" key={key}>
+            <h3>{label}</h3>
+            {!items.some((i) => i.pool_state === key) && (
+              <p>
+                {es
+                  ? "Sin oportunidades en esta página."
+                  : "No opportunities on this page."}
+              </p>
+            )}
+            <div className="acq-cards">
+              {items
+                .filter((i) => i.pool_state === key)
+                .map((i) => (
+                  <article key={i.account_id}>
+                    <h4>{i.display_name}</h4>
+                    <p>
+                      {i.country ??
+                        (es
+                          ? "País sin confirmar"
+                          : "Country unconfirmed")}{" "}
+                      · {i.canonical_domain}
+                    </p>
+                    <p>
+                      {i.intervention_hypothesis ??
+                        (es
+                          ? "Hipótesis de intervención pendiente de evidencia."
+                          : "Intervention hypothesis awaiting evidence.")}
+                    </p>
+                    <p>
+                      {es ? "Responsable" : "Problem owner"}:{" "}
+                      {i.buyer_name ??
+                        i.buyer_role_hypothesis ??
+                        (es ? "Sin resolver" : "Unresolved")}
+                    </p>
+                    <p>
+                      {i.channel === "EMAIL"
+                        ? es
+                          ? "Email respaldado; sujeto a los gates de ejecución."
+                          : "Supported email; execution gates still apply."
+                        : es
+                          ? "Sin canal ejecutable confirmado."
+                          : "No confirmed executable channel."}
+                    </p>
+                    <p>{readinessText(i.readiness_reason, locale)}</p>
+                    <button onClick={() => onInspect(i.account_id)}>
+                      {es
+                        ? "Revisar evidencia y siguiente acción"
+                        : "Review evidence and next action"}
+                    </button>
+                  </article>
+                ))}
+            </div>
+          </section>
+        ))}
       {more && (
         <button disabled={pending} onClick={() => void next()}>
           {es ? "Mostrar más oportunidades" : "Show more opportunities"}
@@ -435,7 +445,8 @@ export function CycleAttention({
 }) {
   const [review, setReview] = useState<CycleReview | null>(null),
     [discovery, setDiscovery] = useState<DiscoveryTruth | null>(null),
-    [failed, setFailed] = useState(false)
+    [failed, setFailed] = useState(false),
+    [discoveryFailed, setDiscoveryFailed] = useState(false)
   useEffect(() => {
     let live = true
     api
@@ -446,12 +457,13 @@ export function CycleAttention({
       .catch(() => {
         if (live) setFailed(true)
       })
-    api
-      .discovery()
+    readDiscovery()
       .then((d) => {
         if (live) setDiscovery(d)
       })
-      .catch(() => {})
+      .catch(() => {
+        if (live) setDiscoveryFailed(true)
+      })
     return () => {
       live = false
     }
@@ -467,6 +479,14 @@ export function CycleAttention({
         {es
           ? "No se pudo verificar la revisión del Cycle."
           : "Cycle review could not be verified."}
+      </p>
+    )
+  if (discoveryFailed)
+    return (
+      <p role="alert">
+        {es
+          ? "No se pudo verificar la ventana vigente; no se asume que no haya decisiones pendientes."
+          : "The current window could not be verified; no-decision is not assumed."}
       </p>
     )
   if (!review)

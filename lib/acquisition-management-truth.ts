@@ -145,3 +145,18 @@ export function marketContextCounts(data: DiscoveryTruth) {
     ).length,
   }
 }
+
+/** Presentation grouping only: same-name Candidates retain distinct identities. */
+export function candidateNameGroups(
+  candidates: ReturnType<typeof candidateManagementTruth>,
+) {
+  type CandidateView = (typeof candidates)[number]
+  const groups = new Map<string, [CandidateView, ...CandidateView[]]>()
+  for (const candidate of candidates) {
+    const key = candidate.name.trim().normalize("NFKC").toLocaleLowerCase()
+    const existing = groups.get(key)
+    if (existing) existing.push(candidate)
+    else groups.set(key, [candidate])
+  }
+  return [...groups.values()]
+}

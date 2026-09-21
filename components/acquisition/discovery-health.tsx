@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { acquisitionApi as api } from "@/lib/acquisition-api"
 import type { DiscoveryTruth } from "@/lib/acquisition-management-truth"
 import type { Locale } from "@/lib/i18n"
+import { readDiscovery } from "@/lib/acquisition-discovery-read"
 
 export function DiscoveryHealth({ locale }: { locale: Locale }) {
   const es = locale === "es"
@@ -11,8 +11,7 @@ export function DiscoveryHealth({ locale }: { locale: Locale }) {
     [failed, setFailed] = useState(false)
   useEffect(() => {
     let live = true
-    api
-      .discovery()
+    readDiscovery()
       .then((d) => {
         if (live) setData(d)
       })
@@ -59,7 +58,8 @@ export function DiscoveryHealth({ locale }: { locale: Locale }) {
               ? "cerrada y detenida para revisión"
               : "closed and held for review"
             : session.status.replaceAll("_", " ")}
-          . {es ? "Nuevos efectos autorizados" : "New effects authorized"}: {session.prospect_effects_authorized ? (es ? "Sí" : "Yes") : "0"}.
+          . {es ? "Nuevos efectos autorizados" : "New effects authorized"}:{" "}
+          {session.prospect_effects_authorized ? (es ? "Sí" : "Yes") : "0"}.
         </p>
       )}
       <details>

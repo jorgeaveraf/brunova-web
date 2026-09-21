@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { acquisitionApi as api } from "@/lib/acquisition-api"
 import type { Locale } from "@/lib/i18n"
 import type { DiscoveryTruth } from "@/lib/acquisition-management-truth"
+import { readDiscovery } from "@/lib/acquisition-discovery-read"
 export function EngineActivity({ locale }: { locale: Locale }) {
   const es = locale === "es",
     [state, setState] = useState<Awaited<
@@ -20,8 +21,7 @@ export function EngineActivity({ locale }: { locale: Locale }) {
       .catch(() => {
         if (!stopped) setFailed(true)
       })
-    api
-      .discovery()
+    readDiscovery()
       .then((d) => {
         if (!stopped) setDiscovery(d)
       })
