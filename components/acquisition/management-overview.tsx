@@ -16,6 +16,7 @@ const countExecuted = (
   session.decisions.filter((decision) => {
     const outcome = decision.outcome
     return (
+      decision.decision !== "STOP" &&
       outcome &&
       typeof outcome === "object" &&
       !Array.isArray(outcome) &&
@@ -169,7 +170,7 @@ export function ManagementOverview({
               </p>
               <div className="acq-inline-facts">
                 <span>
-                  {executed} WorkItems {es ? "ejecutados" : "executed"}
+                  {executed} {es ? "unidades de investigación ejecutadas" : "research units executed"}
                 </span>
                 <span>
                   {requests} {es ? "consultas de fuente" : "source requests"}

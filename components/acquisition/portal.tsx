@@ -422,7 +422,7 @@ export function AcquisitionPortal({
       <div id="acq-active-panel" aria-live="off">
         {tab === "Settings" && (
           <PolicySettings
-            key={projectionRevision}
+            key={`settings:${projectionRevision}`}
             locale={locale}
             session={session}
             cycleId={cycleId}
@@ -430,7 +430,7 @@ export function AcquisitionPortal({
         )}
         {tab === "Discovery" && (
           <DiscoverySection
-            key={cycleId}
+            key={`discovery:${cycleId}:${projectionRevision}`}
             locale={locale}
             cycleId={cycleId}
             session={session}
@@ -438,20 +438,20 @@ export function AcquisitionPortal({
         )}
         {tab === "Work / Health" && (
           <WorkHealthSummary
-            key={projectionRevision}
+            key={`health-summary:${projectionRevision}`}
             locale={locale}
             health={health}
           />
         )}
         {tab === "Work / Health" && cycle && (
-          <DiscoveryHealth key={projectionRevision} locale={locale} />
+          <DiscoveryHealth key={`discovery-health:${projectionRevision}`} locale={locale} />
         )}
         {tab === "Work / Health" && !cycle && (
-          <ActivationPreflight key={projectionRevision} locale={locale} />
+          <ActivationPreflight key={`preflight:${projectionRevision}`} locale={locale} />
         )}
         {tab === "Overview" && cycle && (
           <ManagementOverview
-            key={`${cycleId}:${projectionRevision}`}
+            key={`overview:${cycleId}:${projectionRevision}`}
             cycleId={cycleId}
             cycleStatus={cycle.status}
             locale={locale}
@@ -460,7 +460,7 @@ export function AcquisitionPortal({
         )}
         {tab === "Accounts" && (
           <OpportunityPool
-            key={`${cycleId}:${projectionRevision}`}
+            key={`opportunities:${cycleId}:${projectionRevision}`}
             cycleId={cycleId}
             locale={locale}
             onInspect={(id) => void inspect(id, null)}
@@ -468,13 +468,13 @@ export function AcquisitionPortal({
         )}
         {tab === "Waves" && (
           <OutreachState
-            key={`${cycleId}:${projectionRevision}`}
+            key={`outreach:${cycleId}:${projectionRevision}`}
             locale={locale}
           />
         )}
         {tab === "Waves" && (
           <CycleControlSection
-            key={`${cycleId}:${projectionRevision}`}
+            key={`cycle-control:${cycleId}:${projectionRevision}`}
             cycleId={cycleId}
             session={session}
             locale={locale}

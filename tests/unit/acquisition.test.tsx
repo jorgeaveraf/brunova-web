@@ -537,6 +537,14 @@ it("navigation keeps the selected section aligned with its content without a pag
       expect(
         within(panel).queryByRole("heading", { name: "Market discovery" }),
       ).not.toBeInTheDocument()
+    if (tab === "Settings") {
+      expect(
+        within(panel).queryByRole("heading", { name: "Outreach and waves" }),
+      ).not.toBeInTheDocument()
+      expect(
+        within(panel).queryByRole("heading", { name: /Recurrence on HOLD/i }),
+      ).not.toBeInTheDocument()
+    }
   }
 })
 
