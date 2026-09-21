@@ -706,7 +706,7 @@ export function AcquisitionPortal({
           </div>
           <p className="acq-muted">
             {t(
-              "Solicitar investigación no está habilitado en esta superficie de preactivación.",
+              "Esta lista es de consulta; la investigación se solicita mediante una operación de Management gobernada.",
             )}
           </p>
         </section>

@@ -57,8 +57,8 @@ export const acquisitionEnglish = {
   "Inspeccionar cuenta": "Inspect account",
   "Primera página": "First page",
   "Siguiente página": "Next page",
-  "Solicitar investigación no está habilitado en esta superficie de preactivación.":
-    "Research requests are not enabled on this pre-activation surface.",
+  "Esta lista es de consulta; la investigación se solicita mediante una operación de Management gobernada.":
+    "This list is for inspection; research is requested through a governed Management operation.",
   "Estado del trabajo": "Work state",
   "Observabilidad; las colas no se editan desde el Portal.":
     "Observability only; queues cannot be edited from the Portal.",
