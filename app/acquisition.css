@@ -419,6 +419,12 @@
   margin-top: 2rem;
   padding-top: 0.6rem;
 }
+.acq-decision pre {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 .acq textarea {
   width: 100%;
   min-height: 5rem;

@@ -63,7 +63,11 @@ export function OutreachState({ locale }: { locale: Locale }) {
       {proposed.map((candidate) => (
         <article className="acq-panel" key={candidate.id}>
           <h4>{candidate.name}</h4>
-          <p>{candidate.target?.why}</p>
+          <p>
+            {es
+              ? "La evidencia conservada justifica revisar si puede proponerse un contacto, pero todavía faltan composición y autorización exactas."
+              : "Retained evidence supports reviewing a possible outreach proposal, but exact composition and authorization are still required."}
+          </p>
           <p>
             <strong>{es ? "Canal" : "Channel"}:</strong>{" "}
             {candidate.contactState ?? (es ? "sin resolver" : "unresolved")}
@@ -74,6 +78,22 @@ export function OutreachState({ locale }: { locale: Locale }) {
               ? "requiere composición y aprobación exactas"
               : "exact composition and approval required"}
           </p>
+          {candidate.target && (
+            <details>
+              <summary>
+                {es
+                  ? "Evidencia original de selección"
+                  : "Original selection evidence"}
+              </summary>
+              <p>{candidate.target.why}</p>
+              <p>
+                <strong>
+                  {es ? "Hipótesis original" : "Original hypothesis"}:
+                </strong>{" "}
+                {candidate.target.hypothesis}
+              </p>
+            </details>
+          )}
         </article>
       ))}
       <h3>{es ? "Activas" : "Active"}</h3>
@@ -133,13 +153,18 @@ export function OutreachState({ locale }: { locale: Locale }) {
             </summary>
             {c.target?.hypothesis && (
               <p>
-                <strong>{es ? "Hipótesis" : "Hypothesis"}:</strong>{" "}
+                <strong>
+                  {es ? "Hipótesis original" : "Original hypothesis"}:
+                </strong>{" "}
                 {c.target.hypothesis}
               </p>
             )}
             {c.known && (
               <p>
-                <strong>{es ? "Evidencia" : "Evidence"}:</strong> {c.known}
+                <strong>
+                  {es ? "Evidencia original" : "Original evidence"}:
+                </strong>{" "}
+                {c.known}
               </p>
             )}
             <p>

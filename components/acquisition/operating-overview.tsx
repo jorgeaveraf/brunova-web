@@ -80,15 +80,15 @@ export function OperatingOverview({
         <p>
           {halt
             ? es
-              ? "El Cycle está pausado. Inspecciona el motivo antes de continuar."
+              ? "El ciclo está pausado. Inspecciona el motivo antes de continuar."
               : "The Cycle is paused. Inspect the issue before continuing."
             : needsReview
               ? es
-                ? "La wave terminó su ventana inicial. Management debe revisar resultados."
+                ? "El grupo de contacto terminó su ventana inicial. Dirección debe revisar resultados."
                 : "The wave completed its initial window. Management review is required."
               : revalidation
                 ? es
-                  ? "La wave propuesta necesita revalidación. Revisa sus condiciones pendientes; aún no se puede aprobar."
+                  ? "El grupo de contacto propuesto necesita revalidación. Revisa sus condiciones pendientes; aún no se puede aprobar."
                   : "The proposed wave needs revalidation. Review its unmet requirements; it cannot be approved yet."
                 : waveReady
                   ? es
@@ -99,14 +99,14 @@ export function OperatingOverview({
                       ? "La ventana terminó y la recurrencia está detenida para revisión humana. Las candidatas y la evidencia se conservan."
                       : "The window ended and recurrence is held for Human review. Candidates and evidence remain available."
                     : es
-                      ? "El Engine procesa trabajo interno autorizado. La próxima wave requiere aprobación exacta."
+                      ? "El sistema procesa trabajo interno autorizado. El próximo grupo de contacto requiere aprobación exacta."
                       : "The Engine processes authorized internal work. The next wave requires exact approval."}
         </p>
         <button
           onClick={() =>
             onNavigate(
               halt
-                ? "Operations"
+                ? "SystemStatus"
                 : latestSession?.status === "HELD_REVIEW"
                   ? "Attention"
                   : "Outreach",
@@ -127,16 +127,16 @@ export function OperatingOverview({
                   : "Review discovery"
                 : waveReady
                   ? es
-                    ? "Revisar wave"
+                    ? "Revisar grupo de contacto"
                     : "Review wave"
                   : es
-                    ? "Ver preparación de wave"
+                    ? "Ver preparación del grupo"
                     : "View wave preparation"}
         </button>
       </section>
       <section
         className="acq-metrics"
-        aria-label={es ? "Progreso del Cycle" : "Cycle progress"}
+        aria-label={es ? "Progreso del ciclo" : "Cycle progress"}
       >
         <div>
           <span>
@@ -145,7 +145,7 @@ export function OperatingOverview({
           <strong>{discovery.totals.candidates}</strong>
         </div>
         <div>
-          <span>{es ? "Accounts admitidos" : "Admitted Accounts"}</span>
+          <span>{es ? "Cuentas admitidas" : "Admitted Accounts"}</span>
           <strong>
             {review.discovery?.admitted ?? discovery.totals.admitted} /{" "}
             {review.discovery?.maximum ?? "—"}
@@ -262,7 +262,7 @@ export function OperatingOverview({
         </p>
         <p>
           {es
-            ? "No responder no prueba falta de fit. Las conclusiones de mercado requieren interpretación de Management; los ensayos sintéticos no son aprendizaje comercial."
+            ? "No responder no prueba falta de compatibilidad. Las conclusiones de mercado requieren interpretación de Dirección; los ensayos sintéticos no son aprendizaje comercial."
             : "No response does not prove non-fit. Market conclusions require Management interpretation; synthetic rehearsals are not commercial learning."}
         </p>
       </section>
@@ -332,7 +332,7 @@ export function OpportunityPool({
       <h2>{es ? "Oportunidades" : "Opportunities"}</h2>
       <p>
         {es
-          ? "No seleccionada no significa rechazada. La evidencia y las oportunidades se conservan fuera de la wave."
+          ? "No seleccionada no significa rechazada. La evidencia y las oportunidades se conservan fuera del grupo de contacto."
           : "Not selected does not mean rejected. Evidence and opportunities remain available outside the wave."}
       </p>
       {discovery && (
@@ -346,22 +346,22 @@ export function OpportunityPool({
       {discoveryFailed && (
         <p role="alert">
           {es
-            ? "No se pudo verificar el inventario de candidatas; el pool de Accounts no es toda la oportunidad."
+            ? "No se pudo verificar el inventario de candidatas; el conjunto de cuentas no representa toda la oportunidad."
             : "Candidate inventory could not be verified; the Account pool is not the whole opportunity."}
         </p>
       )}
-      <h3>{es ? "Accounts admitidos" : "Admitted Accounts"}</h3>
+      <h3>{es ? "Cuentas admitidas" : "Admitted Accounts"}</h3>
       {!items.length && (
         <p className="acq-muted">
           {es
-            ? "Todavía no hay Accounts admitidos. El pool de candidatas de arriba se conserva."
+            ? "Todavía no hay cuentas admitidas. El conjunto de candidatas se conserva."
             : "No Accounts admitted yet. The Candidate pool above remains durable."}
         </p>
       )}
       {failed && (
         <p role="alert">
           {es
-            ? "No se pudo verificar el pool completo."
+            ? "No se pudo verificar el conjunto completo."
             : "The complete pool could not be verified."}
         </p>
       )}
@@ -405,10 +405,13 @@ export function OpportunityPool({
                       · {i.canonical_domain}
                     </p>
                     <p>
-                      {i.intervention_hypothesis ??
-                        (es
-                          ? "Hipótesis de intervención pendiente de evidencia."
-                          : "Intervention hypothesis awaiting evidence.")}
+                      {i.intervention_hypothesis
+                        ? es
+                          ? "Existe una hipótesis de intervención respaldada; revisa la evidencia antes de decidir."
+                          : "A supported intervention hypothesis exists; review the evidence before deciding."
+                        : es
+                          ? "La hipótesis de intervención todavía necesita evidencia."
+                          : "The intervention hypothesis still needs evidence."}
                     </p>
                     <p>
                       {es ? "Responsable" : "Problem owner"}:{" "}
@@ -426,6 +429,29 @@ export function OpportunityPool({
                           : "No confirmed executable channel."}
                     </p>
                     <p>{readinessText(i.readiness_reason, locale)}</p>
+                    {(i.intervention_hypothesis || i.buyer_role_hypothesis) && (
+                      <details>
+                        <summary>
+                          {es
+                            ? "Texto original del Engine"
+                            : "Original Engine text"}
+                        </summary>
+                        {i.intervention_hypothesis && (
+                          <p>
+                            {es ? "Hipótesis original" : "Original hypothesis"}:{" "}
+                            {i.intervention_hypothesis}
+                          </p>
+                        )}
+                        {i.buyer_role_hypothesis && (
+                          <p>
+                            {es
+                              ? "Rol comprador original"
+                              : "Original buyer role"}
+                            : {i.buyer_role_hypothesis}
+                          </p>
+                        )}
+                      </details>
+                    )}
                     <button onClick={() => onInspect(i.account_id)}>
                       {es
                         ? "Revisar evidencia y siguiente acción"
@@ -458,7 +484,8 @@ export function CycleAttention({
   const [review, setReview] = useState<CycleReview | null>(null),
     [discovery, setDiscovery] = useState<DiscoveryTruth | null>(null),
     [failed, setFailed] = useState(false),
-    [discoveryFailed, setDiscoveryFailed] = useState(false)
+    [discoveryFailed, setDiscoveryFailed] = useState(false),
+    [inspectWindow, setInspectWindow] = useState(false)
   useEffect(() => {
     let live = true
     api
@@ -482,14 +509,14 @@ export function CycleAttention({
   }, [cycleId])
   const es = locale === "es",
     wave = review?.waves.at(-1),
-    held = discovery?.routineOperatingSessions?.[0]?.status === "HELD_REVIEW",
+    latest = discovery?.routineOperatingSessions?.[0],
     halt =
       review?.control?.technical_halt || review?.control?.state === "STOPPED"
   if (failed)
     return (
       <p role="alert">
         {es
-          ? "No se pudo verificar la revisión del Cycle."
+          ? "No se pudo verificar la revisión del ciclo."
           : "Cycle review could not be verified."}
       </p>
     )
@@ -503,48 +530,154 @@ export function CycleAttention({
     )
   if (!review)
     return <p>{es ? "Consultando decisiones…" : "Loading decisions…"}</p>
-  if (
-    !halt &&
-    !held &&
-    !["PLANNED", "REVIEW_REQUIRED"].includes(wave?.state ?? "")
+  const waveDecision = ["PLANNED", "REVIEW_REQUIRED"].includes(
+    wave?.state ?? "",
   )
-    return null
+  const portalAcceptancePending = !halt && !waveDecision
+  const lastDecision = latest?.decisions.at(-1)
+  const strongestValue =
+    lastDecision?.strongestAlternative ?? lastDecision?.strongest_alternative
+  const strongest =
+    strongestValue && typeof strongestValue === "object"
+      ? (strongestValue as Record<string, unknown>)
+      : null
+  const executed = latest
+    ? latest.decisions.filter((decision) => {
+        const outcome = decision.outcome
+        return (
+          decision.decision !== "STOP" &&
+          outcome &&
+          typeof outcome === "object" &&
+          ("work_item_id" in outcome || "workItemId" in outcome)
+        )
+      }).length
+    : 0
+  const requests = Number(latest?.capacity.requestsUsed ?? 0)
   return (
     <section className="acq-panel">
       <h2>
         {halt
           ? es
-            ? "Cycle pausado"
+            ? "Ciclo pausado"
             : "Cycle paused"
-          : held
+          : wave?.state === "REVIEW_REQUIRED"
             ? es
-              ? "Revisar ventana de operación"
-              : "Review operating window"
-            : wave?.state === "REVIEW_REQUIRED"
+              ? "Revisar resultados del grupo de contacto"
+              : "Review wave outcomes"
+            : wave?.state === "PLANNED"
               ? es
-                ? "Revisar resultados de wave"
-                : "Review wave outcomes"
+                ? "Revisar preparación del grupo de contacto"
+                : "Review wave preparation"
               : es
-                ? "Revisar preparación de wave"
-                : "Review wave preparation"}
+                ? "Aceptación humana del Portal pendiente"
+                : "Human Portal acceptance pending"}
       </h2>
       <p>
         {halt
           ? es
-            ? "Una condición técnica o de Management impide continuar."
+            ? "Una condición técnica o de Dirección impide continuar."
             : "A technical or Management condition prevents progression."
-          : held
+          : waveDecision
             ? es
-              ? "La recurrencia está detenida. Management debe evaluar la asignación y la calidad de información antes de otra ventana."
-              : "Recurrence is held. Management must assess allocation and information quality before another window."
+              ? "La composición y su evidencia necesitan una decisión de Dirección; el planificador no aprueba grupos de contacto."
+              : "Composition and evidence require a Management decision; the scheduler does not approve waves."
             : es
-              ? "La composición y su evidencia necesitan una decisión de Management; el scheduler no aprueba waves."
-              : "Composition and evidence require a Management decision; the scheduler does not approve waves."}
+              ? "La decisión operacional anterior ya fue aceptada técnicamente. Ahora se requiere revisar si este Portal permite entender y dirigir Acquisition."
+              : "The prior operating decision has already been technically accepted. The remaining review is whether this Portal makes Acquisition understandable and manageable."}
       </p>
       {review.control?.technical_halt && <p>{review.control.technical_halt}</p>}
-      <button onClick={() => onNavigate(held ? "Opportunities" : "Outreach")}>
-        {es ? "Inspeccionar decisión" : "Inspect decision"}
-      </button>
+      {portalAcceptancePending ? (
+        <>
+          <p className="acq-muted">
+            {es
+              ? "Después de la aceptación, habilitar recurrencia seguirá siendo una decisión humana separada. No hay seguimiento ni acción comercial pendientes."
+              : "After acceptance, enabling recurrence remains a separate Human decision. No follow-up or commercial action is pending."}
+          </p>
+          <button
+            aria-expanded={inspectWindow}
+            onClick={() => setInspectWindow((value) => !value)}
+          >
+            {es ? "Inspeccionar decisión" : "Inspect decision"}
+          </button>
+          {inspectWindow && (
+            <div
+              className="acq-decision"
+              aria-label={es ? "Decisión operativa" : "Operating decision"}
+            >
+              <h3>{es ? "Qué ocurrió" : "What happened"}</h3>
+              <p>
+                {es
+                  ? "La última ventana cerró después de una decisión comparativa. El sistema decidió no gastar capacidad de investigación."
+                  : "The latest window closed after one comparative decision. The Engine chose not to spend research capacity."}
+              </p>
+              <h3>
+                {es ? "Alternativas consideradas" : "Alternatives considered"}
+              </h3>
+              <ul>
+                <li>
+                  {es
+                    ? "Una lectura de identidad de bajo costo, descartada por redundancia."
+                    : "A low-cost identity read, declined because it was redundant."}
+                </li>
+                <li>
+                  {es
+                    ? "Nueva exploración dirigida, disponible pero sin suficiente valor esperado para justificar seis consultas."
+                    : "New targeted discovery, available but without enough expected value to justify six requests."}
+                </li>
+                <li>
+                  {es
+                    ? "Esperar y conservar capacidad."
+                    : "Defer and preserve capacity."}
+                </li>
+              </ul>
+              <h3>{es ? "Decisión y motivo" : "Decision and reason"}</h3>
+              <p>
+                <strong>{es ? "Esperar." : "Defer."}</strong>{" "}
+                {es
+                  ? "Ninguna alternativa superó el umbral de información capaz de cambiar una decisión."
+                  : "No alternative cleared the threshold for information capable of changing a decision."}
+              </p>
+              <h3>
+                {es ? "Ejecución y aprendizaje" : "Execution and learning"}
+              </h3>
+              <p>
+                {executed} {es ? "tareas ejecutadas" : "tasks executed"} ·{" "}
+                {requests} {es ? "consultas de fuente" : "source requests"}.{" "}
+                {es
+                  ? "No hubo evidencia nueva de empresas; sólo se confirmó que repetir rutas redundantes no justificaba capacidad."
+                  : "No new company evidence was obtained; the result only confirmed that repeating redundant paths did not justify capacity."}
+              </p>
+              <h3>
+                {es
+                  ? "Autoridad y decisión pendiente"
+                  : "Authority and pending decision"}
+              </h3>
+              <p>
+                {es
+                  ? "La recurrencia continúa detenida, el seguimiento de Scania no está autorizado y no hay acción comercial pendiente. La única decisión actual es la aceptación humana del Portal."
+                  : "Recurrence remains held, Scania follow-up is unauthorized, and no commercial action is pending. The only current decision is Human Portal acceptance."}
+              </p>
+              {(latest?.report || strongest) && (
+                <details>
+                  <summary>
+                    {es
+                      ? "Registro original del Engine"
+                      : "Original Engine record"}
+                  </summary>
+                  {strongest && <pre>{JSON.stringify(strongest, null, 2)}</pre>}
+                  {latest?.report && (
+                    <pre>{JSON.stringify(latest.report, null, 2)}</pre>
+                  )}
+                </details>
+              )}
+            </div>
+          )}
+        </>
+      ) : (
+        <button onClick={() => onNavigate("Outreach")}>
+          {es ? "Inspeccionar decisión" : "Inspect decision"}
+        </button>
+      )}
     </section>
   )
 }

@@ -59,14 +59,14 @@ export function ManagementOverview({
     return (
       <section role="alert" className="acq-panel">
         {es
-          ? "No se pudo verificar el estado del Cycle. Actualiza antes de decidir."
+          ? "No se pudo verificar el estado del ciclo. Actualiza antes de decidir."
           : "Cycle state could not be verified. Refresh before deciding."}
       </section>
     )
   if (!review || !discovery)
     return (
       <p role="status">
-        {es ? "Consultando estado del Cycle…" : "Loading Cycle state…"}
+        {es ? "Consultando estado del ciclo…" : "Loading Cycle state…"}
       </p>
     )
 
@@ -95,7 +95,7 @@ export function ManagementOverview({
             {es ? "Estado actual" : "Current state"}
           </p>
           <h2>
-            Cycle 1 ·{" "}
+            {es ? "Ciclo 1" : "Cycle 1"} ·{" "}
             {cycleStatus === "ACTIVE"
               ? es
                 ? "activo"
@@ -105,16 +105,16 @@ export function ManagementOverview({
           <p>
             {held
               ? es
-                ? "La última ventana cerró y la recurrencia espera revisión humana."
-                : "The latest window closed; recurrence awaits Human review."
+                ? "La última ventana fue aceptada técnicamente; la recurrencia continúa detenida."
+                : "The latest window was technically accepted; recurrence remains held."
               : es
-                ? "El Cycle conserva su investigación y sus límites de Management."
+                ? "El ciclo conserva su investigación y sus límites de Dirección."
                 : "The Cycle retains its research and Management boundaries."}
           </p>
         </div>
         <div
           className="acq-summary-metrics"
-          aria-label={es ? "Estado del Cycle" : "Cycle state"}
+          aria-label={es ? "Estado del ciclo" : "Cycle state"}
         >
           <div>
             <strong>{discovery.totals.candidates}</strong>
@@ -124,7 +124,7 @@ export function ManagementOverview({
             <strong>
               {review.discovery?.admitted ?? discovery.totals.admitted}
             </strong>
-            <span>Accounts</span>
+            <span>{es ? "cuentas admitidas" : "admitted Accounts"}</span>
           </div>
           <div>
             <strong>{contacted.length}</strong>
@@ -137,7 +137,12 @@ export function ManagementOverview({
         </div>
         <p className="acq-boundary-line">
           <strong>{es ? "Recurrencia" : "Recurrence"}:</strong>{" "}
-          {held ? "HOLD" : (latest?.recurrence_state ?? "—")} ·{" "}
+          {held
+            ? es
+              ? "detenida (HOLD)"
+              : "HOLD"
+            : (latest?.recurrence_state ?? "—")}{" "}
+          ·{" "}
           <strong>{es ? "Efectos comerciales" : "Commercial effects"}:</strong>{" "}
           {es ? "deshabilitados" : "disabled"}
         </p>
@@ -162,7 +167,7 @@ export function ManagementOverview({
               <p>
                 {deferred
                   ? es
-                    ? "El Engine decidió esperar. El trabajo restante no justificaba otra unidad de capacidad."
+                    ? "El sistema decidió esperar. El trabajo restante no justificaba otra unidad de capacidad."
                     : "The Engine deferred. Remaining work did not justify another capacity unit."
                   : es
                     ? "La ejecución registrada y sus límites están disponibles en Oportunidades."
@@ -220,7 +225,7 @@ export function ManagementOverview({
           <h2>
             {decisionNeeded
               ? es
-                ? "Management debe revisar"
+                ? "Dirección debe revisar"
                 : "Management review required"
               : es
                 ? "Aceptación del Portal pendiente"
@@ -235,18 +240,14 @@ export function ManagementOverview({
                 ? "La recurrencia permanece detenida. No hay una siguiente acción comercial automática ni autoridad de seguimiento."
                 : "Recurrence remains held. There is no automatic next commercial action or follow-up authority."}
           </p>
-          <button
-            onClick={() =>
-              onNavigate(decisionNeeded ? "Attention" : "Opportunities")
-            }
-          >
+          <button onClick={() => onNavigate("Attention")}>
             {decisionNeeded
               ? es
                 ? "Ver decisión"
                 : "View decision"
               : es
-                ? "Ver lo descubierto"
-                : "View discovery"}
+                ? "Revisar frontera de aceptación"
+                : "Review acceptance boundary"}
           </button>
         </section>
       </div>
@@ -272,7 +273,7 @@ export function ManagementOverview({
           </strong>
           <small>
             {es
-              ? "La incertidumbre permanece en el pool."
+              ? "La incertidumbre permanece en el conjunto."
               : "Uncertainty remains in the pool."}
           </small>
         </div>

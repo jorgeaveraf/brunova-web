@@ -20,10 +20,63 @@ const quality = (value: string, es: boolean) =>
     WASTED: es ? "sin valor proporcional" : "not proportionate",
     BLOCKED: es ? "bloqueada" : "blocked",
   })[value] ?? value.toLocaleLowerCase()
-const short = (value: string, limit = 140) =>
-  value.length <= limit
-    ? value
-    : `${value.slice(0, limit).replace(/\s+\S*$/, "")}…`
+function localizedReason(candidate: CandidateView, es: boolean) {
+  if (candidate.contacted)
+    return es
+      ? "Existe un contacto activo y su estado debe conservarse mientras se espera una respuesta."
+      : "An active contact exists and its state must be preserved while a reply is pending."
+  if (candidate.screen === "SUPPORTED_DISMISSAL")
+    return es
+      ? "La evidencia vigente respalda cerrar su consideración activa sin borrar el historial."
+      : "Current evidence supports closing active consideration without deleting history."
+  if (candidate.identity === "RESOLVED")
+    return es
+      ? "La identidad está respaldada, pero la oportunidad de intervención todavía necesita evidencia suficiente."
+      : "Identity is supported, while the intervention opportunity still needs sufficient evidence."
+  if (candidate.target)
+    return es
+      ? "Fue seleccionada previamente para aprendizaje acotado; aún no existe autoridad de contacto."
+      : "It was previously selected for bounded learning; no outreach authority exists yet."
+  return es
+    ? "Una señal inicial justificó conservarla para investigación, no para contacto."
+    : "An initial signal justified retaining it for research, not for outreach."
+}
+
+function localizedUnknown(candidate: CandidateView, es: boolean) {
+  if (candidate.identity === "AMBIGUOUS")
+    return es
+      ? "Qué organización exacta corresponde al registro."
+      : "Which exact organization the record represents."
+  if (candidate.identity !== "RESOLVED")
+    return es
+      ? "La identidad exacta y si existe una intervención concreta justificable."
+      : "The exact identity and whether a concrete, justified intervention exists."
+  return es
+    ? "Si existe un problema no resuelto, quién es responsable y si Brunova puede intervenir."
+    : "Whether an unresolved problem exists, who owns it, and whether Brunova can intervene."
+}
+
+function localizedNext(candidate: CandidateView, es: boolean) {
+  if (candidate.archived)
+    return es
+      ? "Sin acción activa; Dirección puede restaurarla con un motivo cuando corresponda."
+      : "No active action; Management may restore it with a reason when appropriate."
+  if (candidate.contacted)
+    return es
+      ? "Esperar una respuesta. Cualquier seguimiento requiere autoridad nueva y exacta."
+      : "Wait for a reply. Any follow-up requires new, exact authority."
+  if (candidate.identity === "AMBIGUOUS")
+    return es
+      ? "Dirección debe revisar la ambigüedad antes de cualquier progresión."
+      : "Management must review the ambiguity before any progression."
+  if (candidate.screen === "SUPPORTED_DISMISSAL")
+    return es
+      ? "Mantener cerrada; nueva evidencia material puede justificar reconsideración."
+      : "Keep closed; materially new evidence may justify reconsideration."
+  return es
+    ? "Continuar sólo con investigación vigente y autorizada que pueda cambiar una decisión."
+    : "Continue only with current, authorized research capable of changing a decision."
+}
 
 function Opportunity({
   candidate,
@@ -42,7 +95,7 @@ function Opportunity({
   const [reason, setReason] = useState("")
   const [pending, setPending] = useState(false)
   const [error, setError] = useState(false)
-  const signal =
+  const originalSignal =
     candidate.target?.why ||
     (candidate.lastWorkQuality === "JUSTIFIED" ? candidate.known : "") ||
     candidate.sourceHypothesis ||
@@ -80,21 +133,11 @@ function Opportunity({
             : "Why it remains in consideration"}
         </strong>
         <br />
-        {short(
-          signal ||
-            (es
-              ? "Señal inicial pendiente de corroboración."
-              : "Initial signal awaiting corroboration."),
-        )}
+        {localizedReason(candidate, es)}
       </p>
       <p className="acq-muted">
         <strong>{es ? "Aún no probado" : "Still unproven"}:</strong>{" "}
-        {short(
-          candidate.unknown ||
-            (es
-              ? "Identidad, intervención o responsable."
-              : "Identity, intervention or problem owner."),
-        )}
+        {localizedUnknown(candidate, es)}
       </p>
       <p className="acq-opportunity-foot">
         {candidate.searchMarkets.length
@@ -126,7 +169,7 @@ function Opportunity({
             : "no authorized commercial action"}
       </p>
       <p className="acq-record-next">
-        <span>{es ? "Management" : "Management"}</span>
+        <span>{es ? "Dirección" : "Management"}</span>
         {candidate.identity === "AMBIGUOUS"
           ? es
             ? "Debe resolver la ambigüedad de identidad."
@@ -140,7 +183,7 @@ function Opportunity({
                 ? "Ninguna acción mientras espera; cualquier seguimiento requiere autoridad nueva."
                 : "No action while waiting; any follow-up requires new authority."
               : es
-                ? "No requiere decisión ahora; el Engine sólo puede continuar trabajo ya autorizado."
+                ? "No requiere decisión ahora; el sistema sólo puede continuar trabajo ya autorizado."
                 : "No decision required now; the Engine may only continue already-authorized work."}
       </p>
       <p className="acq-record-next">
@@ -169,18 +212,39 @@ function Opportunity({
                     ? "Descubierta"
                     : "Discovered"}
       </p>
-      {candidate.nextAction && (
-        <p className="acq-record-next">
-          <span>{es ? "Siguiente paso legítimo" : "Next legitimate step"}</span>
-          {short(candidate.nextAction)}
-        </p>
-      )}
-      {candidate.nextAction && (
+      <p className="acq-record-next">
+        <span>{es ? "Siguiente paso legítimo" : "Next legitimate step"}</span>
+        {localizedNext(candidate, es)}
+      </p>
+      {(candidate.nextAction || originalSignal || candidate.unknown) && (
         <details>
           <summary>
-            {es ? "Siguiente paso y evidencia" : "Next step and evidence"}
+            {es
+              ? "Texto original del Engine y evidencia"
+              : "Original Engine text and evidence"}
           </summary>
-          <p>{candidate.nextAction}</p>
+          {originalSignal && (
+            <p>
+              <strong>{es ? "Motivo original" : "Original reason"}:</strong>{" "}
+              {originalSignal}
+            </p>
+          )}
+          {candidate.unknown && (
+            <p>
+              <strong>
+                {es ? "Incertidumbre original" : "Original unknown"}:
+              </strong>{" "}
+              {candidate.unknown}
+            </p>
+          )}
+          {candidate.nextAction && (
+            <p>
+              <strong>
+                {es ? "Siguiente paso original" : "Original next step"}:
+              </strong>{" "}
+              {candidate.nextAction}
+            </p>
+          )}
           {candidate.known && (
             <p>
               <strong>{es ? "Observado" : "Observed"}:</strong>{" "}
@@ -286,7 +350,7 @@ export function CandidateOpportunities({
     (candidate) => candidate.archived,
   ).length
   return (
-    <section aria-label={es ? "Pool de oportunidades" : "Opportunity pool"}>
+    <section aria-label={es ? "Conjunto de oportunidades" : "Opportunity pool"}>
       <div className="acq-section-heading">
         <div>
           <h3>
@@ -296,7 +360,7 @@ export function CandidateOpportunities({
           </h3>
           <p className="acq-muted">
             {es
-              ? "Antes de admitir un Account, una Candidate puede seguir siendo valiosa sin estar lista para contacto."
+              ? "Antes de admitir una cuenta, una candidata puede seguir siendo valiosa sin estar lista para contacto."
               : "Before Account admission, a Candidate can remain valuable without being ready for contact."}
           </p>
         </div>
