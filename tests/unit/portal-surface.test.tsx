@@ -31,14 +31,20 @@ it.each(["en", "es"] as const)(
     ).toBeVisible()
     expect(
       screen.getByRole("link", {
-        name: es
-          ? "Adquisición · Acceso operativo"
-          : "Acquisition · Operational access",
+        name: es ? "Adquisición" : "Acquisition",
       }),
     ).toHaveAttribute(
       "href",
       es ? "/es/portal/acquisition" : "/portal/acquisition",
     )
+    expect(container.querySelector("main")).toHaveAttribute(
+      "data-authenticated",
+      "true",
+    )
+    expect(container.querySelectorAll("main a")).toHaveLength(1)
+    expect(
+      screen.getByRole("button", { name: es ? "Cerrar sesión" : "Logout" }),
+    ).toBeVisible()
     expect(container.textContent).not.toMatch(
       /active clients|clientes activos|Client Portal|Portal de Clientes/,
     )

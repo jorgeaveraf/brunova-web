@@ -1936,6 +1936,17 @@ details[open] > summary .disclosure-mark::after {
   padding: 0;
 }
 
+body:has(.portal-page[data-authenticated="true"]) .site-header,
+body:has(.portal-page[data-authenticated="true"]) .site-footer,
+body:has(.portal-page[data-authenticated="true"]) .site-utilities--shell,
+body:has(.portal-page[data-authenticated="true"]) .back-to-top {
+  display: none;
+}
+
+.portal-page[data-authenticated="true"] .portal-threshold {
+  min-height: 100dvh;
+}
+
 .portal-threshold {
   min-height: 56dvh;
   align-content: center;

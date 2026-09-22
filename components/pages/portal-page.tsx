@@ -20,17 +20,20 @@ export function PortalPageView({
   return (
     <main
       className="route-page portal-page"
+      data-authenticated={session ? "true" : undefined}
       id="main-content"
       tabIndex={-1}
       lang={locale}
     >
-      <RouteContext
-        ariaLabel={es ? "Contexto de página" : "Page context"}
-        items={[
-          { href: localizedPath(locale, "/"), label: "Brunova" },
-          { label: "Portal" },
-        ]}
-      />
+      {!session && (
+        <RouteContext
+          ariaLabel={es ? "Contexto de página" : "Page context"}
+          items={[
+            { href: localizedPath(locale, "/"), label: "Brunova" },
+            { label: "Portal" },
+          ]}
+        />
+      )}
       <Container className="portal-threshold">
         <div className="portal-threshold__identity">
           <p>{es ? "Espacio de trabajo seguro" : "Secure workspace"}</p>
@@ -65,27 +68,12 @@ export function PortalPageView({
               </a>
             </>
           ) : acquisition ? (
-            <>
-              <p>
-                {es
-                  ? "Sistema operativo interno"
-                  : "Internal operational system"}
-              </p>
-              <Link
-                className="action-link action-link--primary"
-                href={localizedPath(locale, "/portal/acquisition")}
-              >
-                {es
-                  ? "Adquisición · Acceso operativo"
-                  : "Acquisition · Operational access"}
-              </Link>
-              <p>Brunova Acquisition Engine</p>
-              <p>
-                {es
-                  ? "Investigación, priorización y atención Humana."
-                  : "Research, prioritization and Human attention."}
-              </p>
-            </>
+            <Link
+              className="action-link action-link--primary"
+              href={localizedPath(locale, "/portal/acquisition")}
+            >
+              {es ? "Adquisición" : "Acquisition"}
+            </Link>
           ) : (
             <p>
               {es
