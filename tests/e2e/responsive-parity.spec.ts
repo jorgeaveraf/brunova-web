@@ -76,6 +76,67 @@ test("tablet and desktop use the canonical homepage SVGs", async ({ page }) => {
   }
 })
 
+test("square and intermediate windows keep navigation and positioning copy inside the viewport", async ({
+  page,
+}) => {
+  for (const path of ["/", "/es"]) {
+    for (const width of [1024, 1152, 1250, 1344, 1440]) {
+      await page.setViewportSize({ width, height: 1000 })
+      await page.goto(path)
+
+      const geometry = await page.evaluate(() => {
+        const header = document.querySelector<HTMLElement>(".site-header__bar")
+        const brand = document.querySelector<HTMLElement>(".site-header__brand")
+        const navigation = document.querySelector<HTMLElement>(
+          ".desktop-navigation",
+        )
+        const utilities = document.querySelector<HTMLElement>(
+          ".site-header__utilities",
+        )
+        const menu = document.querySelector<HTMLElement>(".mobile-navigation")
+        const positioning =
+          document.querySelector<HTMLElement>(".home-category p")
+        if (
+          !header ||
+          !brand ||
+          !navigation ||
+          !utilities ||
+          !menu ||
+          !positioning
+        )
+          throw new Error("Homepage shell is incomplete")
+        const visible = (element: HTMLElement) =>
+          getComputedStyle(element).display !== "none"
+        return {
+          overflow: document.documentElement.scrollWidth - window.innerWidth,
+          positioningOverflow:
+            positioning.scrollWidth - positioning.clientWidth,
+          desktop: visible(navigation),
+          menu: visible(menu),
+          brandRight: brand.getBoundingClientRect().right,
+          navigationLeft: navigation.getBoundingClientRect().left,
+          navigationRight: navigation.getBoundingClientRect().right,
+          utilitiesLeft: utilities.getBoundingClientRect().left,
+          headerRight: header.getBoundingClientRect().right,
+          utilitiesRight: utilities.getBoundingClientRect().right,
+        }
+      })
+
+      expect(geometry.overflow).toBeLessThanOrEqual(0)
+      expect(geometry.positioningOverflow).toBeLessThanOrEqual(1)
+      expect(geometry.desktop).toBe(width >= 1344)
+      expect(geometry.menu).toBe(width < 1344)
+      if (geometry.desktop) {
+        expect(geometry.brandRight).toBeLessThan(geometry.navigationLeft)
+        expect(geometry.navigationRight).toBeLessThan(geometry.utilitiesLeft)
+        expect(geometry.utilitiesRight).toBeLessThanOrEqual(
+          geometry.headerRight,
+        )
+      }
+    }
+  }
+})
+
 test("touch users receive selected-system context without hover", async ({
   page,
 }) => {

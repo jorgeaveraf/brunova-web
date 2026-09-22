@@ -884,14 +884,7 @@
 }
 
 @media (min-width: 72rem) {
-  html[lang="en"] .home-category p,
-  html[lang="en"] .problem-shift__transition {
-    max-width: none;
-    white-space: nowrap;
-  }
-
   .problem-shift__transition {
-    max-width: none;
     text-align: end;
   }
 
