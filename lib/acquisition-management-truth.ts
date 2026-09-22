@@ -128,6 +128,10 @@ export function candidateManagementTruth(data: DiscoveryTruth) {
       missingCodes: candidate.missing,
       exactEffect,
       journey,
+      archived: candidate.archived,
+      workspaceReason: candidate.workspace_reason ?? null,
+      workspaceActorType: candidate.workspace_actor_type ?? null,
+      workspaceChangedAt: candidate.workspace_changed_at ?? null,
     }
   })
 }

@@ -35,19 +35,48 @@ export function OutreachState({ locale }: { locale: Locale }) {
       </p>
     )
   if (!data) return <p>{es ? "Consultando contacto…" : "Loading outreach…"}</p>
-  const contacted = candidateManagementTruth(data).filter((c) => c.contacted)
+  const candidates = candidateManagementTruth(data)
+  const contacted = candidates.filter((c) => c.contacted)
+  const proposed = candidates.filter(
+    (c) => !c.archived && !c.contacted && c.target,
+  )
   const current = data.routineOperatingSessions?.[0]
   return (
     <section
       className="acq-panel"
-      aria-label={es ? "Contacto actual" : "Current outreach"}
+      aria-label={es ? "Gestión de contacto" : "Outreach management"}
     >
-      <h2>{es ? "Contacto y waves" : "Outreach and waves"}</h2>
+      <h2>{es ? "Contacto" : "Outreach"}</h2>
       <p>
         {es
-          ? "Una candidata exploratoria contactada no es una wave de Accounts aprobada. Las propuestas históricas se conservan como evidencia; no son autoridad actual de envío."
-          : "A contacted exploratory candidate is not an approved Account wave. Historical proposals remain evidence, not current send authority."}
+          ? "Separa lo que podría proponerse, el contacto activo y el historial. Nada en esta vista autoriza un envío."
+          : "Separates what could be proposed, active outreach, and history. Nothing in this view authorizes a send."}
       </p>
+      <h3>{es ? "Listas / propuestas" : "Ready / proposed"}</h3>
+      {!proposed.length && (
+        <p className="acq-empty">
+          {es
+            ? "No hay organizaciones listas para proponer contacto. Investigación pendiente no equivale a autorización."
+            : "No organizations are ready to propose for outreach. Pending research is not authorization."}
+        </p>
+      )}
+      {proposed.map((candidate) => (
+        <article className="acq-panel" key={candidate.id}>
+          <h4>{candidate.name}</h4>
+          <p>{candidate.target?.why}</p>
+          <p>
+            <strong>{es ? "Canal" : "Channel"}:</strong>{" "}
+            {candidate.contactState ?? (es ? "sin resolver" : "unresolved")}
+          </p>
+          <p>
+            <strong>{es ? "Autorización" : "Authorization"}:</strong>{" "}
+            {es
+              ? "requiere composición y aprobación exactas"
+              : "exact composition and approval required"}
+          </p>
+        </article>
+      ))}
+      <h3>{es ? "Activas" : "Active"}</h3>
       {contacted.length === 0 && (
         <p>
           {es
@@ -134,19 +163,24 @@ export function OutreachState({ locale }: { locale: Locale }) {
           </details>
         </article>
       ))}
-      <p>
-        {es ? "Última ventana de exploración" : "Latest exploratory window"}:{" "}
-        {current
-          ? `${String(current.local_date).slice(0, 10)} · ${current.status === "HELD_REVIEW" ? (es ? "cerrada, en revisión humana" : "closed, awaiting Human review") : current.status.replaceAll("_", " ")}`
-          : es
-            ? "sin ventana reciente"
-            : "no recent window"}
-      </p>
-      <p>
-        {es
-          ? "Ninguna nueva wave o seguimiento se ejecuta sin autorización exacta."
-          : "No new wave or follow-up executes without exact authorization."}
-      </p>
+      <details>
+        <summary>
+          {es ? "Historial y detalle técnico" : "History and technical detail"}
+        </summary>
+        <p>
+          {es ? "Última ventana" : "Latest window"}:{" "}
+          {current
+            ? `${String(current.local_date).slice(0, 10)} · ${current.status.replaceAll("_", " ")}`
+            : es
+              ? "sin ventana reciente"
+              : "no recent window"}
+        </p>
+        <p>
+          {es
+            ? "Waves y propuestas anteriores se conservan como auditoría; no constituyen autoridad vigente."
+            : "Prior waves and proposals remain audit history; they are not current authority."}
+        </p>
+      </details>
     </section>
   )
 }

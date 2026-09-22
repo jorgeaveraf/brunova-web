@@ -4,6 +4,7 @@ import {
   acquisitionApi as api,
   type CycleReview,
   type CyclePoolItem,
+  type PortalSession,
 } from "@/lib/acquisition-api"
 import type { Locale } from "@/lib/i18n"
 import { readinessText } from "@/lib/acquisition-readiness"
@@ -105,10 +106,10 @@ export function OperatingOverview({
           onClick={() =>
             onNavigate(
               halt
-                ? "Work / Health"
+                ? "Operations"
                 : latestSession?.status === "HELD_REVIEW"
-                  ? "Discovery"
-                  : "Waves",
+                  ? "Attention"
+                  : "Outreach",
             )
           }
         >
@@ -172,8 +173,8 @@ export function OperatingOverview({
           <div>
             <span>
               {es
-                ? "Contactos / intentos de wave de Accounts"
-                : "Account-wave contacts / attempts"}
+                ? "Contacto activo / intentos gobernados"
+                : "Active outreach / governed attempts"}
             </span>
             <strong>
               {review.newProspects} / {review.attempts}
@@ -273,10 +274,14 @@ export function OpportunityPool({
   cycleId,
   locale,
   onInspect,
+  session,
+  onChanged,
 }: {
   cycleId: string
   locale: Locale
   onInspect: (id: string) => void
+  session?: PortalSession
+  onChanged?: () => void
 }) {
   const es = locale === "es",
     [items, setItems] = useState<CyclePoolItem[]>([]),
@@ -330,7 +335,14 @@ export function OpportunityPool({
           ? "No seleccionada no significa rechazada. La evidencia y las oportunidades se conservan fuera de la wave."
           : "Not selected does not mean rejected. Evidence and opportunities remain available outside the wave."}
       </p>
-      {discovery && <CandidateOpportunities data={discovery} locale={locale} />}
+      {discovery && (
+        <CandidateOpportunities
+          data={discovery}
+          locale={locale}
+          session={session}
+          onChanged={onChanged}
+        />
+      )}
       {discoveryFailed && (
         <p role="alert">
           {es
@@ -530,7 +542,7 @@ export function CycleAttention({
               : "Composition and evidence require a Management decision; the scheduler does not approve waves."}
       </p>
       {review.control?.technical_halt && <p>{review.control.technical_halt}</p>}
-      <button onClick={() => onNavigate(held ? "Discovery" : "Waves")}>
+      <button onClick={() => onNavigate(held ? "Opportunities" : "Outreach")}>
         {es ? "Inspeccionar decisión" : "Inspect decision"}
       </button>
     </section>

@@ -1,8 +1,10 @@
-import { render, screen, fireEvent } from "@testing-library/react"
+import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import { it, expect, vi, afterEach } from "vitest"
 import { ActivationPreflight } from "@/components/acquisition/activation-preflight"
 import { OpportunityPool } from "@/components/acquisition/operating-overview"
+import { CandidateOpportunities } from "@/components/acquisition/candidate-opportunities"
 import { acquisitionApi as api } from "@/lib/acquisition-api"
+import type { DiscoveryTruth } from "@/lib/acquisition-management-truth"
 afterEach(() => vi.restoreAllMocks())
 it.each(["en", "es"] as const)(
   "%s preflight is read-only and missing evidence is not healthy",
@@ -81,4 +83,77 @@ it("opportunity groups retain uncertainty and supported context without a fabric
     }),
   )
   expect(inspect).toHaveBeenCalledWith("synthetic")
+})
+
+it("archives through the governed command while preserving an explicit disabled automatic policy", async () => {
+  const command = vi.spyOn(api, "candidateWorkspace").mockResolvedValue({
+    status: "accepted",
+    candidateId: "candidate-synthetic",
+    workspaceState: "ARCHIVED",
+    wakeRequired: false,
+  })
+  const changed = vi.fn()
+  const data = {
+    candidates: [
+      {
+        id: "candidate-synthetic",
+        name: "Synthetic Operations Group",
+        domain: null,
+        identity_state: "UNRESOLVED",
+        screen_state: "HOLD",
+        reasons: [],
+        missing: ["identity"],
+        market_contexts: ["MX"],
+        sources: ["synthetic-source"],
+        sightings: 1,
+        admissions: 0,
+        archived: false,
+      },
+    ],
+    journeys: [],
+    workExecution: [],
+    batchCandidates: [],
+    routineOperatingSessions: [],
+    learningWaves: [],
+    firstExploratoryEffect: [],
+    archivePolicy: {
+      version: 1,
+      enabled: false,
+      terminal_retention_days: 30,
+      stale_unresolved_retention_days: 180,
+      definition: {},
+      definition_hash: "a".repeat(64),
+    },
+    archiveEligibility: [],
+  } as unknown as DiscoveryTruth
+  render(
+    <CandidateOpportunities
+      data={data}
+      locale="en"
+      session={{
+        authenticated: true,
+        actor: { email: "human@brunova.mx", capabilities: ["MANAGE_CYCLE"] },
+        csrfToken: "csrf",
+        expiresAt: "2099-01-01T00:00:00Z",
+      }}
+      onChanged={changed}
+    />,
+  )
+  fireEvent.click(screen.getByText("Archive policy"))
+  expect(screen.getByText(/Policy v1 is disabled/)).toBeVisible()
+  fireEvent.click(screen.getByText("Remove from active view"))
+  fireEvent.change(screen.getByLabelText("Reason"), {
+    target: { value: "No current workspace value; preserve evidence." },
+  })
+  fireEvent.click(screen.getByRole("button", { name: "Archive organization" }))
+  await waitFor(() =>
+    expect(command).toHaveBeenCalledWith(
+      expect.any(String),
+      "candidate-synthetic",
+      "ARCHIVE_CANDIDATE",
+      "No current workspace value; preserve evidence.",
+      "csrf",
+    ),
+  )
+  expect(changed).toHaveBeenCalledOnce()
 })

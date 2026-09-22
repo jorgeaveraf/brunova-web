@@ -853,8 +853,35 @@ export const acquisitionApi = {
             admissions: z.coerce.number(),
             first_seen: z.string().optional(),
             last_seen: z.string().optional(),
+            archived: z.boolean().optional(),
+            workspace_action: z.string().nullable().optional(),
+            workspace_reason: z.string().nullable().optional(),
+            workspace_actor_type: z.string().nullable().optional(),
+            workspace_actor_id: z.string().nullable().optional(),
+            workspace_changed_at: z.string().nullable().optional(),
           }),
         ),
+        archivePolicy: z
+          .object({
+            version: z.number(),
+            enabled: z.boolean(),
+            terminal_retention_days: z.number(),
+            stale_unresolved_retention_days: z.number().nullable(),
+            definition: z.record(z.string(), z.unknown()),
+            definition_hash: z.string(),
+          })
+          .nullable()
+          .optional(),
+        archiveEligibility: z
+          .array(
+            z.object({
+              candidate_id: z.string(),
+              policy_version: z.number(),
+              eligibility_reason: z.string(),
+              eligible_at: z.string(),
+            }),
+          )
+          .optional(),
         planning: z.array(
           z.object({
             id: z.string(),
@@ -966,6 +993,30 @@ export const acquisitionApi = {
         method: "POST",
         headers: { "content-type": "application/json", "x-csrf-token": csrf },
         body: JSON.stringify({ commandId, request: body }),
+      },
+    ),
+  candidateWorkspace: (
+    commandId: string,
+    candidateId: string,
+    action: "ARCHIVE_CANDIDATE" | "RESTORE_CANDIDATE",
+    reason: string,
+    csrf: string,
+  ) =>
+    request(
+      "/commands/discovery",
+      z.object({
+        status: z.string(),
+        candidateId: z.string(),
+        workspaceState: z.enum(["ACTIVE", "ARCHIVED"]),
+        wakeRequired: z.literal(false),
+      }),
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-csrf-token": csrf },
+        body: JSON.stringify({
+          commandId,
+          request: { operation: action, candidateId, reason },
+        }),
       },
     ),
   reviewExploratoryTarget: (

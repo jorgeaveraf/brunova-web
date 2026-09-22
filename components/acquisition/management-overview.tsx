@@ -165,8 +165,8 @@ export function ManagementOverview({
                     ? "El Engine decidió esperar. El trabajo restante no justificaba otra unidad de capacidad."
                     : "The Engine deferred. Remaining work did not justify another capacity unit."
                   : es
-                    ? "La ejecución registrada y sus límites están disponibles en Discovery."
-                    : "Recorded execution and its limits are available in Discovery."}
+                    ? "La ejecución registrada y sus límites están disponibles en Oportunidades."
+                    : "Recorded execution and its limits are available in Opportunities."}
               </p>
               <div className="acq-inline-facts">
                 <span>
@@ -185,8 +185,8 @@ export function ManagementOverview({
                     ? "No hubo evidencia nueva de empresas. A1 aceptado; A2 no aplica porque no hubo ejecución."
                     : "No new company evidence. A1 accepted; A2 does not apply because nothing executed."
                   : es
-                    ? "El detalle de evidencia está en Discovery; no se infiere calidad sólo por completar trabajo."
-                    : "Evidence details are in Discovery; completing work alone does not prove information quality."}
+                    ? "El detalle de evidencia está en Oportunidades; no se infiere calidad sólo por completar trabajo."
+                    : "Evidence details are in Opportunities; completing work alone does not prove information quality."}
               </p>
               <details>
                 <summary>
@@ -237,7 +237,7 @@ export function ManagementOverview({
           </p>
           <button
             onClick={() =>
-              onNavigate(decisionNeeded ? "Attention" : "Discovery")
+              onNavigate(decisionNeeded ? "Attention" : "Opportunities")
             }
           >
             {decisionNeeded

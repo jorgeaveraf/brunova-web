@@ -6,7 +6,6 @@ import { CycleControlSection } from "./cycle-control"
 import { PolicySettings } from "./policy-settings"
 import { WorkHealthSummary } from "./work-health-summary"
 import { ActivationPreflight } from "./activation-preflight"
-import { DiscoverySection } from "./discovery"
 import { OutreachState } from "./outreach-state"
 import { DiscoveryHealth } from "./discovery-health"
 import { OpportunityPool, CycleAttention } from "./operating-overview"
@@ -30,7 +29,6 @@ import {
   AcquisitionError,
   type PortalSession,
   type Cycle,
-  type Account,
   type AccountDetail,
   type Attention,
   type Counts,
@@ -135,13 +133,8 @@ export function AcquisitionPortal({
   const { t, humanize, when } = copyFor(locale)
   const [cycles, setCycles] = useState<Cycle[]>([]),
     [cycleId, setCycleId] = useState("")
-  const [tab, setTab] = useState("Overview"),
-    [outcome, setOutcome] = useState(""),
-    [cursor, setCursor] = useState("")
-  const [accounts, setAccounts] = useState<Account[]>([]),
-    [next, setNext] = useState<string | null>(null)
+  const [tab, setTab] = useState("Overview")
   const [active, setActive] = useState<Attention[]>([]),
-    [all, setAll] = useState<Attention[]>([]),
     [counts, setCounts] = useState<Counts | null>(null)
   const [health, setHealth] = useState<Health | null>(null),
     [work, setWork] = useState<Work[]>([]),
@@ -211,25 +204,18 @@ export function AcquisitionPortal({
       const current = cycleId || cs.items[0]?.cycleId || ""
       if (current !== cycleId) setCycleId(current)
       if (current) {
-        const [as, ats, everyone, totals, ws] = await Promise.all([
-          api.accounts(current, outcome, cursor),
+        const [ats, totals, ws] = await Promise.all([
           api.attention(current, true),
-          api.attention(current, false),
           api.counts(current),
           api.work(current, workCursor, workState),
         ])
         if (run !== generation.current) return
-        setAccounts(as.items)
-        setNext(as.nextCursor)
         setActive(ats.items)
-        setAll(everyone.items)
         setCounts(totals)
         setWork(ws.items)
         setWorkNext(ws.nextCursor)
       } else {
-        setAccounts([])
         setActive([])
-        setAll([])
         setCounts(null)
         setWork([])
       }
@@ -241,14 +227,7 @@ export function AcquisitionPortal({
         setLoading(false)
       }
     }
-  }, [
-    cycleId,
-    outcome,
-    cursor,
-    workCursor,
-    workState,
-    session.actor.capabilities,
-  ])
+  }, [cycleId, workCursor, workState, session.actor.capabilities])
   useEffect(() => {
     let cancelled = false
     queueMicrotask(() => {
@@ -394,7 +373,6 @@ export function AcquisitionPortal({
             disabled={!cycles.length || pending}
             onChange={(e) => {
               setCycleId(e.target.value)
-              setCursor("")
               setWorkCursor("")
             }}
           >
@@ -429,15 +407,13 @@ export function AcquisitionPortal({
       <nav className="acq-tabs" aria-label={t("Secciones de Adquisición")}>
         {[
           ["Overview", locale === "es" ? "Resumen" : "Overview"],
-          ["Discovery", locale === "es" ? "Exploración" : "Discovery"],
-          ["Accounts", locale === "es" ? "Oportunidades" : "Opportunities"],
-          ["Waves", "Waves"],
-          ["Attention", t("Necesita tu atención")],
-          ["Settings", locale === "es" ? "Configuración" : "Settings"],
           [
-            "Work / Health",
-            locale === "es" ? "Trabajo y salud" : "Work / Health",
+            "Opportunities",
+            locale === "es" ? "Oportunidades" : "Opportunities",
           ],
+          ["Outreach", locale === "es" ? "Contacto" : "Outreach"],
+          ["Attention", t("Necesita tu atención")],
+          ["Operations", locale === "es" ? "Operaciones" : "Operations"],
         ].map(([key, label]) => (
           <button
             key={key}
@@ -451,40 +427,49 @@ export function AcquisitionPortal({
         ))}
       </nav>
       <div id="acq-active-panel" aria-live="off">
-        {tab === "Settings" && (
-          <PolicySettings
-            key={`settings:${projectionRevision}`}
-            locale={locale}
-            session={session}
-            cycleId={cycleId}
-          />
+        {tab === "Operations" && (
+          <section className="acq-section-heading">
+            <div>
+              <h2>{locale === "es" ? "Operaciones" : "Operations"}</h2>
+              <p className="acq-muted">
+                {locale === "es"
+                  ? "Estado actual primero; política y actividad histórica permanecen disponibles como detalle."
+                  : "Current state first; policy and historical activity remain available as detail."}
+              </p>
+            </div>
+          </section>
         )}
-        {tab === "Discovery" && (
-          <DiscoverySection
-            key={`discovery:${cycleId}:${projectionRevision}`}
-            locale={locale}
-            cycleId={cycleId}
-            session={session}
-          />
-        )}
-        {tab === "Work / Health" && (
+        {tab === "Operations" && (
           <WorkHealthSummary
             key={`health-summary:${projectionRevision}`}
             locale={locale}
             health={health}
           />
         )}
-        {tab === "Work / Health" && cycle && (
+        {tab === "Operations" && cycle && (
           <DiscoveryHealth
             key={`discovery-health:${projectionRevision}`}
             locale={locale}
           />
         )}
-        {tab === "Work / Health" && !cycle && (
+        {tab === "Operations" && !cycle && (
           <ActivationPreflight
             key={`preflight:${projectionRevision}`}
             locale={locale}
           />
+        )}
+        {tab === "Operations" && (
+          <details className="acq-panel">
+            <summary>
+              {locale === "es" ? "Política vigente" : "Current policy"}
+            </summary>
+            <PolicySettings
+              key={`settings:${projectionRevision}`}
+              locale={locale}
+              session={session}
+              cycleId={cycleId}
+            />
+          </details>
         )}
         {tab === "Overview" && cycle && (
           <ManagementOverview
@@ -495,21 +480,26 @@ export function AcquisitionPortal({
             onNavigate={setTab}
           />
         )}
-        {tab === "Accounts" && (
+        {tab === "Opportunities" && (
           <OpportunityPool
             key={`opportunities:${cycleId}:${projectionRevision}`}
             cycleId={cycleId}
             locale={locale}
+            session={session}
+            onChanged={() => {
+              invalidateDiscoveryRead()
+              setProjectionRevision((value) => value + 1)
+            }}
             onInspect={(id) => void inspect(id, null)}
           />
         )}
-        {tab === "Waves" && (
+        {tab === "Outreach" && (
           <OutreachState
             key={`outreach:${cycleId}:${projectionRevision}`}
             locale={locale}
           />
         )}
-        {tab === "Waves" && (
+        {tab === "Outreach" && (
           <CycleControlSection
             key={`cycle-control:${cycleId}:${projectionRevision}`}
             cycleId={cycleId}
@@ -518,7 +508,7 @@ export function AcquisitionPortal({
             onInspect={(accountId) => void inspect(accountId, null)}
           />
         )}
-        {tab === "Work / Health" && cycle && (
+        {tab === "Operations" && cycle && (
           <section className="acq-metrics" aria-label={t("Resumen")}>
             <div>
               <span>{t("Calificadas")}</span>
@@ -552,7 +542,7 @@ export function AcquisitionPortal({
             </div>
           </section>
         )}
-        {health && (tab === "Overview" || tab === "Work / Health") && (
+        {health && (tab === "Overview" || tab === "Operations") && (
           <p className="acq-safety">
             {t("DATOS REALES DE ADQUISICIÓN:")}{" "}
             {t(
@@ -586,7 +576,7 @@ export function AcquisitionPortal({
                 ? "Cycle 1 está configurado. Primero se autorizará Discovery e investigación reales; después, Management revisará la primera wave antes de cualquier contacto."
                 : "Cycle 1 is configured. Real discovery and research will be authorized first; Management then reviews the first wave before any outreach."}
             </p>
-            <button onClick={() => setTab("Settings")}>
+            <button onClick={() => setTab("Operations")}>
               {locale === "es"
                 ? "Revisar configuración del Cycle"
                 : "Review Cycle settings"}
@@ -649,6 +639,16 @@ export function AcquisitionPortal({
                         ? "Revisar evidencia vigente."
                         : "Review current evidence.")}
                   </p>
+                  <p>
+                    <strong>{locale === "es" ? "Opciones" : "Options"}:</strong>{" "}
+                    {canDecide
+                      ? locale === "es"
+                        ? "Continuar promueve sólo bajo política; HOLD conserva y detiene; Rechazar exige evidencia y conserva historial."
+                        : "Continue advances only under policy; HOLD preserves and pauses; Reject requires evidence and preserves history."
+                      : locale === "es"
+                        ? "Esta sesión puede inspeccionar, pero no registrar la decisión."
+                        : "This session may inspect, but cannot record the decision."}
+                  </p>
                   <details>
                     <summary>
                       {locale === "es"
@@ -668,7 +668,7 @@ export function AcquisitionPortal({
             </div>
           </section>
         )}
-        {tab === "Work / Health" && cycle && (
+        {tab === "Operations" && cycle && (
           <section className="acq-panel">
             <h2>{t("Estado del ciclo")}</h2>
             {cycle ? (
@@ -708,76 +708,11 @@ export function AcquisitionPortal({
             )}
           </section>
         )}
-        {tab === "Work / Health" && (
-          <section>
-            <h2>{t("Cuentas")}</h2>
-            <label>
-              {t("Resultado de investigación")}{" "}
-              <select
-                value={outcome}
-                onChange={(e) => {
-                  setOutcome(e.target.value)
-                  setCursor("")
-                }}
-              >
-                <option value="">{t("Todos")}</option>
-                {["QUALIFIED", "HOLD", "REJECTED"].map((o) => (
-                  <option key={o} value={o}>
-                    {humanize(o)}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {!accounts.length && !loading && (
-              <p className="acq-empty">
-                {t("No hay cuentas para este ciclo o filtro.")}
-              </p>
-            )}
-            <div className="acq-account-list">
-              {accounts.map((a) => {
-                const att = all.find((i) => i.account_id === a.accountId)
-                return (
-                  <article key={a.accountId}>
-                    <div>
-                      <h3>{a.canonicalIdentity.displayName}</h3>
-                      <p>{a.canonicalIdentity.domain}</p>
-                    </div>
-                    <div>
-                      <p>{humanize(a.researchOutcome ?? a.stage)}</p>
-                      <p>
-                        {att
-                          ? `${humanize(att.result.tier)} · ${humanize(att.status)}${att.stale ? ` · ${t("Desactualizado")}` : ""}`
-                          : t("Sin prioridad / atención")}
-                      </p>
-                      <small>{when(a.latestMaterialActivityAt)}</small>
-                    </div>
-                    <button
-                      onClick={() => void inspect(a.accountId, att ?? null)}
-                    >
-                      {t("Inspeccionar cuenta")}
-                    </button>
-                  </article>
-                )
-              })}
-            </div>
-            <div className="acq-actions">
-              <button disabled={!cursor} onClick={() => setCursor("")}>
-                {t("Primera página")}
-              </button>
-              <button disabled={!next} onClick={() => setCursor(next ?? "")}>
-                {t("Siguiente página")}
-              </button>
-            </div>
-            <p className="acq-muted">
-              {t(
-                "Esta lista es de consulta; la investigación se solicita mediante una operación de Management gobernada.",
-              )}
-            </p>
-          </section>
-        )}
-        {tab === "Work / Health" && (
-          <section className="acq-panel">
-            <h2>Work / Health</h2>
+        {tab === "Operations" && (
+          <details className="acq-panel">
+            <summary>
+              {locale === "es" ? "Actividad y auditoría" : "Activity and audit"}
+            </summary>
             <label>
               {t("Estado del trabajo")}
               <select
@@ -843,7 +778,7 @@ export function AcquisitionPortal({
             >
               {t("Más trabajo")}
             </button>
-          </section>
+          </details>
         )}
       </div>
       <dialog

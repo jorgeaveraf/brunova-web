@@ -139,7 +139,12 @@ export function PolicySettings({
   }
   return (
     <section className="acq-panel">
-      <h2>{es ? "Configuración del Cycle" : "Cycle settings"}</h2>
+      <h2>{es ? "Política vigente" : "Current policy"}</h2>
+      <p className="acq-muted">
+        {es
+          ? "El snapshot del Cycle es de consulta. Sólo aparecen controles cuando existe una propuesta versionada y gobernada."
+          : "The Cycle snapshot is read-only. Controls appear only where a governed, versioned proposal exists."}
+      </p>
       <p>
         {cycleId
           ? es

@@ -197,8 +197,8 @@ export function CycleControlSection({
     >
       <h2>
         {es
-          ? "Waves · Composición y revisión"
-          : "Waves · Composition and review"}
+          ? "Contacto · Composición y revisión gobernada"
+          : "Outreach · Governed composition and review"}
       </h2>
       {commandNotice && (
         <p role="alert">

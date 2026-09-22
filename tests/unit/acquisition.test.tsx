@@ -462,14 +462,19 @@ it.each(["en", "es"] as const)(
     ).toBeVisible()
     fireEvent.click(
       screen.getByRole("button", {
-        name: locale === "es" ? "Trabajo y salud" : "Work / Health",
+        name: locale === "es" ? "Operaciones" : "Operations",
       }),
     )
     expect(
       await screen.findByRole("heading", {
-        name: t("Investigación de cuenta"),
+        name: locale === "es" ? "Operaciones" : "Operations",
       }),
     ).toBeVisible()
+    fireEvent.click(
+      screen.getByText(
+        locale === "es" ? "Actividad y auditoría" : "Activity and audit",
+      ),
+    )
     fireEvent.change(screen.getByLabelText(t("Estado del trabajo")), {
       target: { value: "WORKING" },
     })
@@ -528,22 +533,20 @@ it("navigation keeps the selected section aligned with its content without a pag
   const { container } = render(
     <AcquisitionPortal session={session} locale="en" />,
   )
-  expect(screen.getByRole("button", { name: "Settings" })).toBeDisabled()
+  expect(screen.getByRole("button", { name: "Operations" })).toBeDisabled()
   await screen.findByRole("heading", { name: /Cycle 1/ })
   await waitFor(() =>
     expect(
       screen.queryByText(text("en", "Actualizando estado del Engine…")),
     ).not.toBeInTheDocument(),
   )
-  expect(screen.getByRole("button", { name: "Settings" })).toBeEnabled()
+  expect(screen.getByRole("button", { name: "Operations" })).toBeEnabled()
   const panel = container.querySelector<HTMLElement>("#acq-active-panel")!
   const sections = [
-    ["Discovery", "Market discovery"],
     ["Opportunities", "Organizations retained for consideration"],
-    ["Waves", "Outreach and waves"],
+    ["Outreach", "Outreach"],
     ["Needs your attention", "Needs your attention"],
-    ["Settings", "Cycle settings"],
-    ["Work / Health", "Operating state"],
+    ["Operations", "Operating state"],
     ["Overview", "Cycle 1"],
   ] as const
   for (const [tab, heading] of sections) {
@@ -555,16 +558,9 @@ it("navigation keeps the selected section aligned with its content without a pag
         name: new RegExp(heading, "i"),
       }),
     ).toBeVisible()
-    if (tab !== "Discovery")
+    if (tab === "Operations") {
       expect(
-        within(panel).queryByRole("heading", { name: "Market discovery" }),
-      ).not.toBeInTheDocument()
-    if (tab === "Settings") {
-      expect(
-        within(panel).queryByRole("heading", { name: "Outreach and waves" }),
-      ).not.toBeInTheDocument()
-      expect(
-        within(panel).queryByRole("heading", { name: /Recurrence on HOLD/i }),
+        within(panel).queryByRole("heading", { name: "Outreach" }),
       ).not.toBeInTheDocument()
     }
   }

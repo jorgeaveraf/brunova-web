@@ -88,6 +88,28 @@ export function WorkHealthSummary({
       )}
       <div className="acq-health-grid">
         <div>
+          <span>{es ? "Recurrencia" : "Recurrence"}</span>
+          <strong>
+            {held
+              ? "HOLD"
+              : es
+                ? "Según autoridad vigente"
+                : "Per current authority"}
+          </strong>
+        </div>
+        <div>
+          <span>Scheduler</span>
+          <strong>
+            {held
+              ? es
+                ? "Desarmado"
+                : "Unarmed"
+              : es
+                ? "Verificar autoridad"
+                : "Verify authority"}
+          </strong>
+        </div>
+        <div>
           <span>{es ? "Trabajo pendiente" : "Pending work"}</span>
           <strong>
             {health?.pendingWorkCount ?? discovery?.totals.pending_work ?? "—"}
@@ -131,6 +153,21 @@ export function WorkHealthSummary({
               : "—"}
           </strong>
         </div>
+        {(["TRANSPORT", "INBOUND"] as const).map((role) => {
+          const row = lastFor(role)
+          return (
+            <div key={role}>
+              <span>n8n {role === "TRANSPORT" ? "Transport" : "Inbound"}</span>
+              <strong>
+                {row
+                  ? String(row.result)
+                  : es
+                    ? "Sin confirmar"
+                    : "Unconfirmed"}
+              </strong>
+            </div>
+          )
+        })}
       </div>
       <details>
         <summary>
