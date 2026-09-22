@@ -105,8 +105,8 @@ export function ManagementOverview({
           <p>
             {held
               ? es
-                ? "La última ventana cerró y la recurrencia espera revisión humana."
-                : "The latest window closed; recurrence awaits Human review."
+                ? "La última ventana fue aceptada técnicamente; la recurrencia continúa detenida."
+                : "The latest window was technically accepted; recurrence remains held."
               : es
                 ? "El Cycle conserva su investigación y sus límites de Management."
                 : "The Cycle retains its research and Management boundaries."}
@@ -124,7 +124,7 @@ export function ManagementOverview({
             <strong>
               {review.discovery?.admitted ?? discovery.totals.admitted}
             </strong>
-            <span>Accounts</span>
+            <span>{es ? "cuentas admitidas" : "admitted Accounts"}</span>
           </div>
           <div>
             <strong>{contacted.length}</strong>
@@ -235,18 +235,14 @@ export function ManagementOverview({
                 ? "La recurrencia permanece detenida. No hay una siguiente acción comercial automática ni autoridad de seguimiento."
                 : "Recurrence remains held. There is no automatic next commercial action or follow-up authority."}
           </p>
-          <button
-            onClick={() =>
-              onNavigate(decisionNeeded ? "Attention" : "Opportunities")
-            }
-          >
+          <button onClick={() => onNavigate("Attention")}>
             {decisionNeeded
               ? es
                 ? "Ver decisión"
                 : "View decision"
               : es
-                ? "Ver lo descubierto"
-                : "View discovery"}
+                ? "Revisar frontera de aceptación"
+                : "Review acceptance boundary"}
           </button>
         </section>
       </div>

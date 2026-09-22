@@ -321,6 +321,13 @@ export function AcquisitionPortal({
         </div>
         <div className="acq-actions">
           <button
+            aria-current={tab === "SystemStatus" ? "page" : undefined}
+            onClick={() => setTab("SystemStatus")}
+            disabled={loading}
+          >
+            {locale === "es" ? "Estado del sistema" : "System status"}
+          </button>
+          <button
             onClick={() => {
               invalidateDiscoveryRead()
               setProjectionRevision((v) => v + 1)
@@ -413,7 +420,6 @@ export function AcquisitionPortal({
           ],
           ["Outreach", locale === "es" ? "Contacto" : "Outreach"],
           ["Attention", t("Necesita tu atención")],
-          ["Operations", locale === "es" ? "Operaciones" : "Operations"],
         ].map(([key, label]) => (
           <button
             key={key}
@@ -427,10 +433,12 @@ export function AcquisitionPortal({
         ))}
       </nav>
       <div id="acq-active-panel" aria-live="off">
-        {tab === "Operations" && (
+        {tab === "SystemStatus" && (
           <section className="acq-section-heading">
             <div>
-              <h2>{locale === "es" ? "Operaciones" : "Operations"}</h2>
+              <h2>
+                {locale === "es" ? "Estado del sistema" : "System status"}
+              </h2>
               <p className="acq-muted">
                 {locale === "es"
                   ? "Estado actual primero; política y actividad histórica permanecen disponibles como detalle."
@@ -439,26 +447,26 @@ export function AcquisitionPortal({
             </div>
           </section>
         )}
-        {tab === "Operations" && (
+        {tab === "SystemStatus" && (
           <WorkHealthSummary
             key={`health-summary:${projectionRevision}`}
             locale={locale}
             health={health}
           />
         )}
-        {tab === "Operations" && cycle && (
+        {tab === "SystemStatus" && cycle && (
           <DiscoveryHealth
             key={`discovery-health:${projectionRevision}`}
             locale={locale}
           />
         )}
-        {tab === "Operations" && !cycle && (
+        {tab === "SystemStatus" && !cycle && (
           <ActivationPreflight
             key={`preflight:${projectionRevision}`}
             locale={locale}
           />
         )}
-        {tab === "Operations" && (
+        {tab === "SystemStatus" && (
           <details className="acq-panel">
             <summary>
               {locale === "es" ? "Política vigente" : "Current policy"}
@@ -508,7 +516,7 @@ export function AcquisitionPortal({
             onInspect={(accountId) => void inspect(accountId, null)}
           />
         )}
-        {tab === "Operations" && cycle && (
+        {tab === "SystemStatus" && cycle && (
           <section className="acq-metrics" aria-label={t("Resumen")}>
             <div>
               <span>{t("Calificadas")}</span>
@@ -542,7 +550,7 @@ export function AcquisitionPortal({
             </div>
           </section>
         )}
-        {health && (tab === "Overview" || tab === "Operations") && (
+        {health && (tab === "Overview" || tab === "SystemStatus") && (
           <p className="acq-safety">
             {t("DATOS REALES DE ADQUISICIÓN:")}{" "}
             {t(
@@ -576,7 +584,7 @@ export function AcquisitionPortal({
                 ? "Cycle 1 está configurado. Primero se autorizará Discovery e investigación reales; después, Management revisará la primera wave antes de cualquier contacto."
                 : "Cycle 1 is configured. Real discovery and research will be authorized first; Management then reviews the first wave before any outreach."}
             </p>
-            <button onClick={() => setTab("Operations")}>
+            <button onClick={() => setTab("SystemStatus")}>
               {locale === "es"
                 ? "Revisar configuración del Cycle"
                 : "Review Cycle settings"}
@@ -614,8 +622,8 @@ export function AcquisitionPortal({
               <div className="acq-empty">
                 <h3>
                   {locale === "es"
-                    ? "No hay decisiones individuales de cuenta pendientes."
-                    : "No individual Account decisions are pending."}
+                    ? "No hay decisiones adicionales de organizaciones pendientes."
+                    : "No additional organization decisions are pending."}
                 </h3>
                 <p>
                   {locale === "es"
@@ -668,7 +676,7 @@ export function AcquisitionPortal({
             </div>
           </section>
         )}
-        {tab === "Operations" && cycle && (
+        {tab === "SystemStatus" && cycle && (
           <section className="acq-panel">
             <h2>{t("Estado del ciclo")}</h2>
             {cycle ? (
@@ -708,7 +716,7 @@ export function AcquisitionPortal({
             )}
           </section>
         )}
-        {tab === "Operations" && (
+        {tab === "SystemStatus" && (
           <details className="acq-panel">
             <summary>
               {locale === "es" ? "Actividad y auditoría" : "Activity and audit"}

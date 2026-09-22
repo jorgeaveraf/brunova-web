@@ -1,7 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import { it, expect, vi, afterEach } from "vitest"
 import { ActivationPreflight } from "@/components/acquisition/activation-preflight"
-import { OpportunityPool } from "@/components/acquisition/operating-overview"
+import {
+  CycleAttention,
+  OpportunityPool,
+} from "@/components/acquisition/operating-overview"
 import { CandidateOpportunities } from "@/components/acquisition/candidate-opportunities"
 import { acquisitionApi as api } from "@/lib/acquisition-api"
 import type { DiscoveryTruth } from "@/lib/acquisition-management-truth"
@@ -75,7 +78,13 @@ it("opportunity groups retain uncertainty and supported context without a fabric
     <OpportunityPool cycleId="synthetic" locale="es" onInspect={inspect} />,
   )
   expect(await screen.findByText("SYNTHETIC Norte")).toBeVisible()
-  expect(screen.getByText("Hipótesis sintética de coordinación")).toBeVisible()
+  expect(
+    screen.getByText(
+      "Existe una hipótesis de intervención respaldada; revisa la evidencia antes de decidir.",
+    ),
+  ).toBeVisible()
+  fireEvent.click(screen.getByText("Texto original del Engine"))
+  expect(screen.getByText(/Hipótesis sintética de coordinación/)).toBeVisible()
   expect(screen.getByText("Sin canal ejecutable confirmado.")).toBeVisible()
   fireEvent.click(
     screen.getByRole("button", {
@@ -84,6 +93,100 @@ it("opportunity groups retain uncertainty and supported context without a fabric
   )
   expect(inspect).toHaveBeenCalledWith("synthetic")
 })
+
+it.each(["en", "es"] as const)(
+  "%s attention treats the accepted operating decision as evidence, not the current blocker",
+  async (locale) => {
+    vi.spyOn(api, "cycleReview").mockResolvedValue({
+      schemaVersion: "1",
+      review: {
+        cycleId: "real-cycle",
+        control: null,
+        pool: {},
+        markets: [],
+        waves: [],
+        attempts: 0,
+        newProspects: 0,
+        attemptsToday: 0,
+        responses: {},
+        quality: {},
+        zeroResponseMeansFailure: false,
+        automaticIcpMutation: false,
+        productionExecution: "DISABLED",
+      },
+    })
+    vi.spyOn(api, "discovery").mockResolvedValue({
+      schemaVersion: "1",
+      state: "WAITING",
+      displayLimits: { missions: 50, candidates: 50, planning: 20 },
+      totals: {
+        observations: 0,
+        candidates: 17,
+        resolved: 7,
+        ambiguous: 0,
+        unresolved: 10,
+        held: 17,
+        admitted: 0,
+        pending_work: 0,
+      },
+      sources: [],
+      missions: [],
+      planning: [],
+      candidates: [],
+      routineOperatingSessions: [
+        {
+          session_id: "session-accepted",
+          local_date: "2026-09-20",
+          status: "HELD_REVIEW",
+          recurrence_state: "HOLD",
+          capacity: { unitsUsed: 1, requestsUsed: 0 },
+          decisions: [
+            {
+              decision: "STOP",
+              strongestAlternative: { workClass: "DISCOVERY", requests: 6 },
+              outcome: { informationYield: "NONE" },
+            },
+          ],
+          report: { learning: "No candidate information gained." },
+        },
+      ],
+    } as never)
+    const navigate = vi.fn()
+    render(
+      <CycleAttention
+        cycleId="real-cycle"
+        locale={locale}
+        onNavigate={navigate}
+      />,
+    )
+    expect(
+      await screen.findByRole("heading", {
+        name:
+          locale === "es"
+            ? "Aceptación humana del Portal pendiente"
+            : "Human Portal acceptance pending",
+      }),
+    ).toBeVisible()
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: locale === "es" ? "Inspeccionar decisión" : "Inspect decision",
+      }),
+    )
+    expect(
+      screen.getByRole("heading", {
+        name: locale === "es" ? "Qué ocurrió" : "What happened",
+      }),
+    ).toBeVisible()
+    expect(
+      screen.getByText(
+        locale === "es"
+          ? /única decisión actual es la aceptación humana del Portal/
+          : /only current decision is Human Portal acceptance/,
+      ),
+    ).toBeVisible()
+    expect(navigate).not.toHaveBeenCalled()
+  },
+)
 
 it("archives through the governed command while preserving an explicit disabled automatic policy", async () => {
   const command = vi.spyOn(api, "candidateWorkspace").mockResolvedValue({

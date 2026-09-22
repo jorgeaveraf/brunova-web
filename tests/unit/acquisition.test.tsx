@@ -462,12 +462,12 @@ it.each(["en", "es"] as const)(
     ).toBeVisible()
     fireEvent.click(
       screen.getByRole("button", {
-        name: locale === "es" ? "Operaciones" : "Operations",
+        name: locale === "es" ? "Estado del sistema" : "System status",
       }),
     )
     expect(
       await screen.findByRole("heading", {
-        name: locale === "es" ? "Operaciones" : "Operations",
+        name: locale === "es" ? "Estado del sistema" : "System status",
       }),
     ).toBeVisible()
     fireEvent.click(
@@ -533,20 +533,25 @@ it("navigation keeps the selected section aligned with its content without a pag
   const { container } = render(
     <AcquisitionPortal session={session} locale="en" />,
   )
-  expect(screen.getByRole("button", { name: "Operations" })).toBeDisabled()
+  expect(screen.getByRole("button", { name: "System status" })).toBeDisabled()
   await screen.findByRole("heading", { name: /Cycle 1/ })
   await waitFor(() =>
     expect(
       screen.queryByText(text("en", "Actualizando estado del Engine…")),
     ).not.toBeInTheDocument(),
   )
-  expect(screen.getByRole("button", { name: "Operations" })).toBeEnabled()
+  expect(screen.getByRole("button", { name: "System status" })).toBeEnabled()
+  expect(
+    within(
+      screen.getByRole("navigation", { name: "Acquisition sections" }),
+    ).queryByRole("button", { name: "System status" }),
+  ).not.toBeInTheDocument()
   const panel = container.querySelector<HTMLElement>("#acq-active-panel")!
   const sections = [
     ["Opportunities", "Organizations retained for consideration"],
     ["Outreach", "Outreach"],
     ["Needs your attention", "Needs your attention"],
-    ["Operations", "Operating state"],
+    ["System status", "Operating state"],
     ["Overview", "Cycle 1"],
   ] as const
   for (const [tab, heading] of sections) {
@@ -558,7 +563,7 @@ it("navigation keeps the selected section aligned with its content without a pag
         name: new RegExp(heading, "i"),
       }),
     ).toBeVisible()
-    if (tab === "Operations") {
+    if (tab === "System status") {
       expect(
         within(panel).queryByRole("heading", { name: "Outreach" }),
       ).not.toBeInTheDocument()
