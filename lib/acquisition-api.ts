@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { portalSessionExpiredEvent } from "@/lib/portal-session-expiry"
 
 const version = z.literal("1")
 export const sessionSchema = z.object({
@@ -207,6 +208,8 @@ async function request<T>(
   } catch {
     throw new AcquisitionError(503)
   }
+  if (response.status === 401 && typeof window !== "undefined")
+    window.dispatchEvent(new Event(portalSessionExpiredEvent))
   if (!response.ok) throw new AcquisitionError(response.status)
   const parsed = schema.safeParse(await response.json())
   if (!parsed.success) throw new AcquisitionError(502)

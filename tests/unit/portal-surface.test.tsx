@@ -73,7 +73,7 @@ it.each(["en", "es"] as const)(
       unavailable: false,
     })
     await expect(AcquisitionPageView({ locale })).rejects.toThrow(
-      `redirect:/portal/login?locale=${locale}`,
+      `redirect:${locale === "es" ? "/es" : "/"}`,
     )
     vi.mocked(readPortalSession).mockResolvedValue({
       session: {

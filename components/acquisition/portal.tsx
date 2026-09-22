@@ -22,6 +22,10 @@ import {
 import { localizedPath, type Locale } from "@/lib/i18n"
 import { invalidateDiscoveryRead } from "@/lib/acquisition-discovery-read"
 import {
+  portalSessionExpiredEvent,
+  sessionExpiryDelay,
+} from "@/lib/portal-session-expiry"
+import {
   acquisitionApi as api,
   AcquisitionError,
   type PortalSession,
@@ -163,6 +167,31 @@ export function AcquisitionPortal({
   const canDecide = session.actor.capabilities.includes(
     "RECORD_ATTENTION_DISPOSITION",
   )
+  useEffect(() => {
+    let leaving = false
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const leave = () => {
+      if (leaving) return
+      leaving = true
+      window.location.replace(localizedPath(locale, "/"))
+    }
+    const checkExpiry = () => {
+      if (timer) clearTimeout(timer)
+      const delay = sessionExpiryDelay(session.expiresAt)
+      if (delay === 0) leave()
+      else if (delay !== null) timer = setTimeout(checkExpiry, delay)
+    }
+    window.addEventListener(portalSessionExpiredEvent, leave)
+    window.addEventListener("focus", checkExpiry)
+    document.addEventListener("visibilitychange", checkExpiry)
+    checkExpiry()
+    return () => {
+      if (timer) clearTimeout(timer)
+      window.removeEventListener(portalSessionExpiredEvent, leave)
+      window.removeEventListener("focus", checkExpiry)
+      document.removeEventListener("visibilitychange", checkExpiry)
+    }
+  }, [locale, session.expiresAt])
   const cycle = cycles.find((c) => c.cycleId === cycleId)
   const refresh = useCallback(async () => {
     const run = ++generation.current
@@ -327,8 +356,13 @@ export function AcquisitionPortal({
               try {
                 await api.logout(session.csrfToken)
                 window.location.assign(localizedPath(locale, "/portal"))
-              } catch {
-                setError(new AcquisitionError(503))
+              } catch (failure) {
+                if (
+                  failure instanceof AcquisitionError &&
+                  failure.status === 401
+                )
+                  window.location.replace(localizedPath(locale, "/"))
+                else setError(new AcquisitionError(503))
               }
             }}
           >

@@ -30,7 +30,7 @@ const session: PortalSession = {
     ],
   },
   csrfToken: "synthetic-csrf",
-  expiresAt: "2026-09-06T00:00:00Z",
+  expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(),
 }
 const item = (name = "SYNTHETIC First"): Attention => ({
   schemaVersion: "1",

@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react"
-import { acquisitionApi } from "@/lib/acquisition-api"
+import { acquisitionApi, AcquisitionError } from "@/lib/acquisition-api"
 import { localizedPath, type Locale } from "@/lib/i18n"
 export function PortalLogout({
   locale,
@@ -22,9 +22,13 @@ export function PortalLogout({
           try {
             await acquisitionApi.logout(csrfToken)
             window.location.assign(localizedPath(locale, "/portal"))
-          } catch {
-            setFailed(true)
-            setPending(false)
+          } catch (failure) {
+            if (failure instanceof AcquisitionError && failure.status === 401)
+              window.location.replace(localizedPath(locale, "/"))
+            else {
+              setFailed(true)
+              setPending(false)
+            }
           }
         }}
       >

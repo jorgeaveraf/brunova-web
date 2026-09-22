@@ -7,7 +7,7 @@ import "@/app/acquisition.css"
 export async function AcquisitionPageView({ locale }: { locale: Locale }) {
   const { session, unavailable } = await readPortalSession()
   const es = locale === "es"
-  if (!session && !unavailable) redirect(`/portal/login?locale=${locale}`)
+  if (!session && !unavailable) redirect(localizedPath(locale, "/"))
   if (!session)
     return (
       <main id="main-content" className="acq" lang={locale}>
