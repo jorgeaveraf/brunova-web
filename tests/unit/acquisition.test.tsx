@@ -241,8 +241,8 @@ it("401 and unavailable/loading states are explicit", async () => {
   render(<AcquisitionPortal session={session} locale="es" />)
   expect(screen.getByText(/Actualizando estado/)).toBeVisible()
   expect(
-    await screen.findByRole("button", { name: "Iniciar sesión" }),
-  ).toBeVisible()
+    await screen.findByRole("link", { name: "Volver a Brunova" }),
+  ).toHaveAttribute("href", "/es")
   expect(screen.getByRole("alert")).toHaveTextContent("Tu sesión terminó")
 })
 it("shows epistemic distinctions, confirms disposition and displays Engine refill", async () => {

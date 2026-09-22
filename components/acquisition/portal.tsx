@@ -374,13 +374,9 @@ export function AcquisitionPortal({
         <div role="alert" className="acq-alert">
           {acquisitionErrorText(locale, error.status)}
           {error.status === 401 && (
-            <button
-              onClick={() =>
-                window.location.assign(`/portal/login?locale=${locale}`)
-              }
-            >
-              {t("Iniciar sesión")}
-            </button>
+            <a href={localizedPath(locale, "/")}>
+              {locale === "es" ? "Volver a Brunova" : "Return to Brunova"}
+            </a>
           )}
         </div>
       )}
