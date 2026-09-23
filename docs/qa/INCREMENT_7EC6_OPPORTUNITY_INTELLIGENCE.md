@@ -56,7 +56,7 @@ not merged, changed, or queued.
 
 ## Validation and safety
 
-- Web: typecheck, 155/155 tests, lint, and production build pass.
+- Web: typecheck, 156/156 tests, lint, and production build pass.
 - Engine: the focused identity suite passes 6/6; the full regression suite
   passes 272/272.
 - Deterministic EN/ES fixtures prove five distinct summaries, routes, next

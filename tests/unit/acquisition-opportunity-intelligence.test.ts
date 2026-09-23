@@ -146,4 +146,23 @@ describe("opportunity intelligence", () => {
     expect(memo.nextStep.decisionChange).toMatch(/keeps both records separate/)
     expect(memo.recommendation.kind).toBe("REVIEW")
   })
+
+  it("does not transfer one company's memo to another candidate with a similar sector signal", () => {
+    const weakLumexa = base(
+      "SYNTHETIC Lumexa Imaging",
+      "A bounded search around outpatient imaging openings may clarify identity.",
+      { nameCollision: true },
+    )
+    const unrelatedWarehouse = base(
+      "SYNTHETIC 3 PL SERVICES",
+      "Warehouse operators may have operational handoffs; DENUE produced a lead.",
+      { searchMarkets: ["MX"] },
+    )
+    const lumexaMemo = opportunityMemo(weakLumexa, "en")
+    const warehouseMemo = opportunityMemo(unrelatedWarehouse, "en")
+    expect(lumexaMemo.tldr).not.toMatch(/Piedmont/)
+    expect(lumexaMemo.stage).toBe("Identity resolution")
+    expect(warehouseMemo.tldr).not.toMatch(/Smart Logistics/)
+    expect(warehouseMemo.nextStep.action).not.toMatch(/DENUE/)
+  })
 })

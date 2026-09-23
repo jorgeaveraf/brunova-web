@@ -69,7 +69,7 @@ const genericIdentityMemo = (
         ? `La exploración produjo un registro atribuible al nombre ${candidate.name}.`
         : `Discovery produced a record attributable to the name ${candidate.name}.`,
       es
-        ? "La incertidumbre puede probarse con evidencia pública acotada; no es evidencia de no-fit."
+        ? "La incertidumbre puede probarse con evidencia pública acotada; no demuestra incompatibilidad."
         : "The uncertainty can be tested with bounded public evidence; it is not evidence of non-fit.",
     ],
     unproven: [
@@ -110,7 +110,7 @@ const genericIdentityMemo = (
         ? "Atribuir la evidencia a una organización concreta sin fusionar por nombre."
         : "Attribute evidence to one concrete organization without merging by name.",
       decisionChange: es
-        ? "Una identidad respaldada abre investigación de empresa; evidencia contradictoria mantiene AMBIGUOUS."
+        ? "Una identidad respaldada abre investigación de empresa; evidencia contradictoria mantiene la ambigüedad."
         : "A supported identity opens company research; contradictory evidence keeps AMBIGUOUS.",
       stopCondition: es
         ? "Detener si las fuentes baratas no corroboran la relación o presentan un conflicto."
@@ -140,6 +140,7 @@ export function opportunityMemo(
 ): OpportunityMemo {
   const es = locale === "es"
   const evidence = evidenceText(candidate)
+  const candidateName = candidate.name.toLocaleLowerCase()
   const base = genericIdentityMemo(candidate, es)
 
   if (candidate.archived)
@@ -191,7 +192,7 @@ export function opportunityMemo(
           ],
       unproven: es
         ? [
-            "Throughput real frente a capacidad declarada.",
+            "Rendimiento real frente a capacidad declarada.",
             "Una responsabilidad no cubierta en agenda o refacciones y su propietario.",
             "Necesidad de intervención externa o presupuesto.",
           ]
@@ -216,7 +217,7 @@ export function opportunityMemo(
             ? "La capacidad desplegada está sustentada; falta saber si existe una responsabilidad residual."
             : "Deployed capacity is supported; an uncovered residual responsibility is not.",
         changeCondition: es
-          ? "Una respuesta material cambia la ruta a revisión/handoff; silencio no autoriza seguimiento."
+          ? "Una respuesta material cambia la ruta a revisión o transferencia comercial; el silencio no autoriza seguimiento."
           : "A material reply changes the route to review/handoff; silence does not authorize follow-up.",
       },
       stage: candidate.contacted
@@ -238,7 +239,7 @@ export function opportunityMemo(
           ? "Respuesta o revisión gobernada"
           : "Response or governed review"
         : es
-          ? "Buyer / contacto"
+          ? "Responsable / contacto"
           : "Buyer / contact",
       nextStep: {
         action: candidate.contacted
@@ -255,7 +256,7 @@ export function opportunityMemo(
           ? "Una respuesta confirma, falsifica o redirige la hipótesis; sin respuesta el estado no progresa."
           : "A reply confirms, falsifies, or redirects the hypothesis; without one the state does not progress.",
         stopCondition: es
-          ? "No enviar seguimiento sin nueva autoridad exacta; DNC, respuesta o handoff detienen progresión autónoma."
+          ? "No enviar seguimiento sin nueva autoridad exacta; una solicitud de no contacto, cualquier respuesta o una transferencia comercial detienen la progresión autónoma."
           : "Do not follow up without new exact authority; DNC, any response, or handoff stops autonomous progression.",
       },
       recommendation: {
@@ -271,7 +272,7 @@ export function opportunityMemo(
           ? "Entender si el crecimiento de capacidad dejó una responsabilidad concreta entre programación del servicio y disponibilidad de refacciones."
           : "Understand whether the capacity expansion left a concrete responsibility between service scheduling and parts availability.",
         learningQuestion: es
-          ? "¿La nueva capacidad opera con un handoff agenda–refacciones ya resuelto o queda una responsabilidad de implementación?"
+          ? "¿La nueva capacidad opera con una coordinación agenda–refacciones ya resuelta o queda una responsabilidad de implementación?"
           : "Is the new scheduling–parts handoff already effective, or does an implementation responsibility remain?",
         whyNow: es
           ? "La mudanza y expansión son recientes, específicas y operativamente medibles."
@@ -291,7 +292,7 @@ export function opportunityMemo(
             ? "Esperar respuesta; no ejecutar otra acción comercial."
             : "Wait for a reply; execute no further commercial action."
           : es
-            ? "Resolver responsable y ContactPoint antes de cualquier propuesta."
+            ? "Resolver responsable y punto de contacto antes de cualquier propuesta."
             : "Resolve owner and ContactPoint before any proposal.",
       },
     }
@@ -335,12 +336,12 @@ export function opportunityMemo(
           ? "Escala, adquisición y capacidad digital están sustentadas; la pregunta útil es si queda un límite específico sin cubrir."
           : "Scale, acquisition, and digital capability are supported; the useful question is whether one specific boundary remains uncovered.",
         changeCondition: es
-          ? "Evidencia específica de Jackson sobre cobertura completa falsifica la tesis; una responsabilidad residual atribuible abre resolución de responsable/contacto."
+          ? "Evidencia específica de Jackson sobre cobertura completa falsifica la tesis; una responsabilidad residual atribuible abre resolución de responsable y contacto."
           : "Jackson-specific proof of complete coverage falsifies the thesis; an attributable residual responsibility opens buyer/contact resolution.",
       },
       stage: es ? "Validación de intervención" : "Intervention validation",
       currentDimension: es ? "Integración de Jackson" : "Jackson integration",
-      nextDimension: es ? "Buyer / contacto" : "Buyer / contact",
+      nextDimension: es ? "Responsable / contacto" : "Buyer / contact",
       nextStep: {
         action: es
           ? "Verificar una frontera concreta de compras o inventario de Jackson y si SupplySync ya la cubre."
@@ -352,7 +353,7 @@ export function opportunityMemo(
           ? "Una responsabilidad residual con dueño mueve a resolución de contacto; cobertura completa mueve a espera o revisión de archivo."
           : "Residual responsibility plus owner moves to buyer/contact; complete coverage moves to HOLD or archive recommendation.",
         stopCondition: es
-          ? "Detener si una fuente atribuible demuestra cobertura completa o si no queda una prueba Jackson-specific barata."
+          ? "Detener si una fuente atribuible demuestra cobertura completa o si no queda una prueba barata y específica de Jackson."
           : "Stop if attributable evidence shows complete coverage or no inexpensive Jackson-specific test remains.",
       },
       recommendation: {
@@ -374,7 +375,7 @@ export function opportunityMemo(
           ? "La adquisición cerró recientemente y tiene escala material y límites operativos identificables."
           : "The acquisition closed recently and has material scale with identifiable operating boundaries.",
         buyer: es
-          ? "Responsable de integración de Jackson en compras/inventario; título y Person aún no resueltos."
+          ? "Responsable de integración de Jackson en compras/inventario; título y persona aún no resueltos."
           : "Owner of Jackson purchasing/inventory integration; title and Person remain unresolved.",
         readiness: es
           ? "Tesis conversacional sustentada; responsable, punto de contacto y autorización pendientes."
@@ -487,6 +488,7 @@ export function opportunityMemo(
   }
 
   if (
+    candidateName.includes("piedmont") &&
     includes(
       evidence,
       "diagnostic",
@@ -562,7 +564,10 @@ export function opportunityMemo(
     }
   }
 
-  if (includes(evidence, "warehouse operators", "smartlogistics", "denue")) {
+  if (
+    candidateName.includes("3 cg group") &&
+    includes(evidence, "warehouse operators", "smartlogistics", "denue")
+  ) {
     return {
       ...base,
       tldr: es
