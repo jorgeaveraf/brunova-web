@@ -8,6 +8,7 @@ import {
   marketContextCounts,
   type DiscoveryTruth,
 } from "@/lib/acquisition-management-truth"
+import { opportunityQuality } from "@/lib/acquisition-opportunity-intelligence"
 import type { Locale } from "@/lib/i18n"
 
 const countExecuted = (
@@ -71,6 +72,13 @@ export function ManagementOverview({
     )
 
   const candidates = candidateManagementTruth(discovery)
+  const quality = opportunityQuality(
+    candidates.filter((candidate) => !candidate.archived),
+    locale,
+    new Set(
+      (discovery.archiveEligibility ?? []).map((item) => item.candidate_id),
+    ),
+  )
   const contacted = candidates.filter((candidate) => candidate.contacted)
   const latest = discovery.routineOperatingSessions?.[0]
   const executed = latest ? countExecuted(latest) : 0
@@ -292,6 +300,51 @@ export function ManagementOverview({
             {es
               ? "La abstención no equivale a rechazo."
               : "Deferral does not mean rejection."}
+          </small>
+        </div>
+      </section>
+      <section
+        className="acq-quality-strip"
+        aria-label={es ? "Calidad del conjunto" : "Pool quality"}
+      >
+        <div>
+          <span>{es ? "Resolviendo identidad" : "Resolving identity"}</span>
+          <strong>{quality.identity}</strong>
+          <small>
+            {es
+              ? "Aún no son oportunidades atribuibles."
+              : "Not yet attributable opportunities."}
+          </small>
+        </div>
+        <div>
+          <span>
+            {es ? "Validando intervención" : "Validating intervention"}
+          </span>
+          <strong>{quality.intervention}</strong>
+          <small>
+            {es
+              ? "Señal concreta; necesidad aún falsable."
+              : "Concrete signal; need remains falsifiable."}
+          </small>
+        </div>
+        <div>
+          <span>{es ? "Tesis conversacional" : "Conversation thesis"}</span>
+          <strong>{quality.conversationReady}</strong>
+          <small>
+            {es
+              ? "No equivale a autorización de contacto."
+              : "Does not equal outreach authority."}
+          </small>
+        </div>
+        <div>
+          <span>{es ? "Esperando / revisión" : "Waiting / review"}</span>
+          <strong>
+            {quality.waiting} / {quality.review}
+          </strong>
+          <small>
+            {es
+              ? "Incluye límites que evitan gastar capacidad."
+              : "Includes boundaries that prevent wasted capacity."}
           </small>
         </div>
       </section>

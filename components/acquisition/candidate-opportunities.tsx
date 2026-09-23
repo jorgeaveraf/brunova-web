@@ -11,72 +11,9 @@ import {
   candidateNameGroups,
   type DiscoveryTruth,
 } from "@/lib/acquisition-management-truth"
+import { opportunityMemo } from "@/lib/acquisition-opportunity-intelligence"
 
 type CandidateView = ReturnType<typeof candidateManagementTruth>[number]
-const quality = (value: string, es: boolean) =>
-  ({
-    JUSTIFIED: es ? "justificada" : "justified",
-    QUESTIONABLE: es ? "cuestionable" : "questionable",
-    WASTED: es ? "sin valor proporcional" : "not proportionate",
-    BLOCKED: es ? "bloqueada" : "blocked",
-  })[value] ?? value.toLocaleLowerCase()
-function localizedReason(candidate: CandidateView, es: boolean) {
-  if (candidate.contacted)
-    return es
-      ? "Existe un contacto activo y su estado debe conservarse mientras se espera una respuesta."
-      : "An active contact exists and its state must be preserved while a reply is pending."
-  if (candidate.screen === "SUPPORTED_DISMISSAL")
-    return es
-      ? "La evidencia vigente respalda cerrar su consideración activa sin borrar el historial."
-      : "Current evidence supports closing active consideration without deleting history."
-  if (candidate.identity === "RESOLVED")
-    return es
-      ? "La identidad está respaldada, pero la oportunidad de intervención todavía necesita evidencia suficiente."
-      : "Identity is supported, while the intervention opportunity still needs sufficient evidence."
-  if (candidate.target)
-    return es
-      ? "Fue seleccionada previamente para aprendizaje acotado; aún no existe autoridad de contacto."
-      : "It was previously selected for bounded learning; no outreach authority exists yet."
-  return es
-    ? "Una señal inicial justificó conservarla para investigación, no para contacto."
-    : "An initial signal justified retaining it for research, not for outreach."
-}
-
-function localizedUnknown(candidate: CandidateView, es: boolean) {
-  if (candidate.identity === "AMBIGUOUS")
-    return es
-      ? "Qué organización exacta corresponde al registro."
-      : "Which exact organization the record represents."
-  if (candidate.identity !== "RESOLVED")
-    return es
-      ? "La identidad exacta y si existe una intervención concreta justificable."
-      : "The exact identity and whether a concrete, justified intervention exists."
-  return es
-    ? "Si existe un problema no resuelto, quién es responsable y si Brunova puede intervenir."
-    : "Whether an unresolved problem exists, who owns it, and whether Brunova can intervene."
-}
-
-function localizedNext(candidate: CandidateView, es: boolean) {
-  if (candidate.archived)
-    return es
-      ? "Sin acción activa; Dirección puede restaurarla con un motivo cuando corresponda."
-      : "No active action; Management may restore it with a reason when appropriate."
-  if (candidate.contacted)
-    return es
-      ? "Esperar una respuesta. Cualquier seguimiento requiere autoridad nueva y exacta."
-      : "Wait for a reply. Any follow-up requires new, exact authority."
-  if (candidate.identity === "AMBIGUOUS")
-    return es
-      ? "Dirección debe revisar la ambigüedad antes de cualquier progresión."
-      : "Management must review the ambiguity before any progression."
-  if (candidate.screen === "SUPPORTED_DISMISSAL")
-    return es
-      ? "Mantener cerrada; nueva evidencia material puede justificar reconsideración."
-      : "Keep closed; materially new evidence may justify reconsideration."
-  return es
-    ? "Continuar sólo con investigación vigente y autorizada que pueda cambiar una decisión."
-    : "Continue only with current, authorized research capable of changing a decision."
-}
 
 function Opportunity({
   candidate,
@@ -84,14 +21,17 @@ function Opportunity({
   record,
   session,
   onChanged,
+  archiveEligible = false,
 }: {
   candidate: CandidateView
   locale: Locale
   record?: string
   session?: PortalSession
   onChanged?: () => void
+  archiveEligible?: boolean
 }) {
   const es = locale === "es"
+  const memo = opportunityMemo(candidate, locale, archiveEligible)
   const [reason, setReason] = useState("")
   const [pending, setPending] = useState(false)
   const [error, setError] = useState(false)
@@ -102,119 +42,87 @@ function Opportunity({
     candidate.discoveryReason ||
     candidate.known
   return (
-    <article className="acq-opportunity-row">
+    <article className="acq-opportunity-row" data-candidate-id={candidate.id}>
       <div className="acq-record-head">
         <div>
           {record && <span className="acq-eyebrow">{record}</span>}
           <h3>{candidate.name}</h3>
+          <p className="acq-company-tldr">{memo.tldr}</p>
         </div>
-        <span className="acq-state">
-          {candidate.archived
-            ? es
-              ? "Archivada"
-              : "Archived"
-            : candidate.contacted
-              ? es
-                ? "Contactada · En espera"
-                : "Contacted · Waiting"
-              : candidate.screen === "SUPPORTED_DISMISSAL"
-                ? es
-                  ? "Descarte respaldado"
-                  : "Supported dismissal"
-                : es
-                  ? "Conservada"
-                  : "Retained"}
-        </span>
+        <div className="acq-state-stack">
+          <span className="acq-state">{memo.stage}</span>
+          <span
+            className={`acq-recommendation acq-recommendation-${memo.recommendation.kind.toLocaleLowerCase()}`}
+          >
+            {memo.recommendation.label}
+          </span>
+        </div>
       </div>
-      <p>
-        <strong>
-          {es
-            ? "Por qué sigue en consideración"
-            : "Why it remains in consideration"}
-        </strong>
-        <br />
-        {localizedReason(candidate, es)}
-      </p>
-      <p className="acq-muted">
-        <strong>{es ? "Aún no probado" : "Still unproven"}:</strong>{" "}
-        {localizedUnknown(candidate, es)}
-      </p>
-      <p className="acq-opportunity-foot">
-        {candidate.searchMarkets.length
-          ? candidate.searchMarkets.join(" / ")
-          : es
-            ? "Contexto de búsqueda sin confirmar"
-            : "Search context unconfirmed"}{" "}
-        ·{" "}
-        {candidate.identity === "RESOLVED"
-          ? es
-            ? "Identidad respaldada"
-            : "Identity supported"
-          : es
-            ? "Identidad pendiente"
-            : "Identity unresolved"}{" "}
-        ·{" "}
-        {candidate.lastWorkQuality
-          ? `${es ? "Investigación" : "Research"}: ${quality(candidate.lastWorkQuality, es)}`
-          : es
-            ? "Investigación pendiente"
-            : "Research pending"}{" "}
-        ·{" "}
-        {candidate.contacted
-          ? es
-            ? "seguimiento sin autorización"
-            : "follow-up not authorized"
-          : es
-            ? "sin acción comercial autorizada"
-            : "no authorized commercial action"}
-      </p>
-      <p className="acq-record-next">
-        <span>{es ? "Dirección" : "Management"}</span>
-        {candidate.identity === "AMBIGUOUS"
-          ? es
-            ? "Debe resolver la ambigüedad de identidad."
-            : "Must resolve the identity ambiguity."
-          : candidate.archived
-            ? es
-              ? "Ninguna decisión pendiente; puede restaurarse con motivo."
-              : "No pending decision; it can be restored with a reason."
-            : candidate.contacted
-              ? es
-                ? "Ninguna acción mientras espera; cualquier seguimiento requiere autoridad nueva."
-                : "No action while waiting; any follow-up requires new authority."
-              : es
-                ? "No requiere decisión ahora; el sistema sólo puede continuar trabajo ya autorizado."
-                : "No decision required now; the Engine may only continue already-authorized work."}
-      </p>
-      <p className="acq-record-next">
-        <span>{es ? "Etapa" : "Stage"}</span>
-        {candidate.archived
-          ? es
-            ? "Fuera del espacio activo; historia conservada"
-            : "Outside active workspace; history preserved"
-          : candidate.contacted
-            ? es
-              ? "Contactada · esperando"
-              : "Contacted · waiting"
-            : candidate.identity === "AMBIGUOUS"
-              ? es
-                ? "Requiere revisión de identidad"
-                : "Identity review required"
-              : candidate.screen === "SUPPORTED_DISMISSAL"
-                ? es
-                  ? "Cerrada con soporte"
-                  : "Closed with support"
-                : candidate.lastAction
-                  ? es
-                    ? "Investigando"
-                    : "Researching"
-                  : es
-                    ? "Descubierta"
-                    : "Discovered"}
-      </p>
-      <p className="acq-record-next">
-        <span>{es ? "Siguiente paso legítimo" : "Next legitimate step"}</span>
-        {localizedNext(candidate, es)}
+      <div className="acq-memo-grid">
+        <section>
+          <h4>{es ? "Por qué importa" : "Why it matters"}</h4>
+          <ul>
+            {memo.reasons.map((reason) => (
+              <li key={reason}>{reason}</li>
+            ))}
+          </ul>
+        </section>
+        <section>
+          <h4>{es ? "Qué sigue sin probarse" : "What remains unproven"}</h4>
+          <ul>
+            {memo.unproven.map((unknown) => (
+              <li key={unknown}>{unknown}</li>
+            ))}
+          </ul>
+        </section>
+      </div>
+      <section className="acq-route">
+        <p className="acq-eyebrow">{es ? "Ruta del Engine" : "Engine route"}</p>
+        <h4>{memo.route.label}</h4>
+        <p>{memo.route.why}</p>
+        <p className="acq-muted">
+          <strong>{es ? "Cambia cuando" : "Route changes when"}:</strong>{" "}
+          {memo.route.changeCondition}
+        </p>
+      </section>
+      <div className="acq-dimension-row">
+        <p>
+          <span>{es ? "Etapa" : "Stage"}</span>
+          <strong>{memo.stage}</strong>
+        </p>
+        <p>
+          <span>{es ? "Dimensión actual" : "Current dimension"}</span>
+          <strong>{memo.currentDimension}</strong>
+        </p>
+        <p>
+          <span>{es ? "Siguiente dimensión" : "Next dimension"}</span>
+          <strong>{memo.nextDimension}</strong>
+        </p>
+      </div>
+      <section className="acq-next-step">
+        <p className="acq-eyebrow">
+          {es ? "Siguiente paso exacto" : "Exact next step"}
+        </p>
+        <h4>{memo.nextStep.action}</h4>
+        <dl>
+          <div>
+            <dt>{es ? "Propósito" : "Purpose"}</dt>
+            <dd>{memo.nextStep.purpose}</dd>
+          </div>
+          <div>
+            <dt>{es ? "Cambio esperado" : "Expected decision change"}</dt>
+            <dd>{memo.nextStep.decisionChange}</dd>
+          </div>
+          <div>
+            <dt>{es ? "Condición de parada" : "Stop condition"}</dt>
+            <dd>{memo.nextStep.stopCondition}</dd>
+          </div>
+        </dl>
+      </section>
+      <p className="acq-archive-recommendation">
+        <span>{es ? "Recomendación" : "Recommendation"}</span>
+        <strong>{memo.recommendation.label}</strong> —{" "}
+        {memo.recommendation.reason}
       </p>
       {(candidate.nextAction || originalSignal || candidate.unknown) && (
         <details>
@@ -349,6 +257,9 @@ export function CandidateOpportunities({
   const archivedCount = candidates.filter(
     (candidate) => candidate.archived,
   ).length
+  const archiveEligibleIds = new Set(
+    (data.archiveEligibility ?? []).map((item) => item.candidate_id),
+  )
   return (
     <section aria-label={es ? "Conjunto de oportunidades" : "Opportunity pool"}>
       <div className="acq-section-heading">
@@ -407,6 +318,7 @@ export function CandidateOpportunities({
               locale={locale}
               session={session}
               onChanged={onChanged}
+              archiveEligible={archiveEligibleIds.has(group[0].id)}
             />
           ) : (
             <section className="acq-same-name" key={group[0].id}>
@@ -426,6 +338,7 @@ export function CandidateOpportunities({
                   locale={locale}
                   session={session}
                   onChanged={onChanged}
+                  archiveEligible={archiveEligibleIds.has(candidate.id)}
                   record={`${es ? "Registro" : "Record"} ${String.fromCharCode(65 + index)}`}
                 />
               ))}

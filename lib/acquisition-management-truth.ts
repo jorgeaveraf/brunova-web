@@ -90,6 +90,8 @@ export function candidateManagementTruth(data: DiscoveryTruth) {
     return {
       id: candidate.id,
       name: candidate.name ?? "Unknown organization",
+      domain: candidate.domain,
+      reasons: candidate.reasons,
       nameCollision: (nameCounts.get(candidate.name ?? "") ?? 0) > 1,
       searchMarkets: candidate.market_contexts ?? [],
       identity: candidate.identity_state,
@@ -119,8 +121,16 @@ export function candidateManagementTruth(data: DiscoveryTruth) {
       target: target
         ? {
             why: target.why,
+            learningGoal: target.learningGoal,
             hypothesis: target.hypothesis,
             falsifier: target.falsifier,
+            yesLearning: target.yesLearning,
+            noLearning: target.noLearning,
+            noResponseLimits: target.noResponseLimits,
+            conversationWorthiness: target.conversationWorthiness,
+            person: target.person,
+            contactPoints: target.contactPoints,
+            contactStrategy: target.contactStrategy,
           }
         : null,
       discoveryReason: text(journey?.origins?.[0]?.reason),

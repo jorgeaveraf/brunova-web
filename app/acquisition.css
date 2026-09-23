@@ -322,6 +322,29 @@
   border-block: 1px solid var(--color-border);
   padding: 1rem 0;
 }
+.acq-quality-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-block: 1px solid var(--color-border);
+}
+.acq-quality-strip > div {
+  padding: 1rem;
+  border-right: 1px solid var(--color-border);
+}
+.acq-quality-strip > div:last-child {
+  border-right: 0;
+}
+.acq-quality-strip span,
+.acq-quality-strip small {
+  display: block;
+  color: var(--color-muted-foreground);
+  font-size: 0.75rem;
+}
+.acq-quality-strip strong {
+  display: block;
+  font: 500 1.65rem var(--font-display);
+  margin: 0.25rem 0;
+}
 .acq-overview-strip strong {
   display: block;
   font-weight: 600;
@@ -332,6 +355,105 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+}
+.acq-record-head > div:first-child {
+  min-width: 0;
+}
+.acq-company-tldr {
+  color: var(--color-muted-foreground);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  margin: 0.55rem 0 0;
+}
+.acq-state-stack {
+  display: grid;
+  justify-items: end;
+  gap: 0.45rem;
+  flex: 0 0 auto;
+}
+.acq-recommendation {
+  font-size: 0.7rem;
+  color: var(--color-muted-foreground);
+  white-space: nowrap;
+}
+.acq-recommendation-wait,
+.acq-recommendation-review {
+  color: var(--color-foreground);
+}
+.acq-memo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+.acq-memo-grid section {
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.75rem;
+}
+.acq-memo-grid h4,
+.acq-route h4,
+.acq-next-step h4,
+.acq-conversation-brief h4 {
+  margin: 0 0 0.5rem;
+}
+.acq-route {
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem;
+  background: color-mix(in srgb, var(--color-foreground) 3%, transparent);
+  border-left: 2px solid var(--color-foreground);
+}
+.acq-route p {
+  margin: 0.4rem 0;
+}
+.acq-dimension-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.acq-dimension-row p {
+  margin: 0;
+}
+.acq-dimension-row span,
+.acq-archive-recommendation > span {
+  display: block;
+  color: var(--color-muted-foreground);
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+.acq-dimension-row strong {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+}
+.acq-next-step {
+  border-top: 1px solid var(--color-border);
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+}
+.acq-next-step dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0.8rem 0 0;
+}
+.acq-next-step dt {
+  color: var(--color-muted-foreground);
+  font-size: 0.72rem;
+}
+.acq-next-step dd {
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin-top: 0.25rem;
+}
+.acq-archive-recommendation {
+  border-top: 1px solid var(--color-border);
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  font-size: 0.82rem;
 }
 .acq-record-context,
 .acq-opportunity-foot {
@@ -463,6 +585,22 @@
   .acq-record-head {
     flex-direction: column;
     gap: 0.55rem;
+  }
+  .acq-quality-strip,
+  .acq-memo-grid,
+  .acq-dimension-row,
+  .acq-next-step dl {
+    grid-template-columns: 1fr;
+  }
+  .acq-quality-strip > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .acq-quality-strip > div:last-child {
+    border-bottom: 0;
+  }
+  .acq-state-stack {
+    justify-items: start;
   }
   .acq-tabs {
     overflow-x: auto;

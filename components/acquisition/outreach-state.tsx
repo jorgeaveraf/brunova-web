@@ -7,6 +7,7 @@ import {
   candidateManagementTruth,
   type DiscoveryTruth,
 } from "@/lib/acquisition-management-truth"
+import { opportunityMemo } from "@/lib/acquisition-opportunity-intelligence"
 
 /** Current outreach truth. Historical exploratory wave proposals are not live approvals. */
 export function OutreachState({ locale }: { locale: Locale }) {
@@ -38,7 +39,11 @@ export function OutreachState({ locale }: { locale: Locale }) {
   const candidates = candidateManagementTruth(data)
   const contacted = candidates.filter((c) => c.contacted)
   const proposed = candidates.filter(
-    (c) => !c.archived && !c.contacted && c.target,
+    (c) =>
+      !c.archived &&
+      !c.contacted &&
+      c.target &&
+      opportunityMemo(c, locale).conversation?.worthHaving,
   )
   const current = data.routineOperatingSessions?.[0]
   return (
@@ -61,13 +66,55 @@ export function OutreachState({ locale }: { locale: Locale }) {
         </p>
       )}
       {proposed.map((candidate) => (
-        <article className="acq-panel" key={candidate.id}>
+        <article
+          className="acq-panel acq-conversation-brief"
+          key={candidate.id}
+        >
           <h4>{candidate.name}</h4>
-          <p>
-            {es
-              ? "La evidencia conservada justifica revisar si puede proponerse un contacto, pero todavía faltan composición y autorización exactas."
-              : "Retained evidence supports reviewing a possible outreach proposal, but exact composition and authorization are still required."}
-          </p>
+          {(() => {
+            const conversation = opportunityMemo(
+              candidate,
+              locale,
+            ).conversation!
+            return (
+              <>
+                <p>
+                  <strong>
+                    {es ? "Tesis de conversación" : "Conversation thesis"}:
+                  </strong>{" "}
+                  {conversation.thesis}
+                </p>
+                <p>
+                  <strong>
+                    {es ? "Pregunta de aprendizaje" : "Learning question"}:
+                  </strong>{" "}
+                  {conversation.learningQuestion}
+                </p>
+                <p>
+                  <strong>{es ? "Por qué ahora" : "Why now"}:</strong>{" "}
+                  {conversation.whyNow}
+                </p>
+                <p>
+                  <strong>
+                    {es ? "Responsable probable" : "Likely buyer"}:
+                  </strong>{" "}
+                  {conversation.buyer}
+                </p>
+                <p>
+                  <strong>
+                    {es ? "Preparación de contacto" : "Readiness"}:
+                  </strong>{" "}
+                  {conversation.readiness}
+                </p>
+                <p className="acq-record-next">
+                  <span>
+                    {es ? "Siguiente paso exacto" : "Exact next step"}
+                  </span>
+                  {conversation.nextStep}
+                </p>
+              </>
+            )
+          })()}
           <p>
             <strong>{es ? "Canal" : "Channel"}:</strong>{" "}
             {candidate.contactState ?? (es ? "sin resolver" : "unresolved")}
@@ -107,6 +154,12 @@ export function OutreachState({ locale }: { locale: Locale }) {
       {contacted.map((c) => (
         <article className="acq-panel" key={c.id}>
           <h3>{c.name}</h3>
+          {opportunityMemo(c, locale).conversation && (
+            <p>
+              <strong>{es ? "Tesis vigente" : "Current thesis"}:</strong>{" "}
+              {opportunityMemo(c, locale).conversation!.thesis}
+            </p>
+          )}
           <p>
             {es
               ? "Conservada · Contactada · Esperando respuesta"
