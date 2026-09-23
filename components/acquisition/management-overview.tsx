@@ -87,7 +87,10 @@ export function ManagementOverview({
     deferred && String(latest?.local_date ?? "").startsWith("2026-09-20")
   const requests = Number(latest?.capacity.requestsUsed ?? 0)
   const markets = marketContextCounts(discovery)
-  const held = latest?.status === "HELD_REVIEW"
+  const continuous =
+    discovery.productionOperatingState?.current === true &&
+    discovery.productionOperatingState.recurrence_authorized === true
+  const held = !continuous && latest?.status === "HELD_REVIEW"
   const wave = review.waves.at(-1)
   const technicalHalt =
     review.control?.technical_halt || review.control?.state === "STOPPED"
@@ -149,10 +152,20 @@ export function ManagementOverview({
             ? es
               ? "detenida (HOLD)"
               : "HOLD"
-            : (latest?.recurrence_state ?? "—")}{" "}
+            : continuous
+              ? es
+                ? "activa · diaria 17:00"
+                : "active · daily 17:00"
+              : (latest?.recurrence_state ?? "—")}{" "}
           ·{" "}
           <strong>{es ? "Efectos comerciales" : "Commercial effects"}:</strong>{" "}
-          {es ? "deshabilitados" : "disabled"}
+          {continuous
+            ? es
+              ? "Pancracio + validación exacta del Engine"
+              : "Pancracio + exact Engine validation"
+            : es
+              ? "deshabilitados"
+              : "disabled"}
         </p>
       </section>
 

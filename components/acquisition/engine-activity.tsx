@@ -31,7 +31,10 @@ export function EngineActivity({ locale }: { locale: Locale }) {
     }
   }, [])
   const latestWindow = discovery?.routineOperatingSessions?.[0],
-    held = latestWindow?.status === "HELD_REVIEW",
+    continuous =
+      discovery?.productionOperatingState?.current === true &&
+      discovery.productionOperatingState.recurrence_authorized === true,
+    held = !continuous && latestWindow?.status === "HELD_REVIEW",
     listener = state?.activity.find((v) => v.mode === "listener"),
     run = state?.activity.find((v) => v.mode === "recovery"),
     schedule = listener?.schedule ?? run?.schedule
@@ -83,11 +86,15 @@ export function EngineActivity({ locale }: { locale: Locale }) {
                 ? "Sin observación disponible"
                 : "No observation available"}{" "}
             ·{" "}
-            {latestWindow?.status === "HELD_REVIEW"
+            {held
               ? es
                 ? "cerrada; espera revisión"
                 : "closed; awaiting review"
-              : (latestWindow?.status ?? "—")}
+              : continuous
+                ? es
+                  ? "operación continua autorizada"
+                  : "continuous operation authorized"
+                : (latestWindow?.status ?? "—")}
           </p>
           <details>
             <summary>

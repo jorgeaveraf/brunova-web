@@ -60,6 +60,9 @@ export function OperatingOverview({
   const markets = marketContextCounts(discovery)
   const contacted = candidates.filter((c) => c.contacted)
   const latestSession = discovery.routineOperatingSessions?.[0]
+  const recurrenceHeld =
+    discovery.productionOperatingState?.recurrence_authorized !== true &&
+    latestSession?.status === "HELD_REVIEW"
   const recordedLearning =
     typeof latestSession?.report?.learning === "string"
       ? latestSession.report.learning
@@ -94,7 +97,7 @@ export function OperatingOverview({
                   ? es
                     ? "La composición está lista para revisión; aún no autoriza contacto."
                     : "The composition is ready for review; it does not authorize outreach yet."
-                  : latestSession?.status === "HELD_REVIEW"
+                  : recurrenceHeld
                     ? es
                       ? "La ventana terminó y la recurrencia está detenida para revisión humana. Las candidatas y la evidencia se conservan."
                       : "The window ended and recurrence is held for Human review. Candidates and evidence remain available."
@@ -107,7 +110,7 @@ export function OperatingOverview({
             onNavigate(
               halt
                 ? "SystemStatus"
-                : latestSession?.status === "HELD_REVIEW"
+                : recurrenceHeld
                   ? "Attention"
                   : "Outreach",
             )
@@ -121,7 +124,7 @@ export function OperatingOverview({
               ? es
                 ? "Revisar resultados"
                 : "Review results"
-              : latestSession?.status === "HELD_REVIEW"
+              : recurrenceHeld
                 ? es
                   ? "Revisar exploración"
                   : "Review discovery"

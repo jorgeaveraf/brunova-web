@@ -37,6 +37,9 @@ export function DiscoveryHealth({ locale }: { locale: Locale }) {
       </p>
     )
   const session = data.routineOperatingSessions?.[0]
+  const held =
+    data.productionOperatingState?.recurrence_authorized !== true &&
+    session?.status === "HELD_REVIEW"
   return (
     <section className="acq-panel">
       <h2>
@@ -53,11 +56,15 @@ export function DiscoveryHealth({ locale }: { locale: Locale }) {
         <p>
           {es ? "Última ventana" : "Latest window"}:{" "}
           {String(session.local_date).slice(0, 10)} ·{" "}
-          {session.status === "HELD_REVIEW"
+          {held
             ? es
               ? "cerrada y detenida para revisión"
               : "closed and held for review"
-            : session.status.replaceAll("_", " ")}
+            : data.productionOperatingState?.recurrence_authorized
+              ? es
+                ? "operación continua autorizada"
+                : "continuous operation authorized"
+              : session.status.replaceAll("_", " ")}
           . {es ? "Nuevos efectos autorizados" : "New effects authorized"}:{" "}
           {session.prospect_effects_authorized ? (es ? "Sí" : "Yes") : "0"}.
         </p>

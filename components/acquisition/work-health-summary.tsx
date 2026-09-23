@@ -42,8 +42,12 @@ export function WorkHealthSummary({
     }
   }, [])
   const latest = discovery?.routineOperatingSessions?.[0]
+  const continuous =
+    discovery?.productionOperatingState?.current === true &&
+    discovery.productionOperatingState.recurrence_authorized === true
   const held =
-    latest?.recurrence_state === "HOLD" || latest?.status === "HELD_REVIEW"
+    !continuous &&
+    (latest?.recurrence_state === "HOLD" || latest?.status === "HELD_REVIEW")
   const listener = model?.activity.find((item) => item.mode === "listener")
   const observations = (discovery?.postEffectReconciliation?.[0]?.n8n_health ??
     []) as Observation[]
@@ -92,6 +96,10 @@ export function WorkHealthSummary({
           <strong>
             {held
               ? "HOLD"
+              : continuous
+                ? es
+                  ? "Activa y continua"
+                  : "Active and continuous"
               : es
                 ? "Según autoridad vigente"
                 : "Per current authority"}
@@ -104,9 +112,13 @@ export function WorkHealthSummary({
               ? es
                 ? "Desarmado"
                 : "Unarmed"
-              : es
-                ? "Verificar autoridad"
-                : "Verify authority"}
+              : continuous
+                ? es
+                  ? "Armado · 17:00"
+                  : "Armed · 17:00"
+                : es
+                  ? "Verificar autoridad"
+                  : "Verify authority"}
           </strong>
         </div>
         <div>

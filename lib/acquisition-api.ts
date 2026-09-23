@@ -656,6 +656,29 @@ export const acquisitionApi = {
               .passthrough(),
           )
           .optional(),
+        productionOperatingState: z
+          .object({
+            cycle_id: z.string(),
+            mandate_id: z.string(),
+            state: z.literal("ACTIVE_CONTINUOUS"),
+            portal_acceptance: z.literal("PASS"),
+            commercial_gate: z.literal("PANCRACIO_EXACT_EFFECT_REQUIRED"),
+            allowed_outbound_channels: z.array(z.string()),
+            new_channel_authority: z.literal("HUMAN_ONLY"),
+            timezone: z.string(),
+            window_start: z.string(),
+            window_end: z.string(),
+            max_units: z.number(),
+            max_requests: z.number(),
+            max_minutes: z.number(),
+            effective_at: z.string(),
+            expires_at: z.string(),
+            current: z.boolean(),
+            recurrence_authorized: z.boolean(),
+            standing_effect_authority: z.literal(false),
+          })
+          .nullable()
+          .optional(),
         routineSourceEconomics: z
           .array(z.record(z.string(), z.unknown()))
           .optional(),
