@@ -117,6 +117,9 @@ export function DiscoverySection({
     (item) => !cycleId || item.cycle_id === cycleId,
   )
   const routineSession = routineSessions[0]
+  const continuous =
+    data?.productionOperatingState?.current === true &&
+    data.productionOperatingState.recurrence_authorized === true
   const routineSources = (data?.routineSourceEconomics ?? []).filter(
     (item) => item.session_id === routineSession?.id,
   )
@@ -281,9 +284,13 @@ export function DiscoverySection({
                     : "no"}
                 </p>
                 <p className="acq-muted">
-                  {es
-                    ? "La sesión asigna capacidad unidad por unidad: planear, ejecutar, observar y volver a decidir. La recurrencia permanece detenida para revisión humana."
-                    : "The session allocates capacity one unit at a time: plan, execute, observe, and decide again. Recurrence remains held for Human review."}
+                  {continuous
+                    ? es
+                      ? "La sesión asigna capacidad unidad por unidad: planear, ejecutar, observar y volver a decidir. La siguiente ventana diaria sigue autorizada dentro del mandato vigente."
+                      : "The session allocates capacity one unit at a time: plan, execute, observe, and decide again. The next daily window remains authorized by the current mandate."
+                    : es
+                      ? "La sesión asigna capacidad unidad por unidad: planear, ejecutar, observar y volver a decidir. La recurrencia permanece detenida para revisión humana."
+                      : "The session allocates capacity one unit at a time: plan, execute, observe, and decide again. Recurrence remains held for Human review."}
                 </p>
                 <dl>
                   <dt>

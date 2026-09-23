@@ -536,7 +536,10 @@ export function CycleAttention({
   const waveDecision = ["PLANNED", "REVIEW_REQUIRED"].includes(
     wave?.state ?? "",
   )
-  const portalAcceptancePending = !halt && !waveDecision
+  const continuous =
+    discovery?.productionOperatingState?.current === true &&
+    discovery.productionOperatingState.recurrence_authorized === true
+  const portalAcceptancePending = !continuous && !halt && !waveDecision
   const lastDecision = latest?.decisions.at(-1)
   const strongestValue =
     lastDecision?.strongestAlternative ?? lastDecision?.strongest_alternative
@@ -571,9 +574,13 @@ export function CycleAttention({
               ? es
                 ? "Revisar preparación del grupo de contacto"
                 : "Review wave preparation"
-              : es
-                ? "Aceptación humana del Portal pendiente"
-                : "Human Portal acceptance pending"}
+              : continuous
+                ? es
+                  ? "El Engine continúa automáticamente"
+                  : "The Engine continues automatically"
+                : es
+                  ? "Aceptación humana del Portal pendiente"
+                  : "Human Portal acceptance pending"}
       </h2>
       <p>
         {halt
@@ -584,9 +591,13 @@ export function CycleAttention({
             ? es
               ? "La composición y su evidencia necesitan una decisión de Dirección; el planificador no aprueba grupos de contacto."
               : "Composition and evidence require a Management decision; the scheduler does not approve waves."
-            : es
-              ? "La decisión operacional anterior ya fue aceptada técnicamente. Ahora se requiere revisar si este Portal permite entender y dirigir Acquisition."
-              : "The prior operating decision has already been technically accepted. The remaining review is whether this Portal makes Acquisition understandable and manageable."}
+            : continuous
+              ? es
+                ? "La aceptación del Portal está registrada y la recurrencia diaria está activa. El Engine trabaja dentro de sus límites y se detiene donde se requiere Dirección."
+                : "Portal acceptance is recorded and daily recurrence is active. The Engine works within its limits and stops where Management is required."
+              : es
+                ? "La decisión operacional anterior ya fue aceptada técnicamente. Ahora se requiere revisar si este Portal permite entender y dirigir Acquisition."
+                : "The prior operating decision has already been technically accepted. The remaining review is whether this Portal makes Acquisition understandable and manageable."}
       </p>
       {review.control?.technical_halt && <p>{review.control.technical_halt}</p>}
       {portalAcceptancePending ? (

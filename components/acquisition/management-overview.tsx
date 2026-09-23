@@ -248,6 +248,10 @@ export function ManagementOverview({
               ? es
                 ? "Dirección debe revisar"
                 : "Management review required"
+              : continuous
+                ? es
+                  ? "El Engine continúa automáticamente"
+                  : "The Engine continues automatically"
               : es
                 ? "Aceptación del Portal pendiente"
                 : "Portal acceptance pending"}
@@ -257,15 +261,23 @@ export function ManagementOverview({
               ? es
                 ? "Revisa la decisión vigente antes de autorizar progresión."
                 : "Review the current decision before authorizing progression."
+              : continuous
+                ? es
+                  ? "La siguiente ventana abre diariamente a las 17:00. No se requiere aprobación por unidad; cualquier efecto comercial exige razonamiento de Pancracio y validación exacta del Engine."
+                  : "The next window opens daily at 17:00. No per-unit approval is required; every commercial effect requires Pancracio reasoning and exact Engine validation."
               : es
                 ? "La recurrencia permanece detenida. No hay una siguiente acción comercial automática ni autoridad de seguimiento."
                 : "Recurrence remains held. There is no automatic next commercial action or follow-up authority."}
           </p>
-          <button onClick={() => onNavigate("Attention")}>
+          <button onClick={() => onNavigate(continuous ? "Opportunities" : "Attention")}>
             {decisionNeeded
               ? es
                 ? "Ver decisión"
                 : "View decision"
+              : continuous
+                ? es
+                  ? "Ver oportunidades"
+                  : "View opportunities"
               : es
                 ? "Revisar frontera de aceptación"
                 : "Review acceptance boundary"}
